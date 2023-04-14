@@ -1,0 +1,12 @@
+{% ckan_extends %}
+
+{% block styles %}
+  {{ super() }}
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  {% asset 'nswdesignsystem/nswdesignsystem-css' %}
+  {% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {% asset 'nswdesignsystem/nswdesignsystem-js' %}
+{% endblock %}

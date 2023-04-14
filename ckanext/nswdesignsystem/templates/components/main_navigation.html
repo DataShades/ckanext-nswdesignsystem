@@ -1,0 +1,21 @@
+<nav class="nsw-skip" aria-label="Skip to links">
+    <a href="#main-nav"><span>Skip to navigation</span></a>
+    <a href="#"><span>Skip to content</span></a>
+</nav>
+
+{% snippet 'components/header.html', title=title %}
+
+<nav class="nsw-main-nav" id="main-nav" aria-label="Main menu">
+    <div class="nsw-main-nav__header">
+        <div class="nsw-main-nav__title">Menu</div>
+        <button class="nsw-icon-button js-close-nav" type="button" aria-expanded="true">
+            <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">close</span>
+            <span class="sr-only">Close Menu</span>
+        </button>
+    </div>
+    <ul class="nsw-main-nav__list">
+        {% if links %}
+        {{ links }}
+        {% endif %}
+    </ul>
+</nav>

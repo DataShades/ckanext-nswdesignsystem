@@ -1,0 +1,17 @@
+nswdesignsystem-js:
+  filter: rjsmin
+  output: ckanext-nswdesignsystem/%(version)s-nswdesignsystem.js
+  contents:
+    - js/nswdesignsystem.js
+    - js/nswdesignsystemActivator.js
+  extra:
+    preload:
+      - base/main
+
+nswdesignsystem-css:
+  filter: cssrewrite
+  output: ckanext-nswdesignsystem/%(version)s-nswdesignsystem.css
+  contents:
+    - css/nswdesignsystem.css
+    - css/nswdesignsystemOverride.css
+
