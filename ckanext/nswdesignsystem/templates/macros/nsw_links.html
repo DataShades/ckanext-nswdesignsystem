@@ -1,0 +1,12 @@
+{% macro blue_link(text='', route='', icon='') %}
+<a href="{{ route }}" class="nsw-button nsw-button--light-outline-solid mb-sm-0 mb-3">
+    {% if icon %}
+    <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">
+        add
+    </span>
+    {% endif %}
+    <span>
+        {{ text }}
+    </span>
+</a>
+{% endmacro %}
