@@ -1,7 +1,7 @@
 {% from "macros/form/attributes.html" import attributes %}
 
-{% macro nsw_link(text='', route='', link_class='nsw-button--light-outline-solid',icon='', attrs={}, custom_icon='') %}
-<a href="{{ route }}" class="nsw-button {{ link_class }} mb-sm-0 mb-3" {{ attributes(attrs) }}>
+{% macro nsw_button(text='', link_class='nsw-button--light-outline-solid',icon='', attrs={}, custom_icon='', type='button') %}
+<button type="{{type}}" class="nsw-button {{ link_class }} mb-sm-0 mb-3" {{ attributes(attrs) }}>
     {% if icon %}
     <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">
         {{ icon }}
@@ -13,6 +13,6 @@
     <span>
         {{ text }}
     </span>
-</a>
+</button>
 {% endmacro %}
 
