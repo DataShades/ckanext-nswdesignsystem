@@ -2,7 +2,7 @@
 
 {% macro nav(details, path) %}
     <li>
-        {{ caller("nav", details) if caller is defined else subnav(details) }}
+        {{ caller("nav", details) if caller is defined else subnav(details, path) }}
 
         {% if details.subnav %}
             <div class="nsw-main-nav__sub-nav" id="sub-nav-{{ path | join("-") }}"

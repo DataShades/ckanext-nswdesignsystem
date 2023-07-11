@@ -1,5 +1,5 @@
-{% macro subnav(details) %}
-    <a href="{{ details.href }}">
+{% macro subnav(details, path) %}
+    <a href="{{ details.href }}" role="button" aria-expanded="false" aria-controls="sub-nav-{{ path | join("-") }}">
         <span>{{ details.label }}</span>
         {% if details.subnav %}
             <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_right</span>
