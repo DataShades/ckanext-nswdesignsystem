@@ -1,0 +1,12 @@
+{% from "macros/nswdesignsystem/masthead.html" import masthead with context  %}
+{% from "macros/nswdesignsystem/header.html" import header with context  %}
+{% from "macros/nswdesignsystem/navigation.html" import main with context  %}
+
+{% macro main_navigation(navigation_links=null) %}
+    {{ masthead() }}
+    {{ header(g.site_title) }}
+
+    {% with links = navigation_links if navigation_links is defined else h.nswdesignsystem_header_links("navigation") %}
+        {{ main(links) if links }}
+    {% endwith %}
+{% endmacro %}

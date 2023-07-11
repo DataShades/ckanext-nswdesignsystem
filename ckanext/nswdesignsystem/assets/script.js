@@ -1,3 +1,5 @@
+window.NSW.initSite();
+
 ckan.module("nswdesignsystem-module", function ($, _) {
   "use strict";
   return {

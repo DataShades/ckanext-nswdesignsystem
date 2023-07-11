@@ -1,0 +1,23 @@
+{
+  "name": "ckanext-nswdesignsystem",
+  "version": "1.0.0",
+  "description": "[![Tests](https://github.com/LinkDigital/ckanext-nswdesignsystem/workflows/Tests/badge.svg?branch=main)](https://github.com/LinkDigital/ckanext-nswdesignsystem/actions)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DataShades/ckanext-nswdesignsystem.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DataShades/ckanext-nswdesignsystem/issues"
+  },
+  "homepage": "https://github.com/DataShades/ckanext-nswdesignsystem#readme",
+  "dependencies": {
+    "nsw-design-system": "^3.8.0"
+  }
+}

@@ -1,13 +1,16 @@
-import ckan.plugins as plugins
-import ckan.plugins.toolkit as toolkit
+from __future__ import annotations
+
+import ckan.plugins as p
+import ckan.plugins.toolkit as tk
 
 
-class NswdesignsystemPlugin(plugins.SingletonPlugin):
-    plugins.implements(plugins.IConfigurer)
+@tk.blanket.helpers
+class NswdesignsystemPlugin(p.SingletonPlugin):
+    p.implements(p.IConfigurer)
 
     # IConfigurer
 
     def update_config(self, config_):
-        toolkit.add_template_directory(config_, "templates")
-        toolkit.add_public_directory(config_, "public")
-        toolkit.add_resource("assets", "nswdesignsystem")
+        tk.add_template_directory(config_, "templates")
+        tk.add_public_directory(config_, "public")
+        tk.add_resource("assets", "nswdesignsystem")

@@ -1,0 +1,34 @@
+{% from "macros/nswdesignsystem/_header_main.html" import main with context  %}
+{% from "macros/nswdesignsystem/_header_search_form.html" import search_form with context  %}
+
+{% macro header(site_title) %}
+    <header class="nsw-header">
+        <div class="nsw-header__container">
+            <div class="nsw-header__inner">
+                <div class="nsw-header__main">
+                    {{ main(site_title) }}
+                </div>
+                <div class="nsw-header__menu">
+                    <button type="button" class="js-open-nav" aria-expanded="false" aria-controls="main-nav">
+                        <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">menu</span>
+                        <span><span class="sr-only">Open</span> Menu</span>
+                    </button>
+                </div>
+                <div class="nsw-header__search">
+                    <button type="button" class="js-open-search" aria-expanded="false" aria-controls="header-search">
+                        <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">search</span>
+                        <span><span class="sr-only">Show</span> Search</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="nsw-header__search-area js-search-area" id="header-search" hidden>
+                {{ search_form() }}
+                <button class="nsw-icon-button js-close-search" aria-expanded="true" aria-controls="header-search">
+                    <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">close</span>
+                    <span class="sr-only">{{ _("Close search") }}</span>
+                </button>
+            </div>
+        </div>
+    </header>
+{% endmacro %}

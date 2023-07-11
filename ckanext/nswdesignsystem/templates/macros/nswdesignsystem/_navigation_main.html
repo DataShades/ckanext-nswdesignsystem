@@ -1,0 +1,19 @@
+{% from "macros/nswdesignsystem/_navigation_nav.html" import nav with context  %}
+
+{% macro main(links) %}
+    <nav class="nsw-main-nav" id="main-nav" aria-label="Main menu">
+        <div class="nsw-main-nav__header">
+            <div class="nsw-main-nav__title">{{ _("Menu") }}</div>
+            <button class="nsw-icon-button js-close-nav" type="button" aria-expanded="true">
+                <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">close</span>
+                <span class="sr-only">{{ _("Close Menu") }}</span>
+            </button>
+        </div>
+
+        <ul class="nsw-main-nav__list">
+            {% for link in links %}
+                {{ nav(link, path=[loop.index]) }}
+            {% endfor %}
+        </ul>
+    </nav>
+{% endmacro %}

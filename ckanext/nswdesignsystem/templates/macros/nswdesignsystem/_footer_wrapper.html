@@ -1,0 +1,5 @@
+{% macro wrapper(style=null) %}
+<footer class="nsw-footer{% if style %}  nsw-footer--{{ style }}{% endif %}">
+    {{ caller() }}
+</footer>
+{% endmacro %}

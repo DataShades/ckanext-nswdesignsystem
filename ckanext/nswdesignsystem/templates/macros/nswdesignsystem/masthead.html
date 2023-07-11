@@ -1,0 +1,13 @@
+{% macro masthead() %}
+    <div class="nsw-masthead">
+        <div class="nsw-container">
+                <div class="masthead-ckan-wrapper">
+                    <span class="mastead-gov-static">{{ _("A NSW Government website") }}</span>
+                    {% if caller is defined %}
+                        {{ caller() }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}

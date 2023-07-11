@@ -1,0 +1,8 @@
+{% macro subnav(details) %}
+    <a href="{{ details.href }}">
+        <span>{{ details.label }}</span>
+        {% if details.subnav %}
+            <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_right</span>
+        {% endif %}
+    </a>
+{% endmacro %}

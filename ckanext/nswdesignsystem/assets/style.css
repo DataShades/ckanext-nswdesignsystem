@@ -3,3 +3,36 @@ body {
   border-radius: 0;
 }
 */
+
+.masthead-ckan-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+@media (min-width: 48rem) {
+    .masthead-ckan-wrapper {
+        flex-direction: row;
+    }
+}
+
+.mastead-gov-static {
+    flex-grow: 1;
+}
+.nsw-masthead .account .list-unstyled {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.nsw-masthead .account .list-unstyled li {
+    margin-top: 0px;
+    margin-left: 0.5rem;
+}
+.nsw-masthead .account .list-unstyled li a{
+    --nsw-text-link: white;
+    --nsw-text-visited: white;
+}
+.nsw-masthead .account .list-unstyled li a:hover{
+    color: var(--nsw-text-link);
+}

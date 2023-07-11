@@ -1,0 +1,45 @@
+{% from "macros/nswdesignsystem/_link_subnav.html" import subnav with context  %}
+
+{% macro nav(details, path) %}
+    <li>
+        {{ caller("nav", details) if caller is defined else subnav(details) }}
+
+        {% if details.subnav %}
+            <div class="nsw-main-nav__sub-nav" id="sub-nav-{{ path | join("-") }}"
+                 role="region" aria-label="{{ details.label }} Submenu">
+                <div class="nsw-main-nav__header">
+                    <button class="nsw-icon-button nsw-icon-button--flex js-close-sub-nav"
+                            type="button" aria-expanded="true" aria-controls="sub-nav-{{ path | join("-") }}">
+                        <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_left</span>
+                        <span>Back<span class="sr-only"> to previous menu</span></span>
+                    </button>
+
+                    <button class="nsw-icon-button js-close-nav" type="button" aria-expanded="true">
+                        <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">close</span>
+                        <span class="sr-only">Close Menu</span>
+                    </button>
+                </div>
+
+                <div class="nsw-main-nav__title">
+                    <a href="{{ details.href }}">
+                        <span>{{ details.subnav.label or details.label }}</span>
+                        <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">east</span>
+                    </a>
+                </div>
+
+                {% if details.subnav.description %}
+                    <div class="nsw-main-nav__description">
+                        {{ details.subnav.description }}
+                    </div>
+                {% endif %}
+
+                <ul class="nsw-main-nav__sub-list">
+                    {% for link in details.subnav.children %}
+                        {{ nav(link, path=path + [loop.index]) }}
+                    {% endfor %}
+                </ul>
+            </div>
+
+        {% endif %}
+    </li>
+{% endmacro %}

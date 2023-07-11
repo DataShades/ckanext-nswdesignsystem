@@ -1,0 +1,25 @@
+{% from "macros/nswdesignsystem/_footer_wrapper.html" import wrapper with context  %}
+{% from "macros/nswdesignsystem/_footer_upper.html" import upper with context %}
+{% from "macros/nswdesignsystem/_footer_lower.html" import lower with context %}
+
+{% macro footer(style=null, upper_links=null, lower_links=null, social_links=null) %}
+
+    {% call wrapper(style) %}
+        {#
+        {% call(part, details) upper(upper_groups) %}
+          {% if part in ["heading", "link"] %}
+            <a href="{{ details.href }}">{{ details.label }}</a>
+          {% endif %}
+        {% endcall %}
+        #}
+        {% with links = upper_links if upper_links is defined else h.nswdesignsystem_footer_links("upper") %}
+            {{ upper(links) if links }}
+        {% endwith %}
+
+        {% set lower_links = lower_links if lower_links is defined else h.nswdesignsystem_footer_links("lower") %}
+        {% set social_links = social_links if social_links is defined else h.nswdesignsystem_footer_links("social") %}
+
+        {{ lower(lower_links, social_links=social_links) }}
+    {% endcall %}
+
+{% endmacro %}

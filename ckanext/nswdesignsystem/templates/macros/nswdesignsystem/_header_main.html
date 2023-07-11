@@ -1,0 +1,12 @@
+
+{% macro main(title) %}
+    <div class="nsw-header__waratah">
+        <a href="/nsw-design-system/">
+            {% include "snippets/nswdesignsystem/header_logo.html" %}
+            <span class="sr-only">{{ _("NSW Government") }}</span>
+        </a>
+    </div>
+    <div class="nsw-header__name">
+        <div class="nsw-header__title">{{ title }}</div>
+    </div>
+{% endmacro %}
