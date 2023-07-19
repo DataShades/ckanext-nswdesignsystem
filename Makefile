@@ -16,4 +16,4 @@ build-highlightjs:
 
 
 changelog:
-	git changelog -t conventional -i -o CHANGELOG.md
+	git changelog -c conventional -o CHANGELOG.md
