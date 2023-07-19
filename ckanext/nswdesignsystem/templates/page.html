@@ -1,6 +1,20 @@
 {% ckan_extends %}
 {% from "macros/nswdesignsystem/skip_to_nav.html" import skip_to_nav with context  %}
 
+{% block styles %}
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  {{ super() }}
+
+  {% asset 'nswdesignsystem/nswdesignsystem-css' %}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {% asset 'nswdesignsystem/nswdesignsystem-js' %}
+{% endblock %}
+
 {% block skip %}
     {{ skip_to_nav() }}
 {% endblock skip %}

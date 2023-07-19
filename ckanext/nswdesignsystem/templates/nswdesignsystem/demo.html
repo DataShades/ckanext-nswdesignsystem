@@ -1,0 +1,38 @@
+{% extends "nswdesignsystem/base.html" %}
+
+{% block primary_content %}
+
+    <div class="p-2">
+        {% for variant in h.nswdesignsystem_demo_variants(component) %}
+            {% set embed_url = h.url_for("nswdesignsystem.embed", component=variant) %}
+
+            <p class="nsw-h4">
+                    {{ variant.split("_") | join(" ") | capitalize }}
+                <a href="{{ embed_url }}" target="_blank" rel="nofollow" title="Open in new tab" class="align-middle">
+                    <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">open_in_new</span>
+                </a>
+            </p>
+            <div class="nsw-tabs js-tabs">
+                <ul class="nsw-tabs__list">
+                    <li><a href="#demo">Demo</a></li>
+                    <li><a href="#code">Code</a></li>
+                </ul>
+                <section id="demo" class="nsw-tabs__content">
+                    {% if use_iframe %}
+                        <iframe frameborder="0" src="{{ embed_url }}" class="w-100" ></iframe>
+                    {% else %}
+                        <section>
+                            {% include h.nswdesignsystem_demo_template_for_component(variant) %}
+                        </section>
+                    {% endif %}
+                </section>
+                <section id="code" class="nsw-tabs__content">
+                    <pre><code class="language-django">{{ h.nswdesignsystem_demo_code(variant) }}</code></pre>
+                </section>
+            </div>
+            <hr/>
+        {% endfor %}
+
+    </div>
+
+{% endblock %}

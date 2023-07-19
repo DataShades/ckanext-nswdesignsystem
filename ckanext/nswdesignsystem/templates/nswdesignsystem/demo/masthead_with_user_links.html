@@ -1,0 +1,11 @@
+{% from "macros/nswdesignsystem/masthead.html" import masthead with context  %}
+
+{% call masthead() %}
+    <a href="#" class="nsw-text--light lh-1">
+        <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">dashboard</span>
+    </a>
+    <a href="#" class="image d-flex align-items-center nsw-text--light ms-3">
+        <img src="//gravatar.com/avatar/john_doe?s=30&d=identicon" class="rounded-circle me-1">
+        <span class="username">John Doe</span>
+    </a>
+{% endcall %}

@@ -1,0 +1,12 @@
+{% from "macros/nswdesignsystem/navigation.html" import main with context  %}
+
+{{ main([
+    {"href": "#", "label": "Flat link"},
+    {"href": "#", "label": "Nested link", "subnav": {"children": [
+        {"href": "#", "label": "First sub-link"},
+        {"href": "#", "label": "Second sub-link"},
+    ]}},
+    {"href": "#", "label": "Nested link with custom nested sub-label", "subnav": {"children": [
+        {"href": "#", "label": "First sub-link"},
+    ], "label": "Custom label"}}
+]) }}

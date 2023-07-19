@@ -14,3 +14,16 @@ nswdesignsystem-css:
   contents:
     - vendor/main.css
     - style.css
+
+
+hljs-js:
+  filter: rjsmin
+  output: ckanext-nswdesignsystem/%(version)s-hljs.js
+  contents:
+    - vendor/hljs.js
+
+hljs-css:
+  filter: cssrewrite
+  output: ckanext-nswdesignsystem/%(version)s-hljs.css
+  contents:
+    - vendor/hljs.css

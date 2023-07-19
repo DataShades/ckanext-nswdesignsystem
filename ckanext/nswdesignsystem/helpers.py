@@ -1,7 +1,14 @@
 from __future__ import annotations
-
+import os
+import glob
+import logging
 import ckan.plugins.toolkit as tk
 from typing_extensions import Literal, NotRequired, TypedDict, overload
+
+log = logging.getLogger(__name__)
+
+tpl_folder = os.path.join(os.path.dirname(__file__), "templates")
+
 
 class SimpleLinkDict(TypedDict):
     href: str
@@ -128,3 +135,20 @@ _lower_footer_links: list[SimpleLinkDict] = [
 _social_footer_links: list[SimpleLinkDict] = [
 
 ]
+
+
+def nswdesignsystem_demo_code(component: str) -> str:
+    filepath = os.path.join(tpl_folder, tk.h.nswdesignsystem_demo_template_for_component(component))
+    with open(filepath) as src:
+        return src.read()
+
+
+def nswdesignsystem_demo_template_for_component(component: str) -> str:
+    return f"nswdesignsystem/demo/{component}.html"
+
+def nswdesignsystem_demo_variants(component: str) -> list[str]:
+    names = glob.glob(os.path.join(tpl_folder, tk.h.nswdesignsystem_demo_template_for_component(f"{component}*")))
+    return sorted([
+        os.path.basename(name).split(".")[0]
+        for name in names
+    ], key=len)

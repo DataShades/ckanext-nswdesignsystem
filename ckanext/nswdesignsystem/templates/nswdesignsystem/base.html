@@ -1,0 +1,44 @@
+{% extends "page.html" %}
+
+{% set demos = [
+    "header",
+    "footer",
+    "main_navigation",
+    "masthead",
+] %}
+
+{% block styles %}
+    {{ super() }}
+    {% asset 'nswdesignsystem/hljs-css' %}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {% asset 'nswdesignsystem/hljs-js' %}
+    <script>
+     window.addEventListener("load", () => hljs.highlightAll())
+    </script>
+{% endblock %}
+
+{% block secondary_content %}
+    <nav class="nsw-side-nav p-2" aria-labelledby="sksm726ns">
+        <div class="nsw-side-nav__header" id="sksm726ns">
+            <a href="{{ h.url_for("nswdesignsystem.pilot") }}">
+                Components
+            </a>
+        </div>
+        <ul>
+            {% for name in demos %}
+                <li>
+                    <a href="{{ h.url_for("nswdesignsystem.demo", component=name) }}">
+                        {{ name.split("_") | join(" ") | capitalize }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </nav>
+{% endblock %}
+
+{% block primary_content %}
+
+{% endblock %}
