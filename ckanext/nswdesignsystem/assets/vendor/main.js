@@ -160,6 +160,7 @@
       this.desktopButtonKeydownEvent = e => this.buttonKeydownDesktop(e);
       this.checkFocusEvent = e => this.checkIfContainsFocus(e);
       this.escapeCloseEvent = e => this.escapeClose(e);
+      this.outsideClickEvent = e => this.handleOutsideClick(e);
       this.openSubNavElements = [];
       this.breakpoint = window.matchMedia('(min-width: 62em)');
       this.body = document.body;
@@ -169,6 +170,21 @@
         this.setUpMobileControls();
         this.responsiveCheck(this.breakpoint);
         this.breakpoint.addListener(e => this.responsiveCheck(e));
+        this.addOutsideClickListener();
+      }
+    }
+    addOutsideClickListener() {
+      document.addEventListener('click', this.outsideClickEvent, false);
+    }
+    removeOutsideClickListener() {
+      document.removeEventListener('click', this.outsideClickEvent, false);
+    }
+    handleOutsideClick(event) {
+      const isOutsideNav = !this.mainNavElement.contains(event.target);
+      if (isOutsideNav) {
+        this.saveElements(event);
+        this.toggleSubNavDesktop(true);
+        event.preventDefault();
       }
     }
     responsiveCheck(e) {
@@ -3113,6 +3129,43 @@
     }
   }
 
+  class ExternalLink {
+    constructor(element) {
+      this.link = element;
+      this.uID = uniqueId('external');
+      this.linkIcon = this.link.querySelector('.nsw-material-icons');
+      this.linkIconTitle = this.linkIcon.getAttribute('title');
+      this.linkElement = false;
+    }
+    init() {
+      this.link.classList.add('nsw-link', 'nsw-link--icon');
+      this.constructor.setAttributes(this.link, {
+        target: '_blank',
+        rel: 'noopener'
+      });
+      this.constructor.setAttributes(this.linkIcon, {
+        focusable: 'false',
+        'aria-hidden': 'true'
+      });
+      this.createElement(this.linkIconTitle);
+    }
+    createElement(title) {
+      if (title) {
+        this.linkElement = document.createElement('span');
+        this.linkElement.id = this.uID;
+        this.linkElement.classList.add('sr-only');
+        this.linkElement.innerText = title;
+        this.link.insertAdjacentElement('afterend', this.linkElement);
+        this.constructor.setAttributes(this.link, {
+          'aria-describedby': this.uID
+        });
+      }
+    }
+    static setAttributes(el, attrs) {
+      Object.keys(attrs).forEach(key => el.setAttribute(key, attrs[key]));
+    }
+  }
+
   if (window.NodeList && !NodeList.prototype.forEach) {
     NodeList.prototype.forEach = Array.prototype.forEach;
   }
@@ -3144,6 +3197,7 @@
     const multiSelect = document.querySelectorAll('.js-multi-select');
     const tooltip = document.querySelectorAll('.js-tooltip');
     const toggletip = document.querySelectorAll('.js-toggletip');
+    const link = document.querySelectorAll('.js-link');
     openSearchButton.forEach(element => {
       new SiteSearch(element).init();
     });
@@ -3194,10 +3248,16 @@
         new Toggletip(element).init();
       });
     }
+    if (link) {
+      link.forEach(element => {
+        new ExternalLink(element).init();
+      });
+    }
   }
 
   exports.Accordion = Accordion;
   exports.Dialog = Dialog;
+  exports.ExternalLink = ExternalLink;
   exports.FileUpload = FileUpload;
   exports.Filters = Filters;
   exports.GlobalAlert = GlobalAlert;
