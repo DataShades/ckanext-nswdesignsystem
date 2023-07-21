@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 
 from flask import Blueprint
 
@@ -9,6 +10,8 @@ bp = Blueprint("nswdesignsystem", __name__)
 
 @bp.route("/nswdesignsystem/pilot")
 def pilot():
+    """List of all available components/intro.
+    """
     if not tk.h.check_access("sysadmin"):
         return tk.abort(403)
 
@@ -17,10 +20,12 @@ def pilot():
 
 @bp.route("/nswdesignsystem/pilot/<component>")
 def demo(component: str):
+    """Preview and code example for the component and its variants.
+    """
     if not tk.h.check_access("sysadmin"):
         return tk.abort(403)
 
-    data = {
+    data: dict[str, Any] = {
         "component": component,
         "use_iframe": False,
     }
@@ -30,10 +35,12 @@ def demo(component: str):
 
 @bp.route("/nswdesignsystem/pilot/<component>/embed")
 def embed(component: str):
+    """Standalone preview of the component.
+    """
     if not tk.h.check_access("sysadmin"):
         return tk.abort(403)
 
-    tpl = tk.h.nswdesignsystem_demo_template_for_component(component)
+    tpl: str = tk.h.nswdesignsystem_demo_template(component)
     data = {
         "demo_template": tpl,
     }

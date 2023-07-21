@@ -30,17 +30,20 @@ Advanced form with custom templates:
                         {% endif %}
                     </div>
 
-                    <ul>
-                        {% for link in group.children %}
-                            <li>
-                                {% if caller is defined %}
-                                    {{ caller("link", link) }}
-                                {% else %}
-                                    <a href="{{ link.href }}">{{ link.label }}</a>
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
+                    {% if group.subnav %}
+                        <ul>
+                            {% for link in group.subnav.children %}
+                                <li>
+                                    {% if caller is defined %}
+                                        {{ caller("link", link) }}
+                                    {% else %}
+                                        <a href="{{ link.href }}">{{ link.label }}</a>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
                 </div>
 
             {% endfor %}
