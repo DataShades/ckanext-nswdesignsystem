@@ -91,7 +91,7 @@ def nswdesignsystem_demo_links() -> list[types.NavDict]:
     template_patch = {}
     demo_patch = {}
 
-    if tk.h.url_for("nswdesignsystem/templates").endswith(tk.request.path):
+    if tk.h.url_for("nswdesignsystem.templates").endswith(tk.request.path):
         templates = ["search", "filters", "events", "content"]
 
         subnav: types.SubNavDict = {
@@ -121,7 +121,7 @@ def nswdesignsystem_demo_links() -> list[types.NavDict]:
         ]}
         layout_patch = {"subnav": subnav}
 
-    if tk.h.url_for("nswdesignsystem/components").endswith(tk.request.path):
+    if tk.h.url_for("nswdesignsystem.components").endswith(tk.request.path):
         subnav: types.SubNavDict = {
             "children": [
                 {
