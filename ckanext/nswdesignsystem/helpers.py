@@ -43,7 +43,8 @@ def nswdesignsystem_get_active_path(links: Iterable[types.NavDict], current: str
 
 def _search_current_path(links: Iterable[types.NavDict], current: str) -> list[int]:
     for idx, item in enumerate(links):
-        if item["href"] == current:
+        # endswith bypass root-path inconsistency
+        if item["href"].endswith(current):
             return [idx]
 
         if "subnav" in item:
@@ -90,7 +91,7 @@ def nswdesignsystem_demo_links() -> list[types.NavDict]:
     template_patch = {}
     demo_patch = {}
 
-    if "nswdesignsystem/templates" in tk.request.path:
+    if tk.h.url_for("nswdesignsystem/templates").endswith(tk.request.path):
         templates = ["search", "filters", "events", "content"]
 
         subnav: types.SubNavDict = {
@@ -104,7 +105,7 @@ def nswdesignsystem_demo_links() -> list[types.NavDict]:
         }
         template_patch = {"subnav": subnav}
 
-    if "nswdesignsystem/layouts" in tk.request.path:
+    if tk.h.url_for("nswdesignsystem.layouts").endswith(tk.request.path):
         layouts: list[tuple[str, str]] = [
             ("full", "Full"),
             ("two-column-left", "Two columns, left sidebar"),
@@ -120,7 +121,7 @@ def nswdesignsystem_demo_links() -> list[types.NavDict]:
         ]}
         layout_patch = {"subnav": subnav}
 
-    if "nswdesignsystem/components" in tk.request.path:
+    if tk.h.url_for("nswdesignsystem/components").endswith(tk.request.path):
         subnav: types.SubNavDict = {
             "children": [
                 {
