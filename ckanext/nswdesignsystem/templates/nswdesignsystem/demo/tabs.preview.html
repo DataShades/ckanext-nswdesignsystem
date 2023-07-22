@@ -1,0 +1,15 @@
+{% from "macros/nswdesignsystem/tabs.html" import tabs with context  %}
+
+{% call(tab) tabs(["Hello", "World"]) %}
+{% if tab == "Hello" %}
+    Vitae elementum curabitur vitae nunc sed velit dignissim sodales! Volutpat
+    diam ut venenatis tellus in metus vulputate eu scelerisque felis imperdiet
+    proin fermentum leo vel orci porta non pulvinar neque!
+
+{% elif tab == "World" %}
+    Habitant morbi tristique senectus et netus et malesuada fames ac turpis
+    egestas sed tempus, urna et! Nisl nisi, scelerisque eu ultrices vitae,
+    auctor eu augue ut lectus arcu, bibendum at?
+
+{% endif %}
+{% endcall %}

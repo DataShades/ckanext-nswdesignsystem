@@ -1,0 +1,21 @@
+{% from "macros/nswdesignsystem/_tabs_link.html" import link with context  %}
+
+
+{% macro tabs(items) %}
+    <div class="nsw-tabs js-tabs">
+        <ul class="nsw-tabs__list">
+            {% for name in items %}
+                <li>
+                    {{ link(name) }}
+                </li>
+            {% endfor %}
+        </ul>
+
+        {% for name in items %}
+            <section id="tab-{{ name.__hash__() }}" class="nsw-tabs__content">
+                {{ caller(name) }}
+            </section>
+        {% endfor %}
+    </div>
+
+{% endmacro %}

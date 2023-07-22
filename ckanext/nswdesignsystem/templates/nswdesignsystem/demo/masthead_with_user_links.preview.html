@@ -1,6 +1,12 @@
 {% from "macros/nswdesignsystem/masthead.html" import masthead with context  %}
 
 {% call masthead() %}
+    {% if g.debug and current_user.sysadmin %}
+        <a href="{{ h.url_for('nswdesignsystem.index') }}" title="NSW Design System" class="nsw-text--light lh-1">
+            <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">logo_dev</span>
+        </a>
+    {% endif %}
+
     <a href="#" class="nsw-text--light lh-1">
         <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">dashboard</span>
     </a>
@@ -8,4 +14,5 @@
         <img src="//gravatar.com/avatar/john_doe?s=30&d=identicon" class="rounded-circle me-1">
         <span class="username">John Doe</span>
     </a>
+
 {% endcall %}

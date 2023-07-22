@@ -1,0 +1,6 @@
+{% macro toggle_all(expand_label=_("Expand all"), collapse_label=_("Collapse all")) %}
+    <div class="nsw-accordion__toggle">
+        <button type="button">{[ _(expand_label) }}</button>
+        <button type="button">{{ _(collapse_label) }}</button>
+    </div>
+{% endmacro %}

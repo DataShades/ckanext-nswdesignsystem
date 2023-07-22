@@ -1,0 +1,4 @@
+
+{% macro link(name) %}
+    <a href="#tab-{{ name.__hash__() }}">{{ name }}</a>
+{% endmacro %}

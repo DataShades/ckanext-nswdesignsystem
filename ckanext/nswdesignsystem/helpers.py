@@ -37,98 +37,6 @@ def nswdesignsystem_footer_links(
     return links.get(type, [])
 
 
-def nswdesignsystem_demo_links() -> list[types.NavDict]:
-    """Navigation links for the demo page."""
-    demos = [
-        "footer", "header", "main_navigation", "masthead", "side_navigation", "tabs", "accordion",
-        "breadcrumbs", "buttons", "callout", "cards", "content_blocks", "dialog", "file_upload", "filters",
-        "forms", "global_alert", "hero_banner", "hero_search", "in_page_alert", "in_page_navigation",
-        "link_list", "list_item", "loader", "pagination", "progress_indicator", "results_bar",
-        "select", "status_labels", "steps", "table", "tags", "tooltip",
-
-    ]
-    return [
-        {
-            "label": "NSW Digital Design System",
-            "href": "#",
-            "subnav": {
-                "children": [
-                    {
-                        "label": "Layouts",
-                        "href": "#",
-                        "subnav": {
-                            "children": [
-                                {
-                                    "href": tk.h.url_for("nswdesignsystem.layouts", layout="full"),
-                                    "label": "Full",
-                                    "attrs": {"target": "_blank"},
-                                },
-                                {
-                                    "href": tk.h.url_for("nswdesignsystem.layouts", layout="two-column-left"),
-                                    "label": "Two columns, left sidebar",
-                                    "attrs": {"target": "_blank"},
-                                },
-                                {
-                                    "href": tk.h.url_for("nswdesignsystem.layouts", layout="two-column-right"),
-                                    "label": "Two columns, right sidebar",
-                                    "attrs": {"target": "_blank"},
-                                },
-                            ]
-                        },
-                    },
-                    {
-                        "label": "Components",
-                        "href": tk.h.url_for("nswdesignsystem.components"),
-                        "subnav": {
-                            "children": [
-                                {
-                                    "href": tk.h.url_for(
-                                        "nswdesignsystem.demo", component=component
-                                    ),
-                                    "label": " ".join(
-                                        component.split("_")
-                                    ).capitalize(),
-                                }
-                                for component in sorted(demos)
-                            ]
-                        },
-                    },
-                    {
-                        "label": "Templates",
-                        "href": "#",
-                        "subnav": {
-                            "children": [
-                                {
-                                    "href": tk.h.url_for("nswdesignsystem.templates", template="search"),
-                                    "label": "Search",
-                                    "attrs": {"target": "_blank"},
-                                },
-                                {
-                                    "href": tk.h.url_for("nswdesignsystem.templates", template="filters"),
-                                    "label": "Filters",
-                                    "attrs": {"target": "_blank"},
-                                },
-                                {
-                                    "href": tk.h.url_for("nswdesignsystem.templates", template="events"),
-                                    "label": "Events",
-                                    "attrs": {"target": "_blank"},
-                                },
-                                {
-                                    "href": tk.h.url_for("nswdesignsystem.templates", template="content"),
-                                    "label": "Content",
-                                    "attrs": {"target": "_blank"},
-                                },
-
-                            ]
-                        },
-                    },
-
-                ]
-            },
-        }
-    ]
-
-
 def nswdesignsystem_get_active_path(links: Iterable[types.NavDict], current: str) -> list[int]:
     result = _search_current_path(links, current)
     return result
@@ -167,3 +75,90 @@ def nswdesignsystem_demo_variants(component: str) -> list[str]:
         os.path.join(tpl_folder, tk.h.nswdesignsystem_demo_template(f"{component}*"))
     )
     return sorted([os.path.basename(name).split(".")[0] for name in names], key=len)
+
+def nswdesignsystem_demo_links() -> list[types.NavDict]:
+    """Navigation links for the demo page."""
+    demos = [
+        "footer", "header", "main_navigation", "masthead", "side_navigation", "tabs", "accordion",
+        "breadcrumbs", "buttons", "callout", "cards", "content_blocks", "dialog", "file_upload", "filters",
+        "forms", "global_alert", "hero_banner", "hero_search", "in_page_alert", "in_page_navigation",
+        "link_list", "list_item", "loader", "pagination", "progress_indicator", "results_bar",
+        "select", "status_labels", "steps", "table", "tags", "tooltip",
+
+    ]
+    layout_patch = {}
+    template_patch = {}
+    demo_patch = {}
+
+    if tk.request.path.startswith(tk.h.url_for("nswdesignsystem.templates")):
+        templates = ["search", "filters", "events", "content"]
+
+        subnav: types.SubNavDict = {
+            "children": [
+                {
+                    "href": tk.h.url_for("nswdesignsystem.templates", template=template),
+                    "label": template.capitalize(),
+                    "attrs": {"target": "_blank"},
+                } for template in templates
+            ]
+        }
+        template_patch = {"subnav": subnav}
+
+    if tk.request.path.startswith(tk.h.url_for("nswdesignsystem.layouts")):
+        layouts: list[tuple[str, str]] = [
+            ("full", "Full"),
+            ("two-column-left", "Two columns, left sidebar"),
+            ("two-column-right", "Two columns, right sidebar"),
+        ]
+
+        subnav: types.SubNavDict = {"children": [
+            {
+                "href": tk.h.url_for("nswdesignsystem.layouts", layout=layout),
+                "label": label,
+                "attrs": {"target": "_blank"},
+            } for (layout, label) in layouts
+        ]}
+        layout_patch = {"subnav": subnav}
+
+    if tk.request.path.startswith(tk.h.url_for("nswdesignsystem.components")):
+        subnav: types.SubNavDict = {
+            "children": [
+                {
+                    "href": tk.h.url_for(
+                        "nswdesignsystem.demo", component=component
+                    ),
+                    "label": " ".join(
+                        component.split("_")
+                    ).capitalize(),
+                }
+                                for component in sorted(demos)
+            ]
+        }
+        demo_patch = {"subnav": subnav}
+
+    return [
+        {
+            "label": "NSW Digital Design System",
+            "href": "#",
+            "subnav": {
+                "children": [
+                    types.NavDict({
+                        "label": "Layouts",
+                        "href": tk.h.url_for("nswdesignsystem.layouts"),
+                        **layout_patch,
+                    }),
+                    types.NavDict({
+                        "label": "Components",
+                        "href": tk.h.url_for("nswdesignsystem.components"),
+                        **demo_patch,
+                    }),
+                    types.NavDict({
+                        "label": "Templates",
+                        "href": tk.h.url_for("nswdesignsystem.templates"),
+                        **template_patch,
+                    }),
+
+                ]
+            },
+        }
+    ]

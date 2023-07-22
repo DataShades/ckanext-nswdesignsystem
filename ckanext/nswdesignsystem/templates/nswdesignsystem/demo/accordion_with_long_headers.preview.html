@@ -1,0 +1,21 @@
+{% from "macros/nswdesignsystem/accordion.html" import accordion with context  %}
+
+
+{% call(idx, part) accordion(2) %}
+{% if idx == 0 and part == "title" %}
+    Elementum eu, facilisis!
+{% elif idx == 0 and part == "content" %}
+    Sed tempus, urna et pharetra pharetra, massa massa ultricies mi, quis
+    hendrerit dolor magna eget est! Cursus risus, at ultrices mi tempus
+    imperdiet nulla malesuada pellentesque elit eget gravida cum.
+
+{% elif idx == 1 and part == "title" %}
+    Blandit massa enim!
+
+{% elif idx == 1 and part == "content" %}
+    Quis commodo odio aenean sed adipiscing diam donec adipiscing? Praesent
+    tristique magna sit amet purus gravida quis blandit turpis cursus in hac
+    habitasse platea dictumst quisque sagittis, purus sit amet?
+
+{% endif %}
+{% endcall %}

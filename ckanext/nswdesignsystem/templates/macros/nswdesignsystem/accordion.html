@@ -1,0 +1,36 @@
+{% from "macros/nswdesignsystem/_accortion_toggle_all.html" import toggle_all with context  %}
+
+
+{% macro accordion(length_or_headers, with_toggle_all=false, toggle_all_labels=[]) %}
+    {% if length_or_headers is iterable %}
+        {% set headers = length_or_headers %}
+        {% set length = headers | length %}
+    {% else %}
+        {% set headers = [] %}
+        {% set length = length_or_headers %}
+    {% endif %}
+
+    <div class="nsw-accordion js-accordion">
+
+        {% if with_toggle_all %}
+            {{ toggle_all(*toggle_all_labels) }}
+        {% endif %}
+
+        {% for idx in range(length) %}
+
+            <div class="nsw-accordion__title">
+                {% if headers %}
+                    {{ headers[idx] }}
+                {% else %}
+                    {{ caller(idx, "title") }}
+                {% endif %}
+
+            </div>
+
+            <div class="nsw-accordion__content">
+                {{ caller(idx, "content") }}
+            </div>
+
+        {% endfor %}
+    </div>
+{% endmacro %}

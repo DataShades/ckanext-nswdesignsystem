@@ -1,0 +1,28 @@
+<div class="nsw-block">
+  <button class="nsw-button nsw-button--dark js-open-dialog-dismissible" aria-haspopup="dialog">Launch dialog</button>
+</div>
+
+<div class="nsw-dialog js-dialog js-dialog-dismiss" id="dismissible" role="dialog" aria-labelledby="dismissible-title">
+  <div class="nsw-dialog__wrapper">
+    <div class="nsw-dialog__container">
+      <div class="nsw-dialog__top">
+        <div class="nsw-dialog__title">
+          <h2 id="dismissible-title">Changes will be lost</h2>
+        </div>
+        <div class="nsw-dialog__close">
+          <button class="nsw-icon-button js-close-dialog">
+            <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">close</span>
+            <span class="sr-only">Close</span>
+          </button>
+        </div>
+        </div>
+      <div class="nsw-dialog__content">
+        <p>This form contains unsaved changes. By exiting, all unsaved changes will be permanently lost. If you wish to save your changes, return to form and follow the prompts to save your progress. If you do not wish to keep any unsaved changes you can proceed to exit the form. </p>
+      </div>
+    </div>
+    <div class="nsw-dialog__bottom">
+      <button class="nsw-button nsw-button--dark nsw-button--danger js-close-dialog">Exit form</button>
+      <button class="nsw-button nsw-button--dark-outline-solid js-close-dialog">Return to form</button>
+    </div>
+  </div>
+</div>
