@@ -1,4 +1,4 @@
-{% extends "nswdesignsystem/base.html" %}
+{% extends "nswdesignsystem/components.html" %}
 
 {% block primary_content %}
 
@@ -7,17 +7,19 @@
             {% set embed_url = h.url_for("nswdesignsystem.embed", component=variant) %}
 
             <p class="nsw-h4">
-                    {{ variant.split("_") | join(" ") | capitalize }}
-                <a href="{{ embed_url }}" target="_blank" rel="nofollow" title="Open in new tab" class="align-middle js-link">
-                    <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">open_in_new</span>
+                <a href="{{ embed_url }}" target="_blank" rel="nofollow" class="js-link">
+                    <span>{{ variant.split("_") | join(" ") | capitalize }}</span>
+                    <span class="material-icons nsw-material-icons" title="Open in new tab">open_in_new</span>
                 </a>
             </p>
+
             <div class="nsw-tabs js-tabs">
                 <ul class="nsw-tabs__list">
                     <li><a href="#preview">Preview</a></li>
                     <li><a href="#code">Code</a></li>
                     <li><a href="#details">Details</a></li>
                 </ul>
+
                 <section id="preview" class="nsw-tabs__content">
                     {% if use_iframe %}
                         <iframe frameborder="0" src="{{ embed_url }}" class="w-100" ></iframe>
@@ -27,15 +29,19 @@
                         </section>
                     {% endif %}
                 </section>
+
                 <section id="code" class="nsw-tabs__content">
                     <pre><code class="language-django">{{ h.nswdesignsystem_demo_code(variant) }}</code></pre>
                 </section>
+
                 <section id="details" class="nsw-tabs__content">
                     {% include [h.nswdesignsystem_demo_details(variant), "nswdesignsystem/snippets/missing_demo_details.html"] %}
                 </section>
 
             </div>
             <hr/>
+        {% else %}
+            {% include "nswdesignsystem/snippets/missing_demo.html" %}
         {% endfor %}
 
     </div>

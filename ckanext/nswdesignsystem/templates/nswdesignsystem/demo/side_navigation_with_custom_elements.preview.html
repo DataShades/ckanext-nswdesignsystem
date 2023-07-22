@@ -1,0 +1,31 @@
+{% from "macros/nswdesignsystem/side_navigation.html" import side_navigation with context  %}
+{% from "macros/nswdesignsystem/_side_navigation_link.html" import link with context  %}
+
+{% set active_path = [0, 1, 1] %}
+
+{% call(part, details, path) side_navigation([{
+    "label": "Demo side navigation", "href": "#", "subnav": {"children": [
+        {"label": "First link", "href": "#"},
+        {"label": "Second link", "href": "#", "subnav": {"children": [
+            {"label": "First sub link", "href": "#"},
+            {"label": "Second sub link", "href": "#"},
+        ]}},
+    ]}
+}], active_path) %}
+
+{% if part == "header" %}
+    <a>
+        <span class="nsw-h4">{{ details.label }}</span>
+    </a>
+{% elif part == "link" %}
+
+    {% call(details, is_current) link(details, path == active_path) %}
+    <a href="{{ details.href }}" {{ details.attrs | xmlattr if details.attrs }}>
+        <span class="material-icons nsw-material-icons align-bottom">extension</span>
+        <span>{{ details.label }}</span>
+    </a>
+    {% endcall %}
+
+{% endif %}
+
+{% endcall %}

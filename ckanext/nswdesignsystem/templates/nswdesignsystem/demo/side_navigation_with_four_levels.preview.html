@@ -1,0 +1,14 @@
+{% from "macros/nswdesignsystem/side_navigation.html" import side_navigation with context  %}
+
+{{ side_navigation([{
+    "label": "Demo side navigation", "href": "#", "subnav": {"children": [
+        {"label": "First link", "href": "#"},
+        {"label": "Second link", "href": "#", "subnav": {"children": [
+            {"label": "Level 2", "href": "#", "subnav": {"children": [
+                {"label": "Level 3", "href": "#", "subnav": {"children": [
+                    {"label": "Level 4", "href": "#"},
+                ]}},
+            ]}},
+        ]}},
+    ]}
+}], active_path=[0, 1, 0]) }}

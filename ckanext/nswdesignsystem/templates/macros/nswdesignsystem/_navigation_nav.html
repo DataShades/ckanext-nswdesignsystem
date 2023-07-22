@@ -1,8 +1,8 @@
-{% from "macros/nswdesignsystem/_link_subnav.html" import subnav with context  %}
+{% from "macros/nswdesignsystem/_navigation_link.html" import link with context  %}
 
 {% macro nav(details, path) %}
     <li>
-        {{ caller("nav", details) if caller is defined else subnav(details, path) }}
+        {{ caller("nav", details) if caller is defined else link(details, path) }}
 
         {% if details.subnav %}
             <div class="nsw-main-nav__sub-nav" id="sub-nav-{{ path | join("-") }}"
@@ -34,8 +34,8 @@
                 {% endif %}
 
                 <ul class="nsw-main-nav__sub-list">
-                    {% for link in details.subnav.children %}
-                        {{ nav(link, path=path + [loop.index]) }}
+                    {% for child in details.subnav.children %}
+                        {{ nav(child, path=path + [loop.index0]) }}
                     {% endfor %}
                 </ul>
             </div>

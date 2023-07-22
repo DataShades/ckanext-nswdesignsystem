@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from typing import Any
 
 from flask import Blueprint
@@ -8,20 +9,18 @@ import ckan.plugins.toolkit as tk
 bp = Blueprint("nswdesignsystem", __name__)
 
 
-@bp.route("/nswdesignsystem/pilot")
-def pilot():
-    """List of all available components/intro.
-    """
+@bp.route("/nswdesignsystem/components")
+def components():
+    """List of all available components/intro."""
     if not tk.h.check_access("sysadmin"):
         return tk.abort(403)
 
-    return tk.render("nswdesignsystem/pilot.html")
+    return tk.render("nswdesignsystem/components.html")
 
 
-@bp.route("/nswdesignsystem/pilot/<component>")
+@bp.route("/nswdesignsystem/components/<component>")
 def demo(component: str):
-    """Preview and code example for the component and its variants.
-    """
+    """Preview and code example for the component and its variants."""
     if not tk.h.check_access("sysadmin"):
         return tk.abort(403)
 
@@ -33,10 +32,9 @@ def demo(component: str):
     return tk.render("nswdesignsystem/demo.html", data)
 
 
-@bp.route("/nswdesignsystem/pilot/<component>/embed")
+@bp.route("/nswdesignsystem/components/<component>/embed")
 def embed(component: str):
-    """Standalone preview of the component.
-    """
+    """Standalone preview of the component."""
     if not tk.h.check_access("sysadmin"):
         return tk.abort(403)
 

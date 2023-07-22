@@ -26,7 +26,7 @@ To install ckanext-nswdesignsystem:
 
 ## Usage
 
-When plugin enabled, visit `/nswdesignsystem/pilot` URL of the application. It
+When plugin enabled, visit `/nswdesignsystem/components` URL of the application. It
 lists implemented components with the code examples.
 
 ![Component demo](/screenshots/demo.png?raw=true)
