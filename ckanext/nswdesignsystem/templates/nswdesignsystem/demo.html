@@ -1,4 +1,5 @@
 {% extends "nswdesignsystem/components.html" %}
+{% from "macros/nswdesignsystem/tabs.html" import tabs with context  %}
 
 {% block primary_content %}
 
@@ -13,37 +14,32 @@
                 </a>
             </p>
 
-            <div class="nsw-tabs js-tabs">
-                <ul class="nsw-tabs__list">
-                    <li><a href="#preview">Preview</a></li>
-                    <li><a href="#code">Code</a></li>
-                    <li><a href="#details">Details</a></li>
-                </ul>
+            {% call(tab) tabs(["Preview", "Code", "Details"]) %}
+            {% if tab == "Preview" %}
+                {% if use_iframe %}
+                    <iframe frameborder="0" src="{{ embed_url }}" class="w-100" ></iframe>
 
-                <section id="preview" class="nsw-tabs__content">
-                    {% if use_iframe %}
-                        <iframe frameborder="0" src="{{ embed_url }}" class="w-100" ></iframe>
-                    {% else %}
-                        <section>
-                            {% include h.nswdesignsystem_demo_template(variant) %}
-                        </section>
-                    {% endif %}
-                </section>
+                {% else %}
+                    <section>
+                        {% include h.nswdesignsystem_demo_template(variant) %}
+                    </section>
 
-                <section id="code" class="nsw-tabs__content">
-                    <pre><code class="language-django">{{ h.nswdesignsystem_demo_code(variant) }}</code></pre>
-                </section>
+                {% endif %}
 
-                <section id="details" class="nsw-tabs__content">
-                    {% include [h.nswdesignsystem_demo_details(variant), "nswdesignsystem/snippets/missing_demo_details.html"] %}
-                </section>
+            {% elif tab == "Code" %}
+                <pre><code class="language-django">{{ h.nswdesignsystem_demo_code(variant) }}</code></pre>
 
-            </div>
+            {% elif tab == "Details" %}
+                {% include [h.nswdesignsystem_demo_details(variant), "nswdesignsystem/snippets/missing_demo_details.html"] %}
+
+            {% endif %}
+            {% endcall %}
             <hr/>
+
         {% else %}
             {% include "nswdesignsystem/snippets/missing_demo.html" %}
+
         {% endfor %}
 
     </div>
-
 {% endblock %}

@@ -1,8 +1,3 @@
-/*
-body {
-  border-radius: 0;
-}
-*/
 
 .masthead-ckan-wrapper {
     display: flex;
@@ -36,3 +31,5 @@ body {
 .nsw-masthead .account .list-unstyled li a:hover{
     color: var(--nsw-text-link);
 }
+
+.nsw-form__fieldset legend { float: none; }

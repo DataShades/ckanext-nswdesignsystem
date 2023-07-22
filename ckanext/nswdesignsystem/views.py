@@ -43,3 +43,19 @@ def embed(component: str):
         "demo_template": tpl,
     }
     return tk.render("nswdesignsystem/embed.html", data)
+
+@bp.route("/nswdesignsystem/layouts/<layout>")
+def layouts(layout: str):
+    """Page layout example."""
+    if not tk.h.check_access("sysadmin"):
+        return tk.abort(403)
+
+    return tk.render(f"nswdesignsystem/layout/{layout}.html")
+
+@bp.route("/nswdesignsystem/templates/<template>")
+def templates(template: str):
+    """Most common page templates."""
+    if not tk.h.check_access("sysadmin"):
+        return tk.abort(403)
+
+    return tk.render(f"nswdesignsystem/template/{template}.html")

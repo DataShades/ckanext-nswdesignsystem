@@ -1,8 +1,9 @@
 {% extends "page.html" %}
 {% from "macros/nswdesignsystem/side_navigation.html" import side_navigation with context  %}
 
-{% set active_path = active_path or [] %}
+{% set links = h.nswdesignsystem_demo_links() %}
 
+{% set active_path = h.nswdesignsystem_get_active_path(links, request.path) %}
 
 {% block styles %}
     {{ super() }}
@@ -19,7 +20,7 @@
 
 {% block secondary_content %}
     <div class="m-2">
-        {{ side_navigation(h.nswdesignsystem_demo_links(), active_path) }}
+        {{ side_navigation(links, active_path) }}
     </div>
 {% endblock %}
 
