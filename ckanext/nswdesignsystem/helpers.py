@@ -87,55 +87,47 @@ def nswdesignsystem_demo_links() -> list[types.NavDict]:
         "select", "status_labels", "steps", "table", "tags", "tooltip",
 
     ]
-    layout_patch = {}
-    template_patch = {}
-    demo_patch = {}
 
-    if "nswdesignsystem/templates" in tk.request.path:
-        templates = ["search", "filters", "events", "content"]
-
-        subnav: types.SubNavDict = {
-            "children": [
-                {
-                    "href": tk.h.url_for("nswdesignsystem.templates", template=template),
-                    "label": template.capitalize(),
-                    "attrs": {"target": "_blank"},
-                } for template in templates
-            ]
-        }
-        template_patch = {"subnav": subnav}
-
-    if "nswdesignsystem/layouts" in tk.request.path:
-        layouts: list[tuple[str, str]] = [
-            ("full", "Full"),
-            ("two-column-left", "Two columns, left sidebar"),
-            ("two-column-right", "Two columns, right sidebar"),
-        ]
-
-        subnav: types.SubNavDict = {"children": [
+    templates = ["search", "filters", "events", "content"]
+    subnav: types.SubNavDict = {
+        "children": [
             {
-                "href": tk.h.url_for("nswdesignsystem.layouts", layout=layout),
-                "label": label,
+                "href": tk.h.url_for("nswdesignsystem.templates", template=template),
+                "label": template.capitalize(),
                 "attrs": {"target": "_blank"},
-            } for (layout, label) in layouts
-        ]}
-        layout_patch = {"subnav": subnav}
+            } for template in templates
+        ]
+    }
+    template_patch = {"subnav": subnav}
 
-    if "nswdesignsystem/components" in tk.request.path:
-        subnav: types.SubNavDict = {
-            "children": [
-                {
-                    "href": tk.h.url_for(
-                        "nswdesignsystem.demo", component=component
-                    ),
-                    "label": " ".join(
-                        component.split("_")
-                    ).capitalize(),
-                }
-                                for component in sorted(demos)
-            ]
-        }
-        demo_patch = {"subnav": subnav}
+    layouts: list[tuple[str, str]] = [
+        ("full", "Full"),
+        ("two-column-left", "Two columns, left sidebar"),
+        ("two-column-right", "Two columns, right sidebar"),
+    ]
+    subnav: types.SubNavDict = {"children": [
+        {
+            "href": tk.h.url_for("nswdesignsystem.layouts", layout=layout),
+            "label": label,
+            "attrs": {"target": "_blank"},
+        } for (layout, label) in layouts
+    ]}
+    layout_patch = {"subnav": subnav}
+
+    subnav: types.SubNavDict = {
+        "children": [
+            {
+                "href": tk.h.url_for(
+                    "nswdesignsystem.demo", component=component
+                ),
+                "label": " ".join(
+                    component.split("_")
+                ).capitalize(),
+            }
+                            for component in sorted(demos)
+        ]
+    }
+    demo_patch = {"subnav": subnav}
 
     return [
         {

@@ -1,8 +1,8 @@
 {% macro link(details, is_current=false) %}
-    {% if is_current %}
-        {% with class = details.setdefault("attrs", {}).setdefault("class", "") %}
-            {% do details.attrs.update(class=[class, "current"]|join(" ")) %}
-        {% endwith %}
+    {% set class = details.setdefault("attrs", {}).setdefault("class", "") %}
+
+    {% if is_current and "current" not in class %}
+        {% do details.attrs.update(class=[class, "current"]|join(" ")|trim) %}
     {% endif %}
 
     {% if caller is defined %}

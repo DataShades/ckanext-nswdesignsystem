@@ -1,17 +1,18 @@
 {% from "macros/nswdesignsystem/_side_navigation_link.html" import link with context  %}
 
-{% macro tree(links, path, active_path) %}
+{% macro tree(links, path, active_path, include_inactive) %}
     <ul>
         {% for child in links %}
             {% set child_path = path + [loop.index0] %}
-            {% set is_active = active_path[:child_path|length] == child_path %}
+            {% set is_active = child.active or active_path[:child_path|length] == child_path %}
+            {% set render_branches = is_active or include_inactive %}
 
             <li class="{{ "active" if is_active }}">
                 {% if caller is defined %}
                     {{ caller("link", child, child_path) }}
 
                     {% with parent_caller = caller %}
-                        {% if child.subnav %}
+                        {% if child.subnav and render_branches %}
                             {% call(part, details, path) tree(child.subnav.children, child_path, active_path)%}
                                 {{ parent_caller(part, details, path) }}
                             {% endcall %}
@@ -19,8 +20,8 @@
                     {% endwith %}
 
                 {% else %}
-                    {{ link(child, active_path == child_path) }}
-                    {% if child.subnav %}
+                    {{ link(child, child.is_current or active_path == child_path) }}
+                    {% if child.subnav and render_branches %}
                         {{ tree(child.subnav.children, child_path, active_path) }}
                     {% endif %}
 

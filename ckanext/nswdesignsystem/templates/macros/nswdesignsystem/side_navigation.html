@@ -1,7 +1,7 @@
 {% from "macros/nswdesignsystem/_side_navigation_link.html" import link with context  %}
 {% from "macros/nswdesignsystem/_side_navigation_tree.html" import tree with context  %}
 
-{% macro side_navigation(links, active_path=[]) %}
+{% macro side_navigation(links, active_path=[], include_inactive=false) %}
     <nav class="nsw-side-nav">
         {% for nav in links %}
             {% set path = [loop.index0] %}
@@ -19,13 +19,13 @@
             {% if nav.subnav %}
                 {% if caller is defined %}
                     {% with parent_caller = caller %}
-                        {% call(part, details, path) tree(nav.subnav.children, path, active_path) %}
+                        {% call(part, details, path) tree(nav.subnav.children, path, active_path, include_inactive) %}
                         {{ parent_caller(part, details, path) }}
                         {% endcall %}
                     {% endwith %}
 
                 {% else %}
-                    {{ tree(nav.subnav.children, path, active_path) }}
+                    {{ tree(nav.subnav.children, path, active_path, include_inactive) }}
 
                 {% endif %}
 

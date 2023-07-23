@@ -8,6 +8,8 @@ from typing_extensions import NotRequired, TypedDict
 class NavDict(TypedDict):
     href: str
     label: str
+    current: NotRequired[bool]
+    active: NotRequired[bool]
     subnav: NotRequired[SubNavDict]
     attrs: NotRequired[dict[str, Any]]
 
