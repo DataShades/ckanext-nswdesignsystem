@@ -66,7 +66,7 @@ have backward incompatible changes, it will be mentioned there.
 None at present
 
 
-## Developer installation
+## Development
 
 To install ckanext-nswdesignsystem for development, activate your CKAN virtualenv and
 do:
@@ -76,6 +76,14 @@ git clone https://github.com/DataShades/ckanext-nswdesignsystem.git
 cd ckanext-nswdesignsystem
 pip install -e.
 ```
+
+Follow [conventional commits specification](https://www.conventionalcommits.org/en/v1.0.0/). Namely:
+
+* commit with a new feature start with: `feat: <feature description(without angles)>`
+* commit with a bugfix start with: `fix: <bug description(without angles)>`
+* commit with anything not important for changelog: `chore: <short message(without angles)>`
+
+
 
 ## Tests
 
