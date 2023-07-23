@@ -1,0 +1,12 @@
+{% macro progress_indicator(length, active, label=null) %}
+    <div class="nsw-progress-indicator">
+        <div class="nsw-progress-indicator__count">
+            {{ label or _("Step {active} of {total}").format(active=active, total=length) }}
+        </div>
+        <div class="nsw-progress-indicator__bar">
+            {% for step in range(length) %}
+                <div{% if step < active %} class="active"{% endif %}></div>
+            {% endfor %}
+        </div>
+    </div>
+{% endmacro %}

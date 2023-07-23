@@ -1,10 +1,3 @@
-<div class="nsw-progress-indicator">
-  <div class="nsw-progress-indicator__count">Step 3 of 5</div>
-  <div class="nsw-progress-indicator__bar">
-    <div class="active"></div>
-    <div class="active"></div>
-    <div class="active"></div>
-    <div></div>
-    <div></div>
-  </div>
-</div>
+{% from "macros/nswdesignsystem/progress_indicator.html" import progress_indicator with context  %}
+
+{{ progress_indicator(5, 3, "Step 3 of 5") }}
