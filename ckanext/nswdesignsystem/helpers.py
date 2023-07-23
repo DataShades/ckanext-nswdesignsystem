@@ -16,6 +16,10 @@ log = logging.getLogger(__name__)
 tpl_folder = os.path.join(os.path.dirname(__file__), "templates")
 
 
+def nswdesignsystem_override_form_macros() -> bool:
+    return tk.config["ckanext.nswdesignsystem.override_form_macros"]
+
+
 def nswdesignsystem_header_links(type: Literal["navigation"]) -> list[types.NavDict]:
     """Navigation links for the header section."""
     links = {

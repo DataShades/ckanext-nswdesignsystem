@@ -1,0 +1,6 @@
+version: 1
+groups:
+  - annotation: ckanext-nswdesignsystem
+    options:
+      - key: ckanext.nswdesignsystem.debug
+        type: bool

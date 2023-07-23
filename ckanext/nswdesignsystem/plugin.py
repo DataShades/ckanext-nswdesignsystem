@@ -6,6 +6,7 @@ import ckan.plugins.toolkit as tk
 
 @tk.blanket.helpers
 @tk.blanket.blueprints
+@tk.blanket.config_declarations
 class NswdesignsystemPlugin(p.SingletonPlugin):
     p.implements(p.IConfigurer)
 

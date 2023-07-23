@@ -1,0 +1,42 @@
+{% from "macros/nswdesignsystem/form/attributes.html" import attributes %}
+
+{#
+Builds a single checkbox input.
+
+name        - The name of the form parameter.
+id          - The id to use on the input and label. Convention is to prefix with 'field-'.
+label       - The human readable label.
+value       - The value of the input.
+checked     - If true the checkbox will be checked
+error       - An error string for the field or just true to highlight the field.
+classes     - An array of classes to apply to the form-group.
+is_required - Boolean of whether this input is requred for the form to validate
+
+Example:
+
+{% import 'macros/form.html' as form %}
+{{ form.checkbox('remember', checked=true) }}
+
+#}
+{% macro checkbox(name, id='', label='', value='', checked=false, placeholder='', error="", classes=[], attrs={}, is_required=false) %}
+    {%- set extra_html = caller() if caller -%}
+
+    <div class="nsw-form__group{{ " " ~ classes | join(' ') }}"{% if error %} aria-invalid="true"{% endif %}>
+
+        <input class="nsw-form__checkbox-input" type="checkbox" name="{{ name }}" id="{{ id or name }}"
+               value="{{ value | empty_and_escape }}"
+               {{ "checked " if checked }}
+               {{ attributes(attrs) }} />
+        <label class="nsw-form__checkbox-label{{ " nsw-form__required" if is_required }}" for="{{ for }}"
+               for="{{ id or name }}">{{ label or name }}</label>
+
+        {% if error and error is iterable %}
+            <span class="nsw-form__helper nsw-form__helper--error">
+                <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">cancel</span>
+                {{ error|join(', ') }}
+            </span>
+        {% endif %}
+
+        {{ extra_html }}
+    </div>
+{% endmacro %}

@@ -1,0 +1,33 @@
+{#
+Builds a list of errors for the current form.
+
+errors  - A dict of field/message pairs.
+type    - The alert-* class that should be applied (default: "error")
+classes - A list of classes to apply to the wrapper (default: [])
+
+Example:
+
+{% import 'macros/form.html' as form %}
+{{ form.errors(error_summary, type="light") }}
+
+#}
+
+{% macro errors(errors={}, type="critical", classes=[]) %}
+    {% if errors %}
+
+        <div class="nsw-global-alert nsw-global-alert--{{ type }} js-global-alert{{ " " ~ classes | join(' ') }}" role="alert">
+            <div class="nsw-global-alert__wrapper">
+                <div class="nsw-global-alert__content">
+                    <div class="nsw-global-alert__title">
+                        {{ _('The form contains invalid entries:') }}
+                    </div>
+                    <ul>
+                        {% for key, error in errors.items() %}
+                            <li data-field-label="{{ key }}">{% if key %}{{ key }}: {% endif %}{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endmacro %}
