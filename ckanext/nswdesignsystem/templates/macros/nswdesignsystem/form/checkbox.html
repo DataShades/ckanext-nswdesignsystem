@@ -27,8 +27,9 @@ Example:
                value="{{ value | empty_and_escape }}"
                {{ "checked " if checked }}
                {{ attributes(attrs) }} />
-        <label class="nsw-form__checkbox-label{{ " nsw-form__required" if is_required }}" for="{{ for }}"
-               for="{{ id or name }}">{{ label or name }}</label>
+        <label class="nsw-form__checkbox-label{{ " nsw-form__required" if is_required }}" for="{{ id or name }}">
+            {{ label or name }}
+        </label>
 
         {% if error and error is iterable %}
             <span class="nsw-form__helper nsw-form__helper--error">
