@@ -102,12 +102,12 @@ If ckanext-nswdesignsystem should be available on PyPI you can follow these step
 
 1. Make sure you have the latest version of necessary packages:
    ```sh
-   pip install -U twine build git-changelog
+   pip install -U twine build git-changelog -r dev-requirements.txt
    ```
 
 1. Update changelog:
    ```sh
-   git changelog -t angular -i -o CHANGELOG.md
+   make changelog
    ```
 
 1. Create a source and binary distributions of the new version
