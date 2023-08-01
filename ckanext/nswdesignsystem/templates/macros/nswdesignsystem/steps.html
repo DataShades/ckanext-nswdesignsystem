@@ -1,0 +1,29 @@
+
+{% macro steps(length_or_headers, active, with_counter=false) %}
+    {% if length_or_headers is iterable %}
+        {% set headers = length_or_headers %}
+        {% set length = headers | length %}
+    {% else %}
+        {% set headers = [] %}
+        {% set length = length_or_headers %}
+    {% endif %}
+
+    <div class="nsw-steps{% if with_counter %} nsw-steps--counters{% endif %}">
+        {% for idx in range(length) %}
+            <div class="nsw-steps__item{% if idx < active %} nsw-steps__item--fill{% endif %}">
+                <div class="nsw-steps__content">
+                    {% if headers %}
+                        <h2>
+                            {{ headers[idx] }}
+                        </h2>
+                    {% else %}
+                        {{ caller(idx, "title") }}
+                    {% endif %}
+
+                    {{ caller(idx, "content") }}
+                </div>
+            </div>
+
+        {% endfor %}
+    </div>
+{% endmacro %}

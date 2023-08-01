@@ -1,20 +1,14 @@
-<div class="nsw-steps nsw-steps--counters">
-  <div class="nsw-steps__item nsw-steps__item--fill">
-    <div class="nsw-steps__content">
-      <h2>Discovery</h2>
-      <p>Understand your users, their challenges, and what motivates their behaviour.</p>
-    </div>
-  </div>
-  <div class="nsw-steps__item">
-    <div class="nsw-steps__content">
-      <h2>Alpha</h2>
-      <p>Test hypotheses and different approaches with users rapidly to determine how to best meet identified user needs.</p>
-    </div>
-  </div>
-  <div class="nsw-steps__item">
-    <div class="nsw-steps__content">
-      <h2>Beta</h2>
-      <p>Turn best-performing prototype into a working “minimum viable product” - the quickest and simplest version of a service to meet basic user needs and provide value.</p>
-    </div>
-  </div>
-</div>
+{% from "macros/nswdesignsystem/steps.html" import steps with context  %}
+
+{% set headers = ["Discovery", "Alpha", "Beta"] %}
+
+{% call(idx, part) steps(3, 1, true) %}
+
+{% if part == "title" %}
+    <h2>{{ headers[idx] }}</h2>
+{% else %}
+    {{ lipsum(idx + 1, min=5, max=20) }}
+{% endif %}
+
+
+{% endcall %}
