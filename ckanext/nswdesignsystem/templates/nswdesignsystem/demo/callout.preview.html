@@ -1,6 +1,6 @@
-<div class="nsw-callout">
-  <div class="nsw-callout__content">
+{% from "macros/nswdesignsystem/callout.html" import callout with context  %}
+
+{% call callout() %}
     <p class="nsw-h4">The Digital Driver's License trial</p>
     <p>Once we launch statewide, the <a href='#'>Digital Drivers License</a> will become legal for use across NSW</p>
-  </div>
-</div>
+{% endcall %}

@@ -19,10 +19,10 @@ Example:
 {% endcall %}
 
 #}{#
-NSW Design system override:
-* control_classes from original input are not used
-* extra_html added **before** the field, because it's usually used for help text
-#}
+  NSW Design system override:
+  * control_classes from original input are not used
+  * extra_html added **before** the field, because it's usually used for help text
+  #}
 {% macro input_block(for, label="", error="", classes=[], control_classes=[], extra_html="", is_required=false) %}
     <div class="nsw-form__group{{ " " ~ classes | join(' ') }}"{% if error %} aria-invalid="true"{% endif %}>
         <label class="nsw-form__label{{ " nsw-form__required" if is_required }}" for="{{ for }}">
