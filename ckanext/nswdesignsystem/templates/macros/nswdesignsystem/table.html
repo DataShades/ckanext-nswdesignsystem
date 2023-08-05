@@ -1,0 +1,54 @@
+
+{% macro table(width_or_headers, height_or_rows, striped=false, bordered=false, caption=null) %}
+    {% if width_or_headers is iterable %}
+        {% set headers = width_or_headers %}
+        {% set width = headers | length %}
+    {% else %}
+        {% set headers = [] %}
+        {% set width = width_or_headers %}
+    {% endif %}
+
+    {% if height_or_rows is iterable %}
+        {% set rows = height_or_rows %}
+        {% set height = rows | length %}
+    {% else %}
+        {% set rows = [] %}
+        {% set height = height_or_rows %}
+    {% endif %}
+
+
+    <div class="nsw-table{{ "  nsw-table--striped" if striped }}{{ "  nsw-table--bordered" if bordered }}" tabindex="0">
+        <table>
+            {% if caption %}
+                <caption>{{ caption }}</caption>
+            {% endif %}
+            <thead>
+                <tr>
+                    {% for idx in range(width) %}
+                        {% if headers %}
+                            <th>{{ headers[idx] }}</th>
+                        {% else %}
+                            {{ caller(0, idx, "head_cell") }}
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row_idx in range(height) %}
+                    <tr>
+                        {% for cell_idx in range(width) %}
+                            {% if rows %}
+                                <td>
+                                    {{ rows[row_idx][cell_idx] }}
+                                </td>
+                            {% else %}
+                                {{ caller(row_idx, cell_idx, "body_cell") }}
+                            {% endif %}
+
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endmacro %}
