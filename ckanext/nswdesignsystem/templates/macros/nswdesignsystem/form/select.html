@@ -44,7 +44,16 @@ Complete example:
     {% call input_block(id or name, label or name, error, classes, extra_html=extra_html, is_required=is_required) %}
         <select id="{{ id or name }}" name="{{ name }}" {{ attributes(attrs) }}>
             {% for option in options %}
-                <option value="{{ option.value }}"{% if option.value == selected %} selected{% endif %}>{{ option.text or option.value }}</option>
+                {% if selected is string %}
+                    {% set is_selected = option.value == selected %}
+                {% elif selected is iterable %}
+                    {% set is_selected = option.value in selected %}
+                {% else %}
+                    {% set is_selected = false %}
+                {% endif %}
+                <option value="{{ option.value }}"{% if is_selected %} selected{% endif %}>
+                    {{ option.text or option.value }}
+                </option>
             {% endfor %}
         </select>
     {% endcall %}
