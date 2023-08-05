@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Features
 
+- add table macro ([1f6f8d7](https://github.com/DataShades/ckanext-nswdesignsystem/commit/1f6f8d7b21360cc0a1ea859578d9e8a10c71f763) by Sergey Motornyuk).
+- show components link in header in debug mode ([d592f33](https://github.com/DataShades/ckanext-nswdesignsystem/commit/d592f33e85e71f7da5c04b370ad0d89120ffb295) by Sergey Motornyuk).
+- add callout macro ([a3302ca](https://github.com/DataShades/ckanext-nswdesignsystem/commit/a3302caf358c8ff7578ff8f925dd3fcb4b3d5ee1) by Sergey Motornyuk).
 - add steps macro ([1186f03](https://github.com/DataShades/ckanext-nswdesignsystem/commit/1186f032ae175783dfae49cc223bfa63197283a2) by Sergey Motornyuk).
 - Update nsw-design-system to v3.9.1 ([6c39a06](https://github.com/DataShades/ckanext-nswdesignsystem/commit/6c39a06c7bdb7063d71967afde2616081f814838) by Sergey Motornyuk).
 - add CKAN form macros overrides ([78af136](https://github.com/DataShades/ckanext-nswdesignsystem/commit/78af13699aa95a0c7dfbaf1dbce3e89cd9d9c3b7) by Sergey Motornyuk).
