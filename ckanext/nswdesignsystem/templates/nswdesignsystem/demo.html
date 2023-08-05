@@ -14,8 +14,8 @@
                 </a>
             </p>
 
-            {% call(tab) tabs(["Preview", "Code", "Details"]) %}
-            {% if tab == "Preview" %}
+            {% call(idx) tabs(["Preview", "Code", "Details"]) %}
+            {% if idx == 0 %}
                 {% if use_iframe %}
                     <iframe frameborder="0" src="{{ embed_url }}" class="w-100" ></iframe>
 
@@ -26,10 +26,10 @@
 
                 {% endif %}
 
-            {% elif tab == "Code" %}
+            {% elif idx == 1 %}
                 <pre><code class="language-django">{{ h.nswdesignsystem_demo_code(variant) }}</code></pre>
 
-            {% elif tab == "Details" %}
+            {% elif idx == 2 %}
                 {% include [h.nswdesignsystem_demo_details(variant), "nswdesignsystem/snippets/missing_demo_details.html"] %}
 
             {% endif %}

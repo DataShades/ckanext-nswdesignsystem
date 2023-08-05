@@ -1,0 +1,17 @@
+{% ckan_extends %}
+
+
+{% block header_account_profile %}
+    {% block nswdesignsystem_header_demo_link %}
+
+        {% if g.debug and current_user.sysadmin %}
+            <li>
+                <a href="{{ h.url_for('nswdesignsystem.index') }}" title="{{ _("NSW Design System") }}">
+                    <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">logo_dev</span>
+                </a>
+            </li>
+        {% endif %}
+    {% endblock %}
+
+    {{ super() }}
+{% endblock header_account_profile %}

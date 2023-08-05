@@ -13,7 +13,7 @@
 
         {% for name in items %}
             <section id="tab-{{ name.__hash__() }}" class="nsw-tabs__content">
-                {{ caller(name) }}
+                {{ caller(loop.index0) }}
             </section>
         {% endfor %}
     </div>
