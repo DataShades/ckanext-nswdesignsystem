@@ -1,19 +1,12 @@
 {% from "macros/nswdesignsystem/_header_inner.html" import inner with context  %}
 
-{% from "macros/nswdesignsystem/_header_search_form.html" import search_form with context  %}
+{% from "macros/nswdesignsystem/_header_search_area.html" import search_area with context  %}
 
 {% macro header(site_title) %}
     <header class="nsw-header">
         <div class="nsw-header__container">
             {{ inner(site_title) }}
-
-            <div class="nsw-header__search-area js-search-area" id="header-search" hidden>
-                {{ search_form() }}
-                <button class="nsw-icon-button js-close-search" aria-expanded="true" aria-controls="header-search">
-                    <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">close</span>
-                    <span class="sr-only">{{ _("Close search") }}</span>
-                </button>
-            </div>
+            {{ search_area() }}
         </div>
     </header>
 {% endmacro %}
