@@ -6,12 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
-## Unreleased
+## [v0.1.6](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.6) - 2023-08-17
 
-<small>[Compare with latest](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.5...HEAD)</small>
+<small>[Compare with v0.1.5](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.5...v0.1.6)</small>
 
 ### Features
 
+- update nsw-design-system to v3.9.2 ([0d920c0](https://github.com/DataShades/ckanext-nswdesignsystem/commit/0d920c04e76d3cf6a4ea5378ea63e0a16048b204) by Sergey Motornyuk).
+- add filter macro ([99b1db0](https://github.com/DataShades/ckanext-nswdesignsystem/commit/99b1db0ac046265b13899c6498ced5b2f1c56364) by Sergey Motornyuk).
 - add table macro ([1f6f8d7](https://github.com/DataShades/ckanext-nswdesignsystem/commit/1f6f8d7b21360cc0a1ea859578d9e8a10c71f763) by Sergey Motornyuk).
 - show components link in header in debug mode ([d592f33](https://github.com/DataShades/ckanext-nswdesignsystem/commit/d592f33e85e71f7da5c04b370ad0d89120ffb295) by Sergey Motornyuk).
 - add callout macro ([a3302ca](https://github.com/DataShades/ckanext-nswdesignsystem/commit/a3302caf358c8ff7578ff8f925dd3fcb4b3d5ee1) by Sergey Motornyuk).
@@ -20,7 +22,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - add CKAN form macros overrides ([78af136](https://github.com/DataShades/ckanext-nswdesignsystem/commit/78af13699aa95a0c7dfbaf1dbce3e89cd9d9c3b7) by Sergey Motornyuk).
 - progress indicator macro ([a5a5612](https://github.com/DataShades/ckanext-nswdesignsystem/commit/a5a56126bf7cc22df30b56c87029211b0569d08c) by Sergey Motornyuk).
 
-<!-- insertion marker -->
+### Bug Fixes
+
+- form.select macro supports multiple selected options ([9bc6f44](https://github.com/DataShades/ckanext-nswdesignsystem/commit/9bc6f446ee2f60f85501fb7ac3efc3d392cdc199) by Sergey Motornyuk).
+
 ## [v0.1.5](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.5) - 2023-07-22
 
 <small>[Compare with v0.1.4](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.4...v0.1.5)</small>
