@@ -10,6 +10,7 @@ class NavDict(TypedDict):
     label: str
     current: NotRequired[bool]
     active: NotRequired[bool]
+    open: NotRequired[bool]
     subnav: NotRequired[SubNavDict]
     attrs: NotRequired[dict[str, Any]]
 
