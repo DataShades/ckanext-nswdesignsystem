@@ -19,6 +19,6 @@
   "homepage": "https://github.com/DataShades/ckanext-nswdesignsystem#readme",
   "dependencies": {
     "highlight.js": "github:highlightjs/highlight.js#11.8.0",
-    "nsw-design-system": "^3.8.0"
+    "nsw-design-system": "^3.10.0"
   }
 }
