@@ -1,0 +1,43 @@
+
+{% macro dialog(id, title=null, dismissible=false) %}
+    <div class="nsw-dialog js-dialog" id="{{ id }}" role="dialog">
+        <div class="nsw-dialog__wrapper">
+            <div class="nsw-dialog__container">
+
+                <div class="nsw-dialog__top">
+                    <div class="nsw-dialog__title">
+                        {% if title %}
+                            <h2>{{ title }}</h2>
+                        {% else %}
+                            {{ caller("title") }}
+                        {% endif %}
+                    </div>
+
+
+                    {% if dismissible %}
+                        <div class="nsw-dialog__close">
+                            <button class="nsw-icon-button js-close-dialog">
+                                <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">close</span>
+                                <span class="sr-only">Close</span>
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="nsw-dialog__content">
+                    {{ caller("content") }}
+                </div>
+            </div>
+
+            <div class="nsw-dialog__bottom">
+                {{ caller("footer") }}
+            </div>
+
+        </div>
+    </div>
+
+{% endmacro %}
+
+{% macro trigger(id, label) %}
+    <button class="nsw-button nsw-button--dark js-open-dialog-{{ id }}" aria-haspopup="dialog">{{ label }}</button>
+{% endmacro %}
