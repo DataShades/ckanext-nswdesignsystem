@@ -1,0 +1,6 @@
+{% from "macros/nswdesignsystem/accordion.html" import accordion with context  %}
+
+
+{% call(idx, part) accordion(["Hello", "World"], with_toggle_all=true) %}
+{{ lipsum(1) }}
+{% endcall %}
