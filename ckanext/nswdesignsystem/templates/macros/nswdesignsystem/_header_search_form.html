@@ -1,5 +1,5 @@
 {% macro search_form() %}
-    <form role="search">
+    <form role="search" action="{{ h.url_for("dataset.search") }}">
         <label for="nsw-header-input" class="sr-only">{{ _("Search site for:") }}</label>
         <input class="nsw-header__input js-search-input" type="text"
                autocomplete="off" id="nsw-header-input" name="q">
