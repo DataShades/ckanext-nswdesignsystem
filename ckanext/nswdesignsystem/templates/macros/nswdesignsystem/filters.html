@@ -1,8 +1,8 @@
 {% import "macros/form.html" as form %}
 
 {% macro filters(title="Filters", accept="Apply filters", cancel="Clear all filters",
-    down=false, right=false, instant=false, count=false) %}
-    <form class="nsw-filters{{ " js-filters" if down or right }}{{ " nsw-filters--down" if down }}{{ " nsw-filters--right" if right }}{{ " nsw-filters--instant" if instant }}">
+    down=false, right=false, instant=false, count=false, id=null) %}
+    <form class="nsw-filters{{ " js-filters" if down or right }}{{ " nsw-filters--down" if down }}{{ " nsw-filters--right" if right }}{{ " nsw-filters--instant" if instant }}" {% if id %}id="{{ id }}"{% endif %}>
 
         {% if down or right %}
             <div class="nsw-filters__controls{{ "  js-filters--count" if count }}">
@@ -61,7 +61,7 @@
     </div>
 {% endmacro %}
 
-{% macro facet(name, values, labels=[], visible=5, title=null, show_all_label="Show all") %}
+{% macro facet(name, values, labels=[], visible=5, title=null, show_all_label="Show all", empty_label=null) %}
     {% if not labels %}
         {% set labels = values %}
     {% endif %}
@@ -81,6 +81,8 @@
                     id="filter-" ~ name ~ "-main-" ~ loop.index0, label=labels[loop.index0], value=val,
                     checked=val in selected,
                 )}}
+            {% else %}
+                {{ empty_label }}
             {% endfor %}
 
             {% if rest %}
