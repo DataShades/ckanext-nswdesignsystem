@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## Unreleased
+
+<small>[Compare with latest](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.6...HEAD)</small>
+
+### Features
+
+- update nswdesignsystem to v3.11.2 ([89b0e35](https://github.com/DataShades/ckanext-nswdesignsystem/commit/89b0e357f71da317a85baca0299bd51bf3f5e2fc) by Sergey Motornyuk).
+- add empty_label to facet macro ([4b43df6](https://github.com/DataShades/ckanext-nswdesignsystem/commit/4b43df629e4b425747bc7c432b400747c2a5e917) by Sergey Motornyuk).
+- dialog macros ([a46d569](https://github.com/DataShades/ckanext-nswdesignsystem/commit/a46d569c2af7653d7ee21c10ad4d8c0fc02fe8d5) by Sergey Motornyuk).
+- in-page-alert macros ([9efe927](https://github.com/DataShades/ckanext-nswdesignsystem/commit/9efe927ee5f118bf30b742787a14ca45d8e79dd6) by Sergey Motornyuk).
+- update nsw-design-system to v3.10.0 ([d5cb25c](https://github.com/DataShades/ckanext-nswdesignsystem/commit/d5cb25c3d1b097d1d06383713441bea5a92dbccd) by Sergey Motornyuk).
+- NavDict.open property for keeping inactive sidebar sections open ([023fb3a](https://github.com/DataShades/ckanext-nswdesignsystem/commit/023fb3a9dbafa0eed9ab2600c4dfde3bd843cd21) by Sergey Motornyuk).
+
+### Bug Fixes
+
+- header search redirects to search page ([dff8bb1](https://github.com/DataShades/ckanext-nswdesignsystem/commit/dff8bb1cde09d408fa97e7365fd1ebe656178937) by Sergey Motornyuk).
+- fix expand label on accordion ([b0a710f](https://github.com/DataShades/ckanext-nswdesignsystem/commit/b0a710f8bfc0e67a7a02477e0057cdf827e738db) by Sergey Motornyuk).
+
+<!-- insertion marker -->
 ## [v0.1.6](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.6) - 2023-08-17
 
 <small>[Compare with v0.1.5](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.5...v0.1.6)</small>

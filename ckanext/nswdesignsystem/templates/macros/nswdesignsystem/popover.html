@@ -1,0 +1,23 @@
+{% macro popover(id, label=null, position="top", gap=10, style="dark-outline") %}
+    {% with trigger = caller("trigger")|trim %}
+        <button type="button" class="nsw-button nsw-button--{{ style }} js-popover" aria-controls="{{ id }}"
+                data-popover-position="{{ position }}" data-popover-class="" data-popover-gap="{{ gap }}">
+
+            {% if trigger %}
+                {{ trigger }}
+
+            {% else %}
+                <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">info</span>
+                <span>{{ label }}</span>
+
+            {% endif %}
+        </button>
+
+
+    {% endwith %}
+
+    <div id="{{ id }}" class="nsw-popover">
+        {{ caller("popover") }}
+    </div>
+
+{% endmacro %}

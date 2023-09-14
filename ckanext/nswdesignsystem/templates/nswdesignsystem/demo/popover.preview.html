@@ -1,0 +1,92 @@
+{% from "macros/nswdesignsystem/popover.html" import popover with context  %}
+
+<div class="nsw-list nsw-list--8">
+
+{% call(part) popover("popover-top", "Open top", "top") %}
+{% if part == "popover" %}
+    <div class="nsw-p-sm">
+        <h4>Family rebate</h4>
+        <p>Helps families with dependants to pay their energy bills. Applications opening late July for the 2019-20 rebate.</p>
+        <p><a class="js-link" href="https://digital.nsw.gov.au">
+            <span>Get started</span><span class="material-icons nsw-material-icons" title="(opens in new window)">open_in_new</span>
+        </a></p>
+    </div>
+{% endif %}
+{% endcall %}
+
+{% call(part) popover("popover-top-start", "Open top start", "top-start", style="danger") %}
+{% if part == "trigger" %}
+    <span>Custom trigger</span>
+    <span class="material-icons nsw-material-icons">star</span>
+{% elif part == "popover" %}
+    <div class="nsw-p-sm">
+        <h4>Family rebate</h4>
+        <p>Helps families with dependants to pay their energy bills. Applications opening late July for the 2019-20 rebate.</p>
+        <p><a class="js-link" href="https://digital.nsw.gov.au">
+            <span>Get started</span><span class="material-icons nsw-material-icons" title="(opens in new window)">open_in_new</span>
+        </a></p>
+    </div>
+{% endif %}
+{% endcall %}
+
+{% call(part) popover("popover-top-end", "Open top end", "top-end", style="dark") %}
+{% if part == "popover" %}
+    <div class="nsw-p-sm">
+        <h4>Family rebate</h4>
+        <p>Helps families with dependants to pay their energy bills. Applications opening late July for the 2019-20 rebate.</p>
+        <p><a class="js-link" href="https://digital.nsw.gov.au">
+            <span>Get started</span><span class="material-icons nsw-material-icons" title="(opens in new window)">open_in_new</span>
+        </a></p>
+    </div>
+{% endif %}
+{% endcall %}
+
+{% call(part) popover("popover-left", "Open left", "left") %}
+{% if part == "popover" %}
+    <div class="nsw-p-sm">
+        <h4>Family rebate</h4>
+        <p>Helps families with dependants to pay their energy bills. Applications opening late July for the 2019-20 rebate.</p>
+        <p><a class="js-link" href="https://digital.nsw.gov.au">
+            <span>Get started</span><span class="material-icons nsw-material-icons" title="(opens in new window)">open_in_new</span>
+        </a></p>
+    </div>
+{% endif %}
+{% endcall %}
+
+{% call(part) popover("popover-right", "Open right", "right") %}
+{% if part == "popover" %}
+    <div class="nsw-p-sm">
+        <h4>Family rebate</h4>
+        <p>Helps families with dependants to pay their energy bills. Applications opening late July for the 2019-20 rebate.</p>
+        <p><a class="js-link" href="https://digital.nsw.gov.au">
+            <span>Get started</span><span class="material-icons nsw-material-icons" title="(opens in new window)">open_in_new</span>
+        </a></p>
+    </div>
+{% endif %}
+{% endcall %}
+
+{% call(part) popover("popover-bottom", "Open bottom", "bottom") %}
+{% if part == "popover" %}
+    <div class="nsw-p-sm">
+        <h4>Family rebate</h4>
+        <p>Helps families with dependants to pay their energy bills. Applications opening late July for the 2019-20 rebate.</p>
+        <p><a class="js-link" href="https://digital.nsw.gov.au">
+            <span>Get started</span><span class="material-icons nsw-material-icons" title="(opens in new window)">open_in_new</span>
+        </a></p>
+    </div>
+{% endif %}
+{% endcall %}
+
+{% call(part) popover("popover-gap", "Open with gap", gap=100) %}
+{% if part == "popover" %}
+    <div class="nsw-p-sm">
+        <h4>Family rebate</h4>
+        <p>Helps families with dependants to pay their energy bills. Applications opening late July for the 2019-20 rebate.</p>
+        <p><a class="js-link" href="https://digital.nsw.gov.au">
+            <span>Get started</span><span class="material-icons nsw-material-icons" title="(opens in new window)">open_in_new</span>
+        </a></p>
+    </div>
+{% endif %}
+{% endcall %}
+
+</div>
