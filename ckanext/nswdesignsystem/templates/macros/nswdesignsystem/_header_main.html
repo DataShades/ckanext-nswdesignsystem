@@ -1,7 +1,7 @@
 
-{% macro main(title) %}
+{% macro main(title, logo_link="/") %}
     <div class="nsw-header__waratah">
-        <a href="/nsw-design-system/">
+        <a href="{{ logo_link }}">
             {% include "snippets/nswdesignsystem/header_logo.html" %}
             <span class="sr-only">{{ _("NSW Government") }}</span>
         </a>

@@ -2,10 +2,10 @@
 
 {% from "macros/nswdesignsystem/_header_search_area.html" import search_area with context  %}
 
-{% macro header(site_title) %}
+{% macro header(site_title, logo_link="/") %}
     <header class="nsw-header">
         <div class="nsw-header__container">
-            {{ inner(site_title) }}
+            {{ inner(site_title, logo_link) }}
             {{ search_area() }}
         </div>
     </header>

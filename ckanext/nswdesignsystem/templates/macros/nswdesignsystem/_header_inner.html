@@ -1,9 +1,9 @@
 {% from "macros/nswdesignsystem/_header_main.html" import main with context  %}
 
-{% macro inner(site_title) %}
+{% macro inner(site_title, logo_link="/") %}
     <div class="nsw-header__inner">
         <div class="nsw-header__main">
-            {{ main(site_title) }}
+            {{ main(site_title, logo_link) }}
         </div>
         <div class="nsw-header__menu">
             <button type="button" class="js-open-nav" aria-expanded="false" aria-controls="main-nav">
