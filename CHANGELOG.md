@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Features
 
+- header macro accepts logo_link ([ef61fc6](https://github.com/DataShades/ckanext-nswdesignsystem/commit/ef61fc62555a1129defd93b3785dcbdcdbc3205f) by Sergey Motornyuk).
+- popover macro ([6be75ce](https://github.com/DataShades/ckanext-nswdesignsystem/commit/6be75ce08ab596edab4255c5a6b68e02b1f966fd) by Sergey Motornyuk).
 - update nswdesignsystem to v3.11.2 ([89b0e35](https://github.com/DataShades/ckanext-nswdesignsystem/commit/89b0e357f71da317a85baca0299bd51bf3f5e2fc) by Sergey Motornyuk).
 - add empty_label to facet macro ([4b43df6](https://github.com/DataShades/ckanext-nswdesignsystem/commit/4b43df629e4b425747bc7c432b400747c2a5e917) by Sergey Motornyuk).
 - dialog macros ([a46d569](https://github.com/DataShades/ckanext-nswdesignsystem/commit/a46d569c2af7653d7ee21c10ad4d8c0fc02fe8d5) by Sergey Motornyuk).
