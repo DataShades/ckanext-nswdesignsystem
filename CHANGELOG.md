@@ -6,9 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
-## Unreleased
+## [v0.1.7](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.7) - 2023-10-25
 
-<small>[Compare with latest](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.6...HEAD)</small>
+<small>[Compare with v0.1.6](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.6...v0.1.7)</small>
 
 ### Features
 
@@ -26,7 +26,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - header search redirects to search page ([dff8bb1](https://github.com/DataShades/ckanext-nswdesignsystem/commit/dff8bb1cde09d408fa97e7365fd1ebe656178937) by Sergey Motornyuk).
 - fix expand label on accordion ([b0a710f](https://github.com/DataShades/ckanext-nswdesignsystem/commit/b0a710f8bfc0e67a7a02477e0057cdf827e738db) by Sergey Motornyuk).
 
-<!-- insertion marker -->
 ## [v0.1.6](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.6) - 2023-08-17
 
 <small>[Compare with v0.1.5](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.5...v0.1.6)</small>
