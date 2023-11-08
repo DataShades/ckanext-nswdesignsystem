@@ -1,7 +1,7 @@
 {% import "macros/form.html" as form %}
 
 {% macro filters(title="Filters", accept="Apply filters", cancel="Clear all filters",
-    down=false, right=false, instant=false, count=false, id=null) %}
+    down=false, right=false, instant=false, count=false, id=null, cancel_url=null) %}
     <form class="nsw-filters{{ " js-filters" if down or right }}{{ " nsw-filters--down" if down }}{{ " nsw-filters--right" if right }}{{ " nsw-filters--instant" if instant }}" {% if id %}id="{{ id }}"{% endif %}>
 
         {% if down or right %}
@@ -36,7 +36,13 @@
             </div>
 
             <div class="nsw-filters__cancel">
-                <button type="reset">{{ cancel }}</button>
+                {% if cancel_url %}
+                    <a href="{{ cancel_url }}">
+                        {{ cancel }}
+                    </a>
+                {% else %}
+                    <button type="reset">{{ cancel }}</button>
+                {% endif %}
             </div>
         </div>
     </form>

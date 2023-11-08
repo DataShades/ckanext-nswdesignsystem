@@ -1,4 +1,5 @@
 from __future__ import annotations
+from collections.abc import Sequence
 
 from typing import Any
 
@@ -18,4 +19,4 @@ class NavDict(TypedDict):
 class SubNavDict(TypedDict):
     label: NotRequired[str]
     description: NotRequired[str]
-    children: list[NavDict]
+    children: Sequence[NavDict]
