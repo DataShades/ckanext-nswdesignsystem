@@ -1,6 +1,6 @@
-{% macro in_page_alert(heading=null, type="info", compact=false) %}
+{% macro in_page_alert(heading=null, type="info", compact=false, icon="info") %}
     <div class="nsw-in-page-alert nsw-in-page-alert--{{ type }}{% if compact %} nsw-in-page-alert--compact{% endif %}">
-        <span class="material-icons nsw-material-icons nsw-in-page-alert__icon" focusable="false" aria-hidden="true">info</span>
+        <span class="material-icons nsw-material-icons nsw-in-page-alert__icon" focusable="false" aria-hidden="true">{{ icon }}</span>
         <div class="nsw-in-page-alert__content">
             {% if heading %}
                 <p class="nsw-h5">{{ heading }}</p>
@@ -11,34 +11,34 @@
 {% endmacro %}
 
 
-{% macro in_page_info(heading=null, compact=false) %}
+{% macro in_page_info(heading=null, compact=false, icon="info") %}
     {% set outer_caller = caller %}
 
-    {% call in_page_alert(heading, "info", compact) %}
+    {% call in_page_alert(heading, "info", compact, icon) %}
         {{ outer_caller() }}
     {% endcall %}
 {% endmacro %}
 
-{% macro in_page_error(heading=null, compact=false) %}
+{% macro in_page_error(heading=null, compact=false, icon="error") %}
     {% set outer_caller = caller %}
 
-    {% call in_page_alert(heading, "error", compact) %}
+    {% call in_page_alert(heading, "error", compact, icon) %}
         {{ outer_caller() }}
     {% endcall %}
 {% endmacro %}
 
-{% macro in_page_warning(heading=null, compact=false) %}
+{% macro in_page_warning(heading=null, compact=false, icon="warning") %}
     {% set outer_caller = caller %}
 
-    {% call in_page_alert(heading, "warning", compact) %}
+    {% call in_page_alert(heading, "warning", compact, icon) %}
         {{ outer_caller() }}
     {% endcall %}
 {% endmacro %}
 
-{% macro in_page_success(heading=null, compact=false) %}
+{% macro in_page_success(heading=null, compact=false, icon="check_circle") %}
     {% set outer_caller = caller %}
 
-    {% call in_page_alert(heading, "success", compact) %}
+    {% call in_page_alert(heading, "success", compact, icon) %}
         {{ outer_caller() }}
     {% endcall %}
 {% endmacro %}
