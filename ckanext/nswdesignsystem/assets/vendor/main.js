@@ -4,33 +4,6 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.NSW = {}));
 })(this, (function (exports) { 'use strict';
 
-  class SiteSearch {
-    constructor(element) {
-      this.triggerButton = element;
-      this.originalButton = document.querySelector('.js-open-search');
-      this.targetElement = document.getElementById(this.triggerButton.getAttribute('aria-controls'));
-      this.searchInput = this.targetElement.querySelector('.js-search-input');
-      this.pressed = this.triggerButton.getAttribute('aria-expanded') === 'true';
-    }
-    init() {
-      this.controls();
-    }
-    controls() {
-      this.triggerButton.addEventListener('click', this.showHide.bind(this), false);
-    }
-    showHide() {
-      if (this.pressed) {
-        this.targetElement.hidden = true;
-        this.originalButton.hidden = false;
-        this.originalButton.focus();
-      } else {
-        this.targetElement.hidden = false;
-        this.originalButton.hidden = true;
-        this.searchInput.focus();
-      }
-    }
-  }
-
   // Unique ID creation requires a high quality random # generator. In the browser we therefore
   // require the crypto API and do not support built-in fallback to lower quality random number
   // generators (like Math.random()).
@@ -139,6 +112,726 @@
     const found = Object.keys(transitions).filter(key => el.style[key] !== undefined);
     return transitions[found[0]];
   };
+
+  function createButtons(_ref) {
+    let {
+      textContent
+    } = _ref;
+    const fragment = document.createDocumentFragment();
+    const button = document.createElement('button');
+    const uID = uniqueId('accordion');
+    button.textContent = textContent;
+    button.setAttribute('type', 'button');
+    button.setAttribute('aria-expanded', 'false');
+    button.setAttribute('aria-controls', uID);
+    button.classList.add('nsw-accordion__button');
+    button.insertAdjacentHTML('beforeend', `
+  <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_down</span>
+  `);
+    fragment.appendChild(button);
+    return fragment;
+  }
+  class Accordion {
+    constructor(element) {
+      const [expandAll, collapseAll] = Array.from(element.querySelectorAll('.nsw-accordion__toggle button'));
+      this.accordionHeadingClass = '.nsw-accordion__title';
+      this.accordion = element;
+      this.headings = element.querySelectorAll(this.accordionHeadingClass);
+      this.expandAllBtn = expandAll;
+      this.collapseAllBtn = collapseAll;
+      this.isExpandedOnLoad = element.querySelectorAll('.nsw-accordion__open');
+      this.buttons = [];
+      this.content = [];
+      this.toggleEvent = e => this.toggle(e);
+      this.expandAllEvent = e => this.expandAll(e);
+      this.collapseAllEvent = e => this.collapseAll(e);
+    }
+    init() {
+      this.setUpDom();
+      this.controls();
+    }
+    setUpDom() {
+      this.accordion.classList.add('ready');
+      if (this.collapseAllBtn) {
+        this.collapseAllBtn.disabled = true;
+      }
+      this.headings.forEach(heading => {
+        const headingElem = heading;
+        const contentElem = heading.nextElementSibling;
+        const buttonFrag = createButtons(heading);
+        headingElem.textContent = '';
+        headingElem.appendChild(buttonFrag);
+        const buttonElem = headingElem.getElementsByTagName('button')[0];
+        contentElem.id = buttonElem.getAttribute('aria-controls');
+        contentElem.hidden = true;
+        this.content.push(contentElem);
+        this.buttons.push(buttonElem);
+      });
+      if (this.isExpandedOnLoad) {
+        this.isExpandedOnLoad.forEach(element => {
+          const openButton = element.querySelector('button');
+          this.setAccordionState(openButton, 'open');
+        });
+      }
+    }
+    controls() {
+      this.buttons.forEach(element => {
+        element.addEventListener('click', this.toggleEvent, false);
+      });
+      if (this.expandAllBtn && this.collapseAllBtn) {
+        this.expandAllBtn.addEventListener('click', this.expandAllEvent, false);
+        this.collapseAllBtn.addEventListener('click', this.collapseAllEvent, false);
+      }
+    }
+    getTargetContent(element) {
+      const currentIndex = this.buttons.indexOf(element);
+      return this.content[currentIndex];
+    }
+    setAccordionState(element, state) {
+      const targetContent = this.getTargetContent(element);
+      if (state === 'open') {
+        element.classList.add('active');
+        element.setAttribute('aria-expanded', 'true');
+        targetContent.hidden = false;
+      } else if (state === 'close') {
+        element.classList.remove('active');
+        element.setAttribute('aria-expanded', 'false');
+        targetContent.hidden = true;
+      }
+    }
+    toggle(e) {
+      const {
+        currentTarget
+      } = e;
+      const targetContent = this.getTargetContent(currentTarget);
+      const isHidden = targetContent.hidden;
+      if (isHidden) {
+        this.setAccordionState(currentTarget, 'open');
+      } else {
+        this.setAccordionState(currentTarget, 'close');
+      }
+      if (this.expandAllBtn && this.collapseAllBtn) {
+        this.expandAllBtn.disabled = this.content.every(item => item.hidden === false);
+        this.collapseAllBtn.disabled = this.content.every(item => item.hidden === true);
+      }
+    }
+    expandAll() {
+      this.buttons.forEach(element => {
+        this.setAccordionState(element, 'open');
+      });
+      this.expandAllBtn.disabled = true;
+      this.collapseAllBtn.disabled = false;
+    }
+    collapseAll() {
+      this.buttons.forEach(element => {
+        this.setAccordionState(element, 'close');
+      });
+      this.expandAllBtn.disabled = false;
+      this.collapseAllBtn.disabled = true;
+    }
+  }
+
+  class BackTop {
+    constructor(element) {
+      this.element = element;
+      this.dataElement = this.element.getAttribute('data-element');
+      this.scrollOffset = this.element.getAttribute('data-offset');
+      this.text = false;
+      this.icon = false;
+      this.scrollElement = this.dataElement ? document.querySelector(this.dataElement) : window;
+      this.scrollPosition = 0;
+      this.width = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+      this.height = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+      this.condition = false;
+    }
+    init() {
+      this.createButton();
+      this.element.addEventListener('click', event => {
+        event.preventDefault();
+        if (!window.requestAnimationFrame) {
+          this.scrollElement.scrollTo(0, 0);
+        } else if (this.dataElement) {
+          this.scrollElement.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        } else {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        }
+      });
+      this.checkBackToTop();
+      const debounceEvent = this.debounce(this.checkBackToTop);
+      this.scrollElement.addEventListener('scroll', () => {
+        debounceEvent();
+      });
+      const debounceResize = this.debounce(this.resizeHandler);
+      window.addEventListener('resize', () => {
+        debounceResize();
+      });
+    }
+    createButton() {
+      const textSpan = this.constructor.createElement('span');
+      const iconSpan = this.constructor.createElement('span', ['material-icons', 'nsw-material-icons'], {
+        title: 'Back to top',
+        focusable: 'false',
+        'aria-hidden': 'true'
+      });
+      this.element.append(textSpan, iconSpan);
+      this.text = this.element.querySelector('span:not(.material-icons)');
+      this.icon = this.element.querySelector('span.material-icons');
+      this.createButtonContent();
+    }
+    createButtonContent() {
+      if (this.width < 768) {
+        this.text.innerText = 'Top';
+        this.icon.innerText = 'keyboard_arrow_up';
+      } else {
+        this.text.innerText = 'Back to top';
+        this.icon.innerText = 'north';
+      }
+    }
+    checkBackToTop() {
+      let windowTop = this.scrollElement.scrollTop || document.documentElement.scrollTop;
+      if (!this.dataElement) windowTop = window.scrollY || document.documentElement.scrollTop;
+      const scroll = this.scrollPosition;
+      this.scrollPosition = window.scrollY;
+      if (this.scrollOffset && this.scrollOffset > 0) {
+        this.condition = windowTop >= this.scrollOffset;
+        this.element.classList.toggle('active', this.condition);
+      } else {
+        this.condition = scroll > this.scrollPosition && this.scrollPosition > 200;
+        this.element.classList.toggle('active', this.condition);
+      }
+    }
+    resizeHandler() {
+      const oldWidth = this.width;
+      const oldHeight = this.height;
+      this.width = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+      this.height = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+      if (oldWidth !== this.width && oldHeight === this.height) {
+        this.createButtonContent();
+      }
+    }
+    debounce(fn) {
+      var _this = this;
+      let wait = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 250;
+      let timeout;
+      return function () {
+        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
+        const context = _this;
+        if (!window.requestAnimationFrame) {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => fn.apply(context, args), wait);
+        } else {
+          if (timeout) {
+            window.cancelAnimationFrame(timeout);
+          }
+          timeout = window.requestAnimationFrame(() => {
+            fn.apply(context, args);
+          });
+        }
+      };
+    }
+    static createElement(tag) {
+      let classes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+      let attributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      const element = document.createElement(tag);
+      if (classes.length > 0) {
+        element.classList.add(...classes);
+      }
+      Object.entries(attributes).forEach(_ref => {
+        let [key, value] = _ref;
+        element.setAttribute(key, value);
+      });
+      return element;
+    }
+  }
+
+  class Dialog {
+    constructor(element) {
+      this.dialog = element;
+      this.dialogWrapper = element.querySelector('.nsw-dialog__wrapper');
+      this.openBtn = document.querySelectorAll('.js-open-dialog-'.concat(element.getAttribute('id')));
+      this.closeBtn = element.querySelectorAll('.js-close-dialog');
+      // eslint-disable-next-line max-len
+      this.focusableEls = element.querySelectorAll('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])');
+      this.body = document.body;
+      this.openEvent = e => this.openDialog(e);
+      this.closeEvent = e => this.closeDialog(e);
+      this.clickEvent = e => this.clickDialog(e);
+      this.trapEvent = e => this.trapFocus(e);
+    }
+    init() {
+      this.controls();
+    }
+    controls() {
+      this.openBtn.forEach(btn => {
+        btn.addEventListener('click', this.openEvent, false);
+      });
+      this.closeBtn.forEach(btn => {
+        btn.addEventListener('click', this.closeEvent, false);
+      });
+      if (this.dialog.classList.contains('js-dialog-dismiss')) {
+        this.dialog.addEventListener('click', this.clickEvent, false);
+      }
+      this.focusableEls[this.focusableEls.length - 1].addEventListener('blur', this.trapEvent, false);
+    }
+    openDialog() {
+      this.dialog.setAttribute('aria-expanded', 'true');
+      this.dialog.classList.add('active');
+      this.body.classList.add('dialog-active');
+      this.focusableEls[0].focus();
+    }
+    closeDialog() {
+      this.dialog.setAttribute('aria-expanded', 'false');
+      this.dialog.classList.remove('active');
+      this.body.classList.remove('dialog-active');
+    }
+    clickDialog(e) {
+      if (!this.dialogWrapper.contains(e.target)) {
+        this.closeDialog();
+      }
+    }
+    trapFocus(e) {
+      e.preventDefault();
+      this.focusableEls[0].focus();
+    }
+  }
+
+  class ExternalLink {
+    constructor(element) {
+      this.link = element;
+      this.uID = uniqueId('external');
+      this.linkIcon = this.link.querySelector('.nsw-material-icons');
+      this.linkIconTitle = this.linkIcon.getAttribute('title');
+      this.linkElement = false;
+    }
+    init() {
+      this.link.classList.add('nsw-link', 'nsw-link--icon');
+      this.constructor.setAttributes(this.link, {
+        target: '_blank',
+        rel: 'noopener'
+      });
+      this.constructor.setAttributes(this.linkIcon, {
+        focusable: 'false',
+        'aria-hidden': 'true'
+      });
+      this.createElement(this.linkIconTitle);
+    }
+    createElement(title) {
+      if (title) {
+        this.linkElement = document.createElement('span');
+        this.linkElement.id = this.uID;
+        this.linkElement.classList.add('sr-only');
+        this.linkElement.innerText = title;
+        this.link.insertAdjacentElement('afterend', this.linkElement);
+        this.constructor.setAttributes(this.link, {
+          'aria-describedby': this.uID
+        });
+      }
+    }
+    static setAttributes(el, attrs) {
+      Object.keys(attrs).forEach(key => el.setAttribute(key, attrs[key]));
+    }
+  }
+
+  /* eslint-disable max-len */
+  class FileUpload {
+    constructor(element) {
+      this.element = element;
+      this.input = this.element.querySelector('.nsw-file-upload__input');
+      this.label = this.element.querySelector('.nsw-file-upload__label');
+      this.multipleUpload = this.input.hasAttribute('multiple');
+      this.replaceFiles = this.element.hasAttribute('data-replace-files');
+      this.filesList = false;
+    }
+    init() {
+      if (!this.input) return;
+      this.input.addEventListener('change', () => {
+        if (this.input.value === '') return;
+        this.updateFileList();
+      });
+    }
+    createFileList() {
+      const ul = document.createElement('ul');
+      ul.classList.add('nsw-file-upload__list');
+      this.label.insertAdjacentElement('afterend', ul);
+      this.filesList = this.element.querySelector('.nsw-file-upload__list');
+    }
+    createFileItem(file) {
+      const li = document.createElement('li');
+      li.classList.add('nsw-file-upload__item');
+      const html = `
+    <span class="nsw-file-upload__item-filename"></span>
+    <button type="button" class="nsw-icon-button">
+        <span class="sr-only">Remove file</span>
+        <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">cancel</span>
+    </button>`;
+      li.insertAdjacentHTML('afterbegin', html);
+      li.querySelector('.nsw-file-upload__item-filename').textContent = this.constructor.truncateString(file.name, 50);
+      return li.outerHTML;
+    }
+    updateFileList() {
+      if (!this.filesList) {
+        this.createFileList();
+      }
+      this.filesList.classList.add('active');
+      let string = '';
+      for (let i = 0; i < this.input.files.length; i += 1) {
+        const file = this.input.files[i];
+        string = this.createFileItem(file) + string;
+      }
+      if (this.replaceFiles) {
+        this.filesList.innerHTML = string;
+      } else {
+        this.filesList.insertAdjacentHTML('beforeend', string);
+      }
+      this.removeFile();
+    }
+    removeFile() {
+      this.filesList.addEventListener('click', event => {
+        if (!event.target.closest('.nsw-icon-button')) return;
+        event.preventDefault();
+        const item = event.target.closest('.nsw-file-upload__item');
+        item.remove();
+        if (event.currentTarget.children.length === 0) {
+          this.filesList.classList.remove('active');
+        }
+      });
+    }
+    static truncateString(str, num) {
+      if (str.length <= num) {
+        return str;
+      }
+      return `${str.slice(0, num)}...`;
+    }
+  }
+
+  /* eslint-disable max-len */
+  class Filters {
+    constructor(element) {
+      this.element = element;
+      // Classes
+      this.hideClass = 'nsw-display-none';
+      this.showClass = 'active';
+      this.openClass = 'filters-open';
+      this.prefix = 'nsw-';
+      this.class = 'filters';
+      this.controlsClass = `${this.class}__controls`;
+      this.wrapperClass = `${this.class}__wrapper`;
+      this.listClass = `${this.class}__list`;
+      this.itemClass = `${this.class}__item`;
+      this.resetClass = `${this.class}__cancel`;
+      this.submitClass = `${this.class}__accept`;
+      this.closeClass = `${this.class}__back`;
+      this.countClass = `${this.class}__count`;
+      this.allClass = `${this.class}__all`;
+      this.moreClass = `${this.class}__more`;
+      // Elements
+      this.count = this.element.querySelector(`.js-${this.countClass}`);
+      this.controls = this.element.querySelector(`.${this.prefix}${this.controlsClass}`);
+      this.controlsButton = this.controls && this.controls.querySelector('button');
+      this.controlsButtonIcons = this.controlsButton && this.controlsButton.querySelectorAll('span');
+      this.controlsButtonText = this.controlsButton && this.controlsButton.querySelector('span:not(.nsw-material-icons)');
+      this.controlsButtonTextContent = this.controlsButton && this.controlsButtonText.innerText;
+      this.wrapper = this.element.querySelector(`.${this.prefix}${this.wrapperClass}`);
+      this.closeButton = this.wrapper.querySelector(`.${this.prefix}${this.closeClass} button`);
+      this.submitButton = this.wrapper.querySelector(`.${this.prefix}${this.submitClass} button`);
+      this.resetButton = this.wrapper.querySelector(`.${this.prefix}${this.resetClass} button`);
+      this.items = this.wrapper.querySelectorAll(`.${this.prefix}${this.itemClass}`);
+      this.accordionButtons = this.wrapper.querySelectorAll(`.${this.prefix}${this.itemClass}-button`);
+      this.showMoreContent = this.element.querySelectorAll(`.${this.prefix}${this.allClass}`);
+      this.showMoreButtons = this.element.querySelectorAll(`.${this.prefix}${this.moreClass}`);
+      this.focusableElements = 'a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])';
+      // Accordion arrays
+      this.buttons = [];
+      this.content = [];
+      this.options = [];
+      this.selected = [];
+    }
+    init() {
+      this.element.classList.add('ready');
+      this.accordionButtons.forEach(button => {
+        const buttonElem = button;
+        const uID = uniqueId('collapsed');
+        buttonElem.setAttribute('type', 'button');
+        buttonElem.setAttribute('aria-expanded', 'false');
+        buttonElem.setAttribute('aria-controls', uID);
+        const label = buttonElem.querySelector(`.${this.prefix}${this.itemClass}-name`);
+        buttonElem.setAttribute('data-label', label.innerText);
+        const contentElem = buttonElem.nextElementSibling;
+        contentElem.id = buttonElem.getAttribute('aria-controls');
+        contentElem.hidden = true;
+        this.content.push(contentElem);
+        this.buttons.push(buttonElem);
+      });
+      this.updateDom();
+      this.initEvents();
+    }
+    initEvents() {
+      document.addEventListener('DOMContentLoaded', () => {
+        this.updateDom();
+      });
+      if (this.options) {
+        this.options.forEach(element => {
+          element.addEventListener('change', () => {
+            this.updateDom();
+          });
+        });
+      }
+      if (this.controlsButton) {
+        this.controlsButton.addEventListener('click', event => {
+          this.showFilters(event);
+        });
+      }
+      if (this.submitButton) {
+        this.submitButton.disabled = true;
+      }
+      if (this.closeButton) {
+        this.closeButton.addEventListener('click', event => {
+          this.closeFilters(event);
+        });
+      }
+      if (this.buttons) {
+        this.buttons.forEach(element => {
+          element.addEventListener('click', event => {
+            this.toggleAccordion(event);
+          });
+        });
+      }
+      if (this.resetButton) {
+        this.resetButton.addEventListener('click', event => {
+          this.clearAll(event);
+        });
+        this.resetButton.addEventListener('change', event => {
+          this.clearAll(event);
+        });
+      }
+      if (this.showMoreButtons) {
+        this.showMoreButtons.forEach((element, index) => {
+          element.addEventListener('click', event => {
+            this.showMore(event, index);
+          });
+        });
+      }
+    }
+    setAccordionState(element, state) {
+      const targetContent = this.getTargetContent(element);
+      const firstfocusable = targetContent.querySelector(this.focusableElements);
+      if (state === 'open') {
+        element.classList.add(this.showClass);
+        element.setAttribute('aria-expanded', 'true');
+        targetContent.hidden = false;
+        this.constructor.moveFocusFn(firstfocusable);
+      } else if (state === 'close') {
+        element.classList.remove(this.showClass);
+        element.setAttribute('aria-expanded', 'false');
+        targetContent.hidden = true;
+      }
+    }
+    toggleAccordion(event) {
+      const {
+        currentTarget
+      } = event;
+      const targetContent = this.getTargetContent(currentTarget);
+      if (targetContent.hidden) {
+        this.setAccordionState(currentTarget, 'open');
+      } else {
+        this.setAccordionState(currentTarget, 'close');
+      }
+    }
+    getTargetContent(element) {
+      const currentIndex = this.buttons.indexOf(element);
+      return this.content[currentIndex];
+    }
+    toggleSubmit(array) {
+      if (this.submitButton) {
+        if (array.length > 0) {
+          this.submitButton.disabled = false;
+        } else {
+          this.submitButton.disabled = true;
+        }
+      }
+    }
+    showMore(event, index) {
+      event.preventDefault();
+      const firstfocusable = this.showMoreContent[index].querySelector(this.focusableElements);
+      this.showMoreContent[index].classList.remove(this.hideClass);
+      event.target.classList.add(this.hideClass);
+      this.constructor.moveFocusFn(firstfocusable);
+    }
+    closeFilters(event) {
+      event.preventDefault();
+      this.element.classList.remove(this.showClass);
+      document.body.classList.remove(this.openClass);
+    }
+    showFilters(event) {
+      event.preventDefault();
+      if (this.element.classList.contains('nsw-filters--down')) {
+        this.element.classList.toggle(this.showClass);
+      } else {
+        this.trapFocus(this.wrapper);
+        this.element.classList.add(this.showClass);
+        document.body.classList.add(this.openClass);
+      }
+    }
+    clearAll(event) {
+      event.preventDefault();
+      const simulateEvent = new MouseEvent('change', {
+        view: window,
+        bubbles: true,
+        cancelable: true
+      });
+      const multiSelect = this.element.querySelector('.js-multi-select');
+      const multiSelectAll = multiSelect && multiSelect.querySelector('.js-multi-select__all');
+      const multiSelectOptions = multiSelect && multiSelect.querySelectorAll('.js-multi-select__option');
+      if (this.options.length > 0) {
+        this.options.forEach(input => {
+          const option = input;
+          if (option.type === 'text' || option.type === 'select-one') {
+            option.value = '';
+          } else if (!option.parentElement.classList.contains('js-multi-select__option')) {
+            option.value = false;
+            option.checked = false;
+          }
+        });
+      }
+      if (multiSelect) {
+        multiSelectAll.classList.remove(this.showClass);
+        multiSelectOptions.forEach(element => {
+          element.setAttribute('aria-selected', 'true');
+          element.dispatchEvent(new Event(simulateEvent));
+          element.click();
+        });
+      }
+      this.updateDom();
+    }
+    getOptions() {
+      this.options = [];
+      this.items.forEach(element => {
+        const content = element.querySelector(`.${this.prefix}${this.itemClass}-content`);
+        const textInputs = content.querySelectorAll('input[type="text"]');
+        const singleSelects = content.querySelectorAll('select:not([multiple]):not(.nsw-display-none)');
+        const multiSelects = content.querySelectorAll('select[multiple]:not(.nsw-display-none)');
+        const checkboxes = content.querySelectorAll('input[type="checkbox"]');
+        this.options.push(...textInputs, ...singleSelects, ...checkboxes, ...multiSelects);
+      });
+    }
+    getSelected() {
+      this.selected = [];
+      if (this.options.length > 0) {
+        const select = this.options.filter(option => option.type === 'select-one' && option.value !== '');
+        const checkboxes = this.options.filter(option => option.checked);
+        const text = this.options.filter(option => option.type === 'text' && option.value !== '');
+        const multiple = this.options.filter(option => option.type === 'select-multiple' && option.value !== '');
+        const selectMultiple = this.constructor.getMultiSelectValues(multiple);
+        this.selected = [...select, ...checkboxes, ...text, ...selectMultiple];
+      }
+    }
+    selectedCount(array) {
+      if (!this.count) return;
+      const dateInputs = array.filter(option => option.closest('.nsw-form__date'));
+      const removedDateInputs = array.filter(option => !option.closest('.nsw-form__date'));
+      let buttonText = `${this.controlsButtonTextContent}`;
+      let countText = '';
+      if (dateInputs.length > 0) {
+        countText = ` (${removedDateInputs.length + 1})`;
+      } else {
+        countText = ` (${array.length})`;
+      }
+      if (dateInputs.length === 0 && array.length === 0) {
+        this.controlsButtonText.innerText = buttonText;
+      } else {
+        buttonText += countText;
+        this.controlsButtonText.innerText = buttonText;
+      }
+    }
+    setSelectedState() {
+      const formElements = 'textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled]):not(.nsw-display-none)';
+      const checkIcon = '<span class="material-icons nsw-material-icons nsw-material-icons--valid" focusable="false" aria-hidden="true">check_circle</span>';
+      this.buttons.forEach(element => {
+        const buttonName = element.querySelector(`.${this.prefix}${this.itemClass}-name`);
+        const label = element.getAttribute('data-label');
+        const content = element.nextElementSibling;
+        const values = content.querySelectorAll(formElements);
+        const selected = Array.from(values).filter(field => {
+          if (field.type === 'checkbox' || field.type === 'radio') {
+            return field.checked;
+          }
+          return field.value !== '';
+        });
+        if (selected.length > 0) {
+          buttonName.innerText = label;
+          buttonName.innerHTML = `${label} ${checkIcon}`;
+        } else if (selected.length === 0) {
+          buttonName.innerText = label;
+        }
+      });
+    }
+    updateDom() {
+      this.getOptions();
+      this.getSelected();
+      this.toggleSubmit(this.selected);
+      this.selectedCount(this.selected);
+      this.setSelectedState();
+    }
+    trapFocus(element) {
+      const focusableContent = element.querySelectorAll(this.focusableElements);
+      const firstFocusableElement = focusableContent[0];
+      const lastFocusableElement = focusableContent[focusableContent.length - 1];
+      document.addEventListener('keydown', event => {
+        const tab = event.code && event.code === 9 || event.key && event.key === 'Tab';
+        if (!tab) return;
+        if (document.activeElement === firstFocusableElement && event.shiftKey) {
+          event.preventDefault();
+          lastFocusableElement.focus();
+        }
+        if (document.activeElement === lastFocusableElement && !event.shiftKey) {
+          event.preventDefault();
+          firstFocusableElement.focus();
+        }
+      });
+      firstFocusableElement.focus();
+    }
+    static getMultiSelectValues(array) {
+      let selectedOptions = [];
+      if (array.length > 0) {
+        array.forEach(element => {
+          selectedOptions = Array.from(element.options).filter(option => option.selected);
+        });
+      }
+      return selectedOptions;
+    }
+    static moveFocusFn(element) {
+      element.focus();
+      if (document.activeElement !== element) {
+        element.setAttribute('tabindex', '-1');
+        element.focus();
+      }
+    }
+  }
+
+  class GlobalAlert {
+    constructor(element) {
+      this.messageElement = element;
+      this.closeButton = element.querySelector('.js-close-alert');
+      this.closeMessageEvent = e => this.closeMessage(e);
+    }
+    init() {
+      this.controls();
+    }
+    controls() {
+      this.closeButton.addEventListener('click', this.closeMessageEvent, false);
+    }
+    closeMessage() {
+      this.messageElement.hidden = true;
+    }
+  }
 
   class Navigation {
     constructor(element) {
@@ -405,1078 +1098,6 @@
       } = this.whichSubNavLatest();
       const elemObj = getFocusableElementBySelector(submenu.id, ['> div button', '> ul > li > a']);
       trapTabKey(e, elemObj);
-    }
-  }
-
-  function createButtons(_ref) {
-    let {
-      textContent
-    } = _ref;
-    const fragment = document.createDocumentFragment();
-    const button = document.createElement('button');
-    const uID = uniqueId('accordion');
-    button.textContent = textContent;
-    button.setAttribute('type', 'button');
-    button.setAttribute('aria-expanded', 'false');
-    button.setAttribute('aria-controls', uID);
-    button.classList.add('nsw-accordion__button');
-    button.insertAdjacentHTML('beforeend', `
-  <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_down</span>
-  `);
-    fragment.appendChild(button);
-    return fragment;
-  }
-  class Accordion {
-    constructor(element) {
-      const [expandAll, collapseAll] = Array.from(element.querySelectorAll('.nsw-accordion__toggle button'));
-      this.accordionHeadingClass = '.nsw-accordion__title';
-      this.accordion = element;
-      this.headings = element.querySelectorAll(this.accordionHeadingClass);
-      this.expandAllBtn = expandAll;
-      this.collapseAllBtn = collapseAll;
-      this.isExpandedOnLoad = element.querySelectorAll('.nsw-accordion__open');
-      this.buttons = [];
-      this.content = [];
-      this.toggleEvent = e => this.toggle(e);
-      this.expandAllEvent = e => this.expandAll(e);
-      this.collapseAllEvent = e => this.collapseAll(e);
-    }
-    init() {
-      this.setUpDom();
-      this.controls();
-    }
-    setUpDom() {
-      this.accordion.classList.add('ready');
-      if (this.collapseAllBtn) {
-        this.collapseAllBtn.disabled = true;
-      }
-      this.headings.forEach(heading => {
-        const headingElem = heading;
-        const contentElem = heading.nextElementSibling;
-        const buttonFrag = createButtons(heading);
-        headingElem.textContent = '';
-        headingElem.appendChild(buttonFrag);
-        const buttonElem = headingElem.getElementsByTagName('button')[0];
-        contentElem.id = buttonElem.getAttribute('aria-controls');
-        contentElem.hidden = true;
-        this.content.push(contentElem);
-        this.buttons.push(buttonElem);
-      });
-      if (this.isExpandedOnLoad) {
-        this.isExpandedOnLoad.forEach(element => {
-          const openButton = element.querySelector('button');
-          this.setAccordionState(openButton, 'open');
-        });
-      }
-    }
-    controls() {
-      this.buttons.forEach(element => {
-        element.addEventListener('click', this.toggleEvent, false);
-      });
-      if (this.expandAllBtn && this.collapseAllBtn) {
-        this.expandAllBtn.addEventListener('click', this.expandAllEvent, false);
-        this.collapseAllBtn.addEventListener('click', this.collapseAllEvent, false);
-      }
-    }
-    getTargetContent(element) {
-      const currentIndex = this.buttons.indexOf(element);
-      return this.content[currentIndex];
-    }
-    setAccordionState(element, state) {
-      const targetContent = this.getTargetContent(element);
-      if (state === 'open') {
-        element.classList.add('active');
-        element.setAttribute('aria-expanded', 'true');
-        targetContent.hidden = false;
-      } else if (state === 'close') {
-        element.classList.remove('active');
-        element.setAttribute('aria-expanded', 'false');
-        targetContent.hidden = true;
-      }
-    }
-    toggle(e) {
-      const {
-        currentTarget
-      } = e;
-      const targetContent = this.getTargetContent(currentTarget);
-      const isHidden = targetContent.hidden;
-      if (isHidden) {
-        this.setAccordionState(currentTarget, 'open');
-      } else {
-        this.setAccordionState(currentTarget, 'close');
-      }
-      if (this.expandAllBtn && this.collapseAllBtn) {
-        this.expandAllBtn.disabled = this.content.every(item => item.hidden === false);
-        this.collapseAllBtn.disabled = this.content.every(item => item.hidden === true);
-      }
-    }
-    expandAll() {
-      this.buttons.forEach(element => {
-        this.setAccordionState(element, 'open');
-      });
-      this.expandAllBtn.disabled = true;
-      this.collapseAllBtn.disabled = false;
-    }
-    collapseAll() {
-      this.buttons.forEach(element => {
-        this.setAccordionState(element, 'close');
-      });
-      this.expandAllBtn.disabled = false;
-      this.collapseAllBtn.disabled = true;
-    }
-  }
-
-  class Dialog {
-    constructor(element) {
-      this.dialog = element;
-      this.dialogWrapper = element.querySelector('.nsw-dialog__wrapper');
-      this.openBtn = document.querySelectorAll('.js-open-dialog-'.concat(element.getAttribute('id')));
-      this.closeBtn = element.querySelectorAll('.js-close-dialog');
-      // eslint-disable-next-line max-len
-      this.focusableEls = element.querySelectorAll('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])');
-      this.body = document.body;
-      this.openEvent = e => this.openDialog(e);
-      this.closeEvent = e => this.closeDialog(e);
-      this.clickEvent = e => this.clickDialog(e);
-      this.trapEvent = e => this.trapFocus(e);
-    }
-    init() {
-      this.controls();
-    }
-    controls() {
-      this.openBtn.forEach(btn => {
-        btn.addEventListener('click', this.openEvent, false);
-      });
-      this.closeBtn.forEach(btn => {
-        btn.addEventListener('click', this.closeEvent, false);
-      });
-      if (this.dialog.classList.contains('js-dialog-dismiss')) {
-        this.dialog.addEventListener('click', this.clickEvent, false);
-      }
-      this.focusableEls[this.focusableEls.length - 1].addEventListener('blur', this.trapEvent, false);
-    }
-    openDialog() {
-      this.dialog.setAttribute('aria-expanded', 'true');
-      this.dialog.classList.add('active');
-      this.body.classList.add('dialog-active');
-      this.focusableEls[0].focus();
-    }
-    closeDialog() {
-      this.dialog.setAttribute('aria-expanded', 'false');
-      this.dialog.classList.remove('active');
-      this.body.classList.remove('dialog-active');
-    }
-    clickDialog(e) {
-      if (!this.dialogWrapper.contains(e.target)) {
-        this.closeDialog();
-      }
-    }
-    trapFocus(e) {
-      e.preventDefault();
-      this.focusableEls[0].focus();
-    }
-  }
-
-  class Filters {
-    constructor(element) {
-      this.filters = element;
-      this.filtersWrapper = element.querySelector('.nsw-filters__wrapper');
-      this.openButton = element.querySelector('.nsw-filters__controls button');
-      this.openButtonIcons = this.openButton ? this.openButton.querySelectorAll('span') : null;
-      this.selectedCount = element.querySelector('.js-filters--count');
-      this.openButtonText = this.selectedCount ? this.selectedCount.querySelector('span:not(.nsw-material-icons)') : null;
-      this.buttonLabel = this.openButtonText ? this.openButtonText.innerText : null;
-      this.closeButton = element.querySelector('.nsw-filters__back button');
-      this.acceptButton = element.querySelector('.nsw-filters__accept button');
-      this.clearButton = element.querySelector('.nsw-filters__cancel button');
-      this.showMoreButtons = Array.prototype.slice.call(element.querySelectorAll('.nsw-filters__more'));
-      this.accordionButtons = element.querySelectorAll('.nsw-filters__item-button');
-      this.showAll = element.querySelectorAll('.nsw-filters__all');
-      this.showAllBlocks = Array.prototype.slice.call(this.showAll);
-      this.filtersItems = element.querySelectorAll('.nsw-filters__item');
-      /* eslint-disable max-len */
-      this.focusableEls = this.filtersWrapper.querySelectorAll('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])');
-      this.checkIcon = '<span class="material-icons nsw-material-icons nsw-material-icons--valid" focusable="false" aria-hidden="true">check_circle</span>';
-      this.arrowIcon = '<span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_right</span>';
-      /* eslint-ensable max-len */
-      this.showEvent = e => this.showFilters(e);
-      this.hideEvent = e => this.hideFilters(e);
-      this.showMoreEvent = e => this.showMore(e);
-      this.toggleEvent = e => this.toggleAccordion(e);
-      this.resetEvent = e => this.clearAllFilters(e);
-      this.body = document.body;
-      this.buttons = [];
-      this.content = [];
-      this.selected = [];
-    }
-    init() {
-      this.setUpDom();
-      this.controls();
-      this.selectedItems();
-    }
-    setUpDom() {
-      this.filters.classList.add('ready');
-      if (this.openButton) {
-        if (this.openButtonIcons.length < 3) {
-          this.openButton.insertAdjacentHTML('beforeend', this.arrowIcon);
-        }
-      }
-      this.accordionButtons.forEach(button => {
-        const buttonElem = button;
-        const uID = uniqueId('collapsed');
-        buttonElem.setAttribute('type', 'button');
-        buttonElem.setAttribute('aria-expanded', 'false');
-        buttonElem.setAttribute('aria-controls', uID);
-        const contentElem = buttonElem.nextElementSibling;
-        contentElem.id = buttonElem.getAttribute('aria-controls');
-        contentElem.hidden = true;
-        this.content.push(contentElem);
-        this.buttons.push(buttonElem);
-      });
-    }
-    controls() {
-      if (this.openButton) {
-        this.openButton.addEventListener('click', this.showEvent, false);
-      }
-      if (this.acceptButton) {
-        this.acceptButton.disabled = true;
-      }
-      if (this.closeButton) {
-        this.closeButton.addEventListener('click', this.hideEvent, false);
-      }
-      this.showAll.forEach(element => {
-        const showMoreButton = element.nextElementSibling;
-        showMoreButton.addEventListener('click', this.showMoreEvent, false);
-      });
-      if (this.buttons) {
-        this.buttons.forEach(element => {
-          element.addEventListener('click', this.toggleEvent, false);
-        });
-      }
-      if (this.clearButton) {
-        this.clearButton.addEventListener('click', this.resetEvent, false);
-      }
-    }
-    showFilters(e) {
-      e.preventDefault();
-      if (this.filters.classList.contains('nsw-filters--down')) {
-        this.filters.classList.toggle('active');
-      } else {
-        this.trapFocus(this.filtersWrapper);
-        this.filters.classList.add('active');
-        this.body.classList.add('filters-open');
-      }
-    }
-    hideFilters(e) {
-      e.preventDefault();
-      this.filters.classList.remove('active');
-      this.body.classList.remove('filters-open');
-    }
-    showMore(e) {
-      e.preventDefault();
-      const currentShowMore = e.target;
-      const currentIndex = this.showMoreButtons.indexOf(currentShowMore);
-      const currentAll = this.showAllBlocks[currentIndex];
-      currentAll.classList.remove('hidden');
-      currentShowMore.classList.add('hidden');
-    }
-    getTargetContent(element) {
-      const currentIndex = this.buttons.indexOf(element);
-      return this.content[currentIndex];
-    }
-    setAccordionState(element, state) {
-      const targetContent = this.getTargetContent(element);
-      if (state === 'open') {
-        element.classList.add('active');
-        element.setAttribute('aria-expanded', 'true');
-        targetContent.hidden = false;
-      } else if (state === 'close') {
-        element.classList.remove('active');
-        element.setAttribute('aria-expanded', 'false');
-        targetContent.hidden = true;
-      }
-    }
-    toggleAccordion(e) {
-      const {
-        currentTarget
-      } = e;
-      const targetContent = this.getTargetContent(currentTarget);
-      const isHidden = targetContent.hidden;
-      if (isHidden) {
-        this.setAccordionState(currentTarget, 'open');
-      } else {
-        this.setAccordionState(currentTarget, 'close');
-      }
-    }
-    trapFocus(element) {
-      const firstFocusableEl = this.focusableEls[0];
-      const lastFocusableEl = this.focusableEls[this.focusableEls.length - 1];
-      const KEYCODE_TAB = 9;
-      element.addEventListener('keydown', e => {
-        const isTabPressed = e.key === 'Tab' || e.keyCode === KEYCODE_TAB;
-        if (!isTabPressed) {
-          return;
-        }
-        if (e.shiftKey) {
-          if (document.activeElement === firstFocusableEl) {
-            e.preventDefault();
-            lastFocusableEl.focus();
-          }
-        } else if (document.activeElement === lastFocusableEl) {
-          e.preventDefault();
-          firstFocusableEl.focus();
-        }
-      });
-    }
-    toggleAccept(array) {
-      if (this.acceptButton) {
-        if (array.length > 0) {
-          this.acceptButton.disabled = false;
-        } else {
-          this.acceptButton.disabled = true;
-        }
-      }
-    }
-    toggleSelectedState(array) {
-      if (array.length > 0) {
-        this.openButton.parentElement.classList.add('active');
-      } else {
-        this.openButton.parentElement.classList.remove('active');
-      }
-    }
-    resultsCount(array, buttonText) {
-      if (this.openButtonText) {
-        if (array.length > 0) {
-          this.openButtonText.innerText = `${buttonText} (${array.length})`;
-        } else {
-          this.openButtonText.innerText = `${buttonText}`;
-        }
-      }
-    }
-    updateDom() {
-      this.resultsCount(this.selected, this.buttonLabel);
-      this.toggleAccept(this.selected);
-      this.toggleSelectedState(this.selected);
-    }
-    static getEventType(type) {
-      if (type === 'text') {
-        return 'input';
-      }
-      return 'change';
-    }
-    static getCondition(element) {
-      if (element.type === 'text' || element.type === 'select-one') {
-        return element.value !== '';
-      }
-      return element.checked;
-    }
-    static singleCount(element, index, id) {
-      const isSingleCount = element.closest('.js-filters--single-count');
-      if (!isSingleCount) {
-        return {
-          uniqueID: `${id}-${index}`,
-          singleID: `${id}-${index}`,
-          isSingleCount
-        };
-      }
-      return {
-        uniqueID: `${id}`,
-        singleID: `${id}-${index}`,
-        isSingleCount
-      };
-    }
-    updateCount(options) {
-      const id = uniqueId();
-      const GroupArray = [];
-      if (options.array.length > 0) {
-        options.array.forEach((element, index) => {
-          const getEventType = this.constructor.getEventType(element.type);
-          const {
-            uniqueID,
-            singleID,
-            isSingleCount
-          } = this.constructor.singleCount(element, index, id);
-          if (this.constructor.getCondition(element)) {
-            this.selected.push(uniqueID);
-            if (isSingleCount) {
-              GroupArray.push(singleID);
-            }
-            this.updateDom();
-          }
-          element.addEventListener(getEventType, () => {
-            const selectedIndex = this.selected.indexOf(uniqueID);
-            const singleSelectedIndex = GroupArray.indexOf(singleID);
-            if (this.constructor.getCondition(element)) {
-              if (!this.selected.includes(uniqueID)) {
-                this.selected.push(uniqueID);
-              }
-              if (isSingleCount && !GroupArray.includes(singleID)) {
-                GroupArray.push(singleID);
-              }
-              this.updateDom();
-            } else {
-              if (isSingleCount && singleSelectedIndex !== -1) {
-                GroupArray.splice(singleSelectedIndex, 1);
-              }
-              if (!isSingleCount && selectedIndex !== -1) {
-                this.selected.splice(selectedIndex, 1);
-              } else if (GroupArray.length <= 0) {
-                this.selected.splice(selectedIndex, 1);
-              }
-              this.updateDom();
-            }
-          });
-        });
-      }
-    }
-    updateStatus(options) {
-      const id = uniqueId();
-      const text = options.title;
-      const GroupArray = [];
-      if (options.array.length > 0) {
-        const labelText = text ? text.textContent : null;
-        options.array.forEach((element, index) => {
-          const getEventType = this.constructor.getEventType(element.type);
-          const {
-            singleID
-          } = this.constructor.singleCount(element, index, id);
-          if (this.constructor.getCondition(element)) {
-            if (text) {
-              text.textContent = labelText;
-              text.innerHTML = `${text.textContent} ${this.checkIcon}`;
-            }
-          }
-          element.addEventListener(getEventType, () => {
-            if (this.constructor.getCondition(element)) {
-              if (!GroupArray.includes(singleID)) {
-                GroupArray.push(singleID);
-              }
-            } else if (GroupArray.indexOf(singleID) !== -1) {
-              GroupArray.splice(GroupArray.indexOf(singleID), 1);
-            }
-            if (text) {
-              if (GroupArray.length > 0) {
-                text.textContent = labelText;
-                text.innerHTML = `${text.textContent} ${this.checkIcon}`;
-              } else {
-                text.textContent = labelText;
-              }
-            }
-          });
-        });
-      }
-    }
-    selectedItems() {
-      const stateCheck = setInterval(() => {
-        if (document.readyState === 'complete') {
-          clearInterval(stateCheck);
-          this.filtersItems.forEach(filter => {
-            const button = filter.querySelector('.nsw-filters__item-name');
-            const content = filter.querySelector('.nsw-filters__item-content');
-            const text = content ? content.querySelectorAll('input[type="text"]') : null;
-            const selects = content ? content.querySelectorAll('select') : null;
-            const checkboxes = content ? content.querySelectorAll('input[type="checkbox"]:not([id$="-all"])') : null;
-            if (!content) return;
-            this.updateCount({
-              array: text,
-              title: button
-            });
-            this.updateCount({
-              array: selects,
-              title: button
-            });
-            this.updateCount({
-              array: checkboxes,
-              title: button
-            });
-            this.updateStatus({
-              array: text,
-              title: button
-            });
-            this.updateStatus({
-              array: selects,
-              title: button
-            });
-            this.updateStatus({
-              array: checkboxes,
-              title: button
-            });
-          });
-        }
-      }, 100);
-    }
-    clearAllFilters(e) {
-      e.preventDefault();
-      this.filtersItems.forEach(filter => {
-        const button = filter.querySelector('.nsw-filters__item-name');
-        const buttonCheck = button ? button.querySelector('span.nsw-material-icons') : null;
-        const content = filter.querySelector('.nsw-filters__item-content');
-        const text = content.querySelectorAll('input[type="text"]');
-        const selects = content.querySelectorAll('select');
-        const checkboxes = content.querySelectorAll('input[type="checkbox"]:not([id$="-all"])');
-        const allFields = [...text, ...selects, ...checkboxes];
-        if (!content) return;
-        if (allFields.length > 0) {
-          allFields.forEach(input => {
-            const field = input;
-            if (this.constructor.getCondition(field) && (field.type === 'text' || field.type === 'select-one')) {
-              field.value = '';
-            } else {
-              field.click();
-              field.checked = false;
-            }
-          });
-        }
-        if (buttonCheck) {
-          buttonCheck.remove();
-        }
-        this.selected = [];
-        this.updateDom();
-      });
-    }
-  }
-
-  /* eslint-disable max-len */
-  class FileUpload {
-    constructor(element) {
-      this.element = element;
-      this.input = this.element.querySelector('.nsw-file-upload__input');
-      this.label = this.element.querySelector('.nsw-file-upload__label');
-      this.multipleUpload = this.input.hasAttribute('multiple');
-      this.replaceFiles = this.element.hasAttribute('data-replace-files');
-      this.filesList = false;
-    }
-    init() {
-      if (!this.input) return;
-      this.input.addEventListener('change', () => {
-        if (this.input.value === '') return;
-        this.updateFileList();
-      });
-    }
-    createFileList() {
-      const ul = document.createElement('ul');
-      ul.classList.add('nsw-file-upload__list');
-      this.label.insertAdjacentElement('afterend', ul);
-      this.filesList = this.element.querySelector('.nsw-file-upload__list');
-    }
-    createFileItem(file) {
-      const li = document.createElement('li');
-      li.classList.add('nsw-file-upload__item');
-      const html = `
-    <span class="nsw-file-upload__item-filename"></span>
-    <button type="button" class="nsw-icon-button">
-        <span class="sr-only">Remove file</span>
-        <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">cancel</span>
-    </button>`;
-      li.insertAdjacentHTML('afterbegin', html);
-      li.querySelector('.nsw-file-upload__item-filename').textContent = this.constructor.truncateString(file.name, 50);
-      return li.outerHTML;
-    }
-    updateFileList() {
-      if (!this.filesList) {
-        this.createFileList();
-      }
-      this.filesList.classList.add('active');
-      let string = '';
-      for (let i = 0; i < this.input.files.length; i += 1) {
-        const file = this.input.files[i];
-        string = this.createFileItem(file) + string;
-      }
-      if (this.replaceFiles) {
-        this.filesList.innerHTML = string;
-      } else {
-        this.filesList.insertAdjacentHTML('beforeend', string);
-      }
-      this.removeFile();
-    }
-    removeFile() {
-      this.filesList.addEventListener('click', event => {
-        if (!event.target.closest('.nsw-icon-button')) return;
-        event.preventDefault();
-        const item = event.target.closest('.nsw-file-upload__item');
-        item.remove();
-        if (event.currentTarget.children.length === 0) {
-          this.filesList.classList.remove('active');
-        }
-      });
-    }
-    static truncateString(str, num) {
-      if (str.length <= num) {
-        return str;
-      }
-      return `${str.slice(0, num)}...`;
-    }
-  }
-
-  class Tabs {
-    constructor(element, showTab) {
-      this.tablistClass = '.nsw-tabs__list';
-      this.tablistItemClass = 'li';
-      this.tablistLinkClass = 'a';
-      this.tab = element;
-      this.showTab = showTab;
-      this.tabList = element.querySelector(this.tablistClass);
-      this.tabItems = this.tabList.querySelectorAll(this.tablistItemClass);
-      this.allowedKeys = [35, 36, 37, 39, 40];
-      this.tabLinks = [];
-      this.tabPanel = [];
-      this.selectedTab = null;
-      this.clickTabEvent = e => this.clickTab(e);
-      this.arrowKeysEvent = e => this.arrowKeys(e);
-      this.owns = [];
-    }
-    init() {
-      this.setUpDom();
-      this.controls();
-      this.setInitalTab();
-    }
-    setUpDom() {
-      const tabListWrapper = document.createElement('div');
-      tabListWrapper.classList.add('nsw-tabs__list-wrapper');
-      this.tab.prepend(tabListWrapper);
-      tabListWrapper.prepend(this.tabList);
-      this.tabList.setAttribute('role', 'tablist');
-      this.tabItems.forEach(item => {
-        const itemElem = item;
-        const itemLink = item.querySelector(this.tablistLinkClass);
-        const panel = this.tab.querySelector(itemLink.hash);
-        const uID = uniqueId('tab');
-        this.owns.push(uID);
-        itemElem.setAttribute('role', 'presentation');
-        this.enhanceTabLink(itemLink, uID);
-        this.enhanceTabPanel(panel, uID);
-      });
-      this.tabList.setAttribute('aria-owns', this.owns.join(' '));
-    }
-    enhanceTabLink(link, id) {
-      link.setAttribute('role', 'tab');
-      link.setAttribute('id', id);
-      link.setAttribute('aria-selected', false);
-      link.setAttribute('tabindex', '-1');
-      this.tabLinks.push(link);
-    }
-    enhanceTabPanel(panel, id) {
-      const panelElem = panel;
-      panelElem.setAttribute('role', 'tabpanel');
-      panelElem.setAttribute('role', 'tabpanel');
-      panelElem.setAttribute('aria-labelledBy', id);
-      panelElem.setAttribute('tabindex', '0');
-      panelElem.hidden = true;
-      this.tabPanel.push(panelElem);
-    }
-    setInitalTab() {
-      const {
-        tabLinks,
-        tabPanel,
-        showTab
-      } = this;
-      const index = showTab === undefined ? 0 : showTab;
-      const selectedLink = tabLinks[index];
-      selectedLink.classList.add('active');
-      selectedLink.removeAttribute('tabindex');
-      selectedLink.setAttribute('aria-selected', true);
-      tabPanel[index].hidden = false;
-      this.selectedTab = selectedLink;
-    }
-    clickTab(e) {
-      e.preventDefault();
-      this.switchTabs(e.currentTarget);
-    }
-    switchTabs(elem) {
-      const clickedTab = elem;
-      if (clickedTab !== this.selectedTab) {
-        clickedTab.focus();
-        clickedTab.removeAttribute('tabindex');
-        clickedTab.setAttribute('aria-selected', true);
-        clickedTab.classList.add('active');
-        this.selectedTab.setAttribute('aria-selected', false);
-        this.selectedTab.setAttribute('tabindex', '-1');
-        this.selectedTab.classList.remove('active');
-        const clickedTabIndex = this.tabLinks.indexOf(clickedTab);
-        const selectedTabIndex = this.tabLinks.indexOf(this.selectedTab);
-        this.tabPanel[clickedTabIndex].hidden = false;
-        this.tabPanel[selectedTabIndex].hidden = true;
-        this.selectedTab = clickedTab;
-        if (!clickedTab.classList.contains('js-tabs-fixed')) {
-          clickedTab.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest',
-            inline: 'nearest'
-          });
-        }
-      }
-    }
-    arrowKeys(_ref) {
-      let {
-        which
-      } = _ref;
-      const linkLength = this.tabLinks.length - 1;
-      let index = this.tabLinks.indexOf(this.selectedTab);
-      let down = false;
-      if (this.allowedKeys.includes(which)) {
-        switch (which) {
-          case 35:
-            index = linkLength;
-            break;
-          case 36:
-            index = 0;
-            break;
-          case 37:
-            index = index === 0 ? -1 : index -= 1;
-            break;
-          case 39:
-            index = index === linkLength ? -1 : index += 1;
-            break;
-          case 40:
-            down = true;
-            break;
-        }
-        if (index > -1) {
-          if (down) {
-            this.tabPanel[index].focus();
-          } else {
-            this.switchTabs(this.tabLinks[index]);
-          }
-        }
-      }
-    }
-    controls() {
-      this.tabLinks.forEach(link => {
-        link.addEventListener('click', this.clickTabEvent, false);
-        link.addEventListener('keydown', this.arrowKeysEvent, false);
-      });
-    }
-  }
-
-  class GlobalAlert {
-    constructor(element) {
-      this.messageElement = element;
-      this.closeButton = element.querySelector('.js-close-alert');
-      this.closeMessageEvent = e => this.closeMessage(e);
-    }
-    init() {
-      this.controls();
-    }
-    controls() {
-      this.closeButton.addEventListener('click', this.closeMessageEvent, false);
-    }
-    closeMessage() {
-      this.messageElement.hidden = true;
-    }
-  }
-
-  /* eslint-disable max-len */
-  class Select {
-    constructor(element) {
-      this.element = element;
-      this.select = this.element.querySelector('select');
-      this.options = this.select.querySelectorAll('option');
-      this.optGroups = this.select.querySelectorAll('optgroup');
-      this.selectId = this.select.getAttribute('id');
-      this.trigger = false;
-      this.dropdown = false;
-      this.customOptions = false;
-      this.optionIndex = 0;
-      this.textSelected = this.element.getAttribute('data-selection-text') || 'selected';
-    }
-    init() {
-      this.initCustomSelect();
-      this.initCustomSelectEvents();
-    }
-    initCustomSelect() {
-      this.element.insertAdjacentHTML('beforeend', this.initButtonSelect() + this.initListSelect());
-      this.dropdown = this.element.querySelector('.nsw-multi-select__dropdown');
-      this.trigger = this.element.querySelector('.nsw-multi-select__button');
-      this.multiSelectList = this.dropdown.querySelector('.nsw-multi-select__list');
-      this.customOptions = this.multiSelectList.querySelectorAll('.nsw-multi-select__option');
-      this.multiSelectList.insertAdjacentHTML('afterbegin', this.initAllButton());
-      this.allButton = this.multiSelectList.querySelector('.js-multi-select-all');
-      this.allButtonInput = this.allButton.querySelector('.nsw-form__checkbox-input');
-    }
-    initCustomSelectEvents() {
-      this.initSelection();
-      this.trigger.addEventListener('click', event => {
-        event.preventDefault();
-        this.toggleCustomSelect(false);
-      });
-      this.trigger.addEventListener('keydown', event => {
-        if (event.code && event.code === 38 || event.key && event.key.toLowerCase() === 'arrowup' || event.code && event.code === 40 || event.key && event.key.toLowerCase() === 'arrowdown') {
-          event.preventDefault();
-          this.toggleCustomSelect(false);
-        }
-      });
-      this.dropdown.addEventListener('keydown', event => {
-        if (event.code && event.code === 38 || event.key && event.key.toLowerCase() === 'arrowup') {
-          this.keyboardCustomSelect('prev', event);
-        } else if (event.code && event.code === 40 || event.key && event.key.toLowerCase() === 'arrowdown') {
-          this.keyboardCustomSelect('next', event);
-        }
-      });
-      window.addEventListener('keyup', event => {
-        if (event.key && event.key.toLowerCase() === 'escape') {
-          this.constructor.moveFocusToSelectTrigger(event.target);
-          this.toggleCustomSelect('false');
-        }
-      });
-      window.addEventListener('click', event => {
-        this.checkCustomSelectClick(event.target);
-      });
-      window.addEventListener('resize', this.placeDropdown);
-      this.allButton.addEventListener('change', () => {
-        this.toggleAllOptions();
-      });
-    }
-    toggleCustomSelect(bool) {
-      let ariaExpanded;
-      if (bool) {
-        ariaExpanded = bool;
-      } else {
-        ariaExpanded = this.trigger.getAttribute('aria-expanded') === 'true' ? 'false' : 'true';
-      }
-      this.trigger.setAttribute('aria-expanded', ariaExpanded);
-      if (ariaExpanded === 'true') {
-        const selectedOption = this.getSelectedOption();
-        this.constructor.moveFocus(selectedOption);
-        this.dropdown.addEventListener('transitionend', function cb() {
-          this.constructor.moveFocus(selectedOption);
-          this.dropdown.removeEventListener('transitionend', cb);
-        });
-        this.constructor.trapFocus(this.dropdown);
-        this.placeDropdown();
-      }
-    }
-    placeDropdown() {
-      const {
-        top,
-        bottom
-      } = this.trigger.getBoundingClientRect();
-      const moveUp = window.innerHeight - bottom < top;
-      const maxHeight = moveUp ? top - 20 : window.innerHeight - bottom - 20;
-      const vhCalc = Math.ceil(100 * maxHeight / window.innerHeight);
-      this.dropdown.setAttribute('style', `max-height: ${vhCalc}vh;`);
-    }
-    keyboardCustomSelect(direction, event) {
-      event.preventDefault();
-      const allOptions = [...this.customOptions, this.allButton];
-      let index = Array.prototype.indexOf.call(allOptions, document.activeElement.closest('.nsw-multi-select__option'));
-      index = direction === 'next' ? index + 1 : index - 1;
-      if (index < 0) index = allOptions.length - 1;
-      if (index >= allOptions.length) index = 0;
-      this.constructor.moveFocus(allOptions[index].querySelector('.nsw-form__checkbox-input'));
-    }
-    initSelection() {
-      if (!this.dropdown) return;
-      this.customOptions.forEach(opt => {
-        opt.addEventListener('change', event => {
-          const option = event.currentTarget.closest('.nsw-multi-select__option');
-          if (!option) return;
-          this.selectOption(option);
-        });
-        opt.addEventListener('click', event => {
-          const option = event.currentTarget.closest('.nsw-multi-select__option');
-          if (!option || !event.target.classList.contains('nsw-multi-select__option')) return;
-          this.selectOption(option);
-        });
-      });
-    }
-    getSelectedOptionCount() {
-      let selectedOptCounter = 0;
-      for (let i = 0; i < this.options.length; i += 1) {
-        if (this.options[i].selected) {
-          selectedOptCounter += 1;
-        }
-      }
-      return selectedOptCounter;
-    }
-    toggleAllOptions() {
-      const count = this.getSelectedOptionCount();
-      this.customOptions.forEach(check => {
-        const input = check.querySelector('.nsw-form__checkbox-input');
-        if (count === this.options.length) {
-          input.click();
-          input.checked = false;
-          input.removeAttribute('checked');
-          check.setAttribute('aria-selected', 'false');
-          this.updateNativeSelect(check.getAttribute('data-index'), false);
-        } else {
-          input.click();
-          input.checked = true;
-          input.setAttribute('checked', '');
-          check.setAttribute('aria-selected', 'true');
-          this.updateNativeSelect(check.getAttribute('data-index'), true);
-        }
-        //
-      });
-
-      const [label, ariaLabel] = this.getSelectedOptionText();
-      this.trigger.querySelector('.nsw-multi-select__label').innerHTML = label;
-      this.constructor.toggleClass(this.trigger, 'active', count > 0);
-      this.updateTriggerAria(ariaLabel);
-    }
-    selectOption(option) {
-      const input = option.querySelector('.nsw-form__checkbox-input');
-      if (option.hasAttribute('aria-selected') && option.getAttribute('aria-selected') === 'true') {
-        input.checked = false;
-        input.removeAttribute('checked');
-        option.setAttribute('aria-selected', 'false');
-        this.updateNativeSelect(option.getAttribute('data-index'), false);
-      } else {
-        input.checked = true;
-        input.value = true;
-        input.setAttribute('checked', '');
-        option.setAttribute('aria-selected', 'true');
-        this.updateNativeSelect(option.getAttribute('data-index'), true);
-      }
-      const [label, ariaLabel] = this.getSelectedOptionText();
-      const count = this.getSelectedOptionCount();
-      if (count === this.options.length) {
-        this.allButtonInput.checked = true;
-        this.allButtonInput.setAttribute('checked', '');
-        this.allButton.setAttribute('aria-selected', 'true');
-      } else {
-        this.allButtonInput.checked = false;
-        this.allButtonInput.removeAttribute('checked');
-        this.allButton.setAttribute('aria-selected', 'false');
-      }
-      this.trigger.querySelector('.nsw-multi-select__label').innerHTML = label;
-      this.constructor.toggleClass(this.trigger, 'active', count > 0);
-      this.updateTriggerAria(ariaLabel);
-    }
-    initButtonSelect() {
-      const triggerLabel = this.getSelectedOptionText();
-      const button = `<button class="nsw-button nsw-multi-select__button" aria-label="${triggerLabel[1]}" aria-expanded="false" aria-controls="${this.selectId}-dropdown">
-      <span aria-hidden="true" class="nsw-multi-select__label">${triggerLabel[0]}</span>
-      <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_down</span>
-      </button>`;
-      return button;
-    }
-    initAllButton() {
-      const all = this.getSelectedOptionCount() === this.options.length;
-      const selected = all ? ' aria-selected="true"' : ' aria-selected="false"';
-      const checked = all ? 'checked' : '';
-      const allButton = `
-      <li class="js-multi-select-all nsw-multi-select__option" role="option" data-value="Select all" aria-selected="false" ${selected} data-label="Select all">
-        <input aria-hidden="true" class="nsw-form__checkbox-input" type="checkbox" id="${this.selectId}-all" ${checked}>
-        <label class="nsw-form__checkbox-label" aria-hidden="true" for="${this.selectId}-all">
-          <span>Select all</span>
-        </label>
-      </li>`;
-      return allButton;
-    }
-    getSelectedOptionText() {
-      const noSelectionText = '<span class="multi-select__term">Please select</span>';
-      let label = '';
-      let ariaLabel = '';
-      const count = this.getSelectedOptionCount();
-      if (count === this.options.length && this.dropdown) {
-        label = `All ${this.textSelected}`;
-        ariaLabel = `All ${this.textSelected}`;
-      } else if (count > 1) {
-        label = `${count} ${this.textSelected}`;
-        ariaLabel = `${count} ${this.textSelected}, Please select`;
-      } else if (count === 1) {
-        const selectedOption = this.getSelectedOption();
-        label = selectedOption.closest('.nsw-multi-select__option').getAttribute('data-label');
-        ariaLabel = `${label}, Please select`;
-      } else {
-        label = noSelectionText;
-        ariaLabel = 'Please select';
-      }
-      return [label, ariaLabel];
-    }
-    initListSelect() {
-      let list = `<div class="nsw-multi-select__dropdown" aria-describedby=${this.selectId}-description" id="${this.selectId}-dropdown">`;
-      if (this.optGroups.length > 0) {
-        this.optGroups.forEach(optionGroup => {
-          const optGroupList = optionGroup.querySelectorAll('option');
-          const optGroupLabel = `<li><span>${optionGroup.getAttribute('label')}</span></li>`;
-          list += `<ul class="nsw-multi-select__list" role="listbox" aria-multiselectable="true">
-          ${optGroupLabel + this.getOptionsList(optGroupList)}
-        </ul>`;
-        });
-      } else {
-        list += `<ul class="nsw-multi-select__list" role="listbox" aria-multiselectable="true">${this.getOptionsList(this.options)}</ul>`;
-      }
-      return list;
-    }
-    getOptionsList(options) {
-      let list = '';
-      options.forEach(option => {
-        const selected = option.hasAttribute('selected') ? ' aria-selected="true"' : ' aria-selected="false"';
-        const checked = option.hasAttribute('selected') ? 'checked' : '';
-        const uniqueName = this.constructor.createSafeCssClassname(`${this.selectId}-${option.value}-${this.optionIndex.toString()}`);
-        list += `
-      <li class="nsw-multi-select__option" role="option" data-value="${option.value}" ${selected} data-label="${option.text}" data-index="${this.optionIndex}">
-        <input aria-hidden="true" class="nsw-form__checkbox-input" type="checkbox" id="${uniqueName}" ${checked}>
-        <label class="nsw-form__checkbox-label" aria-hidden="true" for="${uniqueName}">
-          <span>${option.text}</span>
-        </label>
-      </li>`;
-        this.optionIndex += 1;
-      });
-      return list;
-    }
-    getSelectedOption() {
-      const option = this.dropdown.querySelector('[aria-selected="true"]');
-      if (option) {
-        return option.querySelector('.nsw-form__checkbox-input');
-      }
-      return this.dropdown.querySelector('.nsw-multi-select__option').querySelector('.nsw-form__checkbox-input');
-    }
-    checkCustomSelectClick(target) {
-      if (!this.element.contains(target)) this.toggleCustomSelect('false');
-    }
-    updateNativeSelect(index, bool) {
-      this.options[index].selected = bool;
-      this.select.dispatchEvent(new CustomEvent('update', {
-        bubbles: true
-      }));
-    }
-    updateTriggerAria(ariaLabel) {
-      this.trigger.setAttribute('aria-label', ariaLabel);
-    }
-    static createSafeCssClassname(str) {
-      const invalidBeginningOfClassname = /^([0-9]|--|-[0-9])/;
-      if (typeof str !== 'string') {
-        return '';
-      }
-      const strippedClassname = str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g).map(x => x.toLowerCase()).join('-');
-      return invalidBeginningOfClassname.test(strippedClassname) ? `_${strippedClassname}` : strippedClassname;
-    }
-    static moveFocusToSelectTrigger(target) {
-      const multiSelect = target.closest('.js-multi-select');
-      if (!multiSelect) return;
-      multiSelect.querySelector('.nsw-multi-select__button').focus();
-    }
-    static trapFocus(element) {
-      const focusableElements = 'a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])';
-      const firstFocusableElement = element.querySelectorAll(focusableElements)[0];
-      const focusableContent = element.querySelectorAll(focusableElements);
-      const lastFocusableElement = focusableContent[focusableContent.length - 1];
-      document.addEventListener('keydown', event => {
-        const isTabPressed = event.key === 'Tab' || event.code === 9;
-        if (!isTabPressed) {
-          return;
-        }
-        if (event.shiftKey) {
-          if (document.activeElement === firstFocusableElement) {
-            lastFocusableElement.focus();
-            event.preventDefault();
-          }
-        } else if (document.activeElement === lastFocusableElement) {
-          firstFocusableElement.focus();
-          event.preventDefault();
-        }
-      });
-      firstFocusableElement.focus();
-    }
-    static moveFocus(element) {
-      if (document.activeElement !== element) {
-        element.focus();
-      }
-    }
-    static toggleClass(el, className, bool) {
-      if (bool) el.classList.add(className);else el.classList.remove(className);
     }
   }
 
@@ -2770,194 +2391,684 @@
   };
 
   /* eslint-disable max-len */
-  class Tooltip {
+  class Popover {
     constructor(element) {
-      this.tooltip = element;
-      this.uID = uniqueId('tooltip');
-      this.tooltipElement = false;
-      this.arrowElement = false;
-      this.tooltipContent = false;
-      this.tooltipDelay = 400;
-      this.screenSize = false;
-      this.tooltipTheme = this.tooltip.getAttribute('data-theme') || 'dark';
+      this.popover = element;
+      this.popoverId = this.popover.getAttribute('aria-controls');
+      this.popoverPosition = this.popover.dataset.popoverPosition || 'bottom';
+      this.popoverClassList = this.popover.dataset.popoverClass;
+      this.popoverGap = this.popover.dataset.popoverGap || 5;
+      this.popoverAnchor = this.popover.querySelector('[data-anchor]') || this.popover;
+      this.popoverElement = document.querySelector(`#${this.popoverId}`);
+      this.popoverVisibleClass = 'active';
+      this.popoverContent = false;
+      this.popoverIsOpen = false;
+      this.firstFocusable = false;
+      this.lastFocusable = false;
     }
     init() {
-      this.tooltipContent = this.tooltip.getAttribute('title');
-      this.constructor.setAttributes(this.tooltip, {
-        'data-tooltip-content': this.tooltipContent,
-        'aria-describedby': this.uID,
-        tabindex: '0'
+      this.constructor.setAttributes(this.popover, {
+        tabindex: '0',
+        'aria-haspopup': 'dialog'
       });
-      this.tooltip.removeAttribute('title');
-      const eventArray = ['mouseenter', 'mouseleave', 'focus', 'blur'];
-      eventArray.forEach((event, _ref) => {
-        let {
-          listener = this.handleEvent.bind(this)
-        } = _ref;
-        this.tooltip.addEventListener(event, listener);
+      this.initEvents();
+    }
+    initEvents() {
+      this.popover.addEventListener('click', this.togglePopover.bind(this));
+      this.popover.addEventListener('keyup', event => {
+        if (event.code && event.code.toLowerCase() === 'enter' || event.key && event.key.toLowerCase() === 'enter') {
+          this.togglePopover();
+        }
+      });
+      window.addEventListener('DOMContentLoaded', () => {
+        this.popoverContent = this.popoverElement.innerHTML;
+      });
+      this.popoverElement.addEventListener('keydown', this.trapFocus.bind(this));
+      window.addEventListener('click', event => {
+        this.checkPopoverClick(event.target);
+      });
+      window.addEventListener('keyup', event => {
+        if (event.code && event.code.toLowerCase() === 'escape' || event.key && event.key.toLowerCase() === 'escape') {
+          this.checkPopoverFocus();
+        }
+      });
+      window.addEventListener('resize', () => {
+        if (this.popoverIsOpen) this.togglePopover();
+      });
+      window.addEventListener('scroll', () => {
+        if (this.popoverIsOpen) this.togglePopover();
       });
     }
-    handleEvent(event) {
-      switch (event.type) {
-        case 'mouseenter':
-        case 'focus':
-          this.showTooltip(this, event);
-          break;
-        case 'mouseleave':
-        case 'blur':
-          this.hideTooltip(this, event);
-          break;
-        default:
-          console.log(`Unexpected event type: ${event.type}`);
-          break;
-      }
-    }
-    createTooltipElement() {
-      if (!this.tooltipElement) {
-        this.tooltipElement = document.createElement('div');
-        document.body.appendChild(this.tooltipElement);
-      }
-      this.constructor.setAttributes(this.tooltipElement, {
-        id: this.uID,
-        class: `nsw-tooltip__element nsw-tooltip__element--${this.tooltipTheme}`,
-        role: 'tooltip'
-      });
-      if (this.tooltip) {
-        this.arrowElement = document.createElement('div');
-        this.arrowElement.className = 'nsw-tooltip__arrow';
-      }
-      this.tooltipContent = this.tooltip.getAttribute('data-tooltip-content');
-      this.tooltipElement.innerHTML = this.tooltipContent;
-      this.tooltipElement.insertAdjacentElement('beforeend', this.arrowElement);
-    }
-    showTooltip() {
-      setTimeout(() => {
-        this.createTooltipElement();
-        this.tooltipElement.classList.add('active');
-        const range = document.createRange();
-        const text = this.tooltipElement.childNodes[0];
-        range.setStartBefore(text);
-        range.setEndAfter(text);
-        const clientRect = range.getBoundingClientRect();
-        this.matchMedia();
-        this.tooltipElement.style.width = `${clientRect.width + this.screenSize}px`;
-        this.updateTooltip(this.tooltipElement, this.arrowElement);
-      }, this.tooltipDelay);
-    }
-    hideTooltip() {
-      setTimeout(() => {
-        this.tooltipElement.classList.remove('active');
-        this.tooltipElement.style.width = '';
-      }, this.tooltipDelay);
-    }
-    matchMedia() {
-      if (window.matchMedia('(min-width: 576px)').matches) {
-        this.screenSize = 32;
+    togglePopover() {
+      if (this.popoverElement.classList.contains('active')) {
+        this.hidePopover();
       } else {
-        this.screenSize = 16;
+        this.popoverElement.focus();
+        this.showPopover();
       }
     }
-    updateTooltip(tooltip, arrowElement) {
-      let anchor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.tooltip;
-      computePosition(anchor, tooltip, {
-        placement: 'top',
-        middleware: [offset(8), flip(), shift({
-          padding: 5
-        }), arrow({
-          element: arrowElement
+    showPopover() {
+      this.constructor.setAttributes(this.popoverElement, {
+        tabindex: '0',
+        role: 'dialog'
+      });
+      this.popoverElement.setAttribute('aria-expanded', 'true');
+      this.popoverElement.classList.add('active');
+      this.popoverIsOpen = true;
+      this.getFocusableElements();
+      this.popoverElement.focus({
+        preventScroll: true
+      });
+      this.popover.addEventListener('transitionend', () => {
+        this.focusPopover();
+      }, {
+        once: true
+      });
+      this.updatePopover(this.popoverElement, this.popoverPosition);
+    }
+    hidePopover() {
+      this.popoverElement.setAttribute('aria-expanded', 'false');
+      this.popoverElement.classList.remove('active');
+      this.popoverIsOpen = false;
+    }
+    updatePopover(popover, placement) {
+      let anchor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.popoverAnchor;
+      computePosition(anchor, popover, {
+        placement,
+        middleware: [offset(parseInt(this.popoverGap, 10)), flip({
+          fallbackAxisSideDirection: 'start',
+          crossAxis: false
+        }), shift({
+          limiter: limitShift()
         })]
-      }).then(_ref2 => {
+      }).then(_ref => {
         let {
           x,
-          y,
-          placement,
-          middlewareData
-        } = _ref2;
-        Object.assign(tooltip.style, {
+          y
+        } = _ref;
+        Object.assign(popover.style, {
           left: `${x}px`,
           top: `${y}px`
         });
-
-        // Accessing the data
-        const {
-          x: arrowX,
-          y: arrowY
-        } = middlewareData.arrow;
-        const staticSide = {
-          top: 'bottom',
-          right: 'left',
-          bottom: 'top',
-          left: 'right'
-        }[placement.split('-')[0]];
-        Object.assign(arrowElement.style, {
-          left: arrowX != null ? `${arrowX}px` : '',
-          top: arrowY != null ? `${arrowY}px` : '',
-          right: '',
-          bottom: '',
-          [staticSide]: '-6px'
-        });
       });
+    }
+    checkPopoverClick(target) {
+      if (!this.popoverIsOpen) return;
+      if (!this.popoverElement.contains(target) && !target.closest(`[aria-controls="${this.popoverId}"]`)) this.togglePopover();
+    }
+    checkPopoverFocus() {
+      if (!this.popoverIsOpen) return;
+      this.constructor.moveFocus(this.popover);
+      this.togglePopover();
+    }
+    focusPopover() {
+      if (this.firstFocusable) {
+        this.firstFocusable.focus({
+          preventScroll: true
+        });
+      } else {
+        this.constructor.moveFocus(this.popoverElement);
+      }
+    }
+    getFocusableElements() {
+      const focusableElString = '[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable], audio[controls], video[controls], summary';
+      const allFocusable = this.popoverElement.querySelectorAll(focusableElString);
+      this.getFirstVisible(allFocusable);
+      this.getLastVisible(allFocusable);
+    }
+    getFirstVisible(elements) {
+      for (let i = 0; i < elements.length; i += 1) {
+        if (this.constructor.isVisible(elements[i])) {
+          this.firstFocusable = elements[i];
+          break;
+        }
+      }
+    }
+    getLastVisible(elements) {
+      for (let i = elements.length - 1; i >= 0; i -= 1) {
+        if (this.constructor.isVisible(elements[i])) {
+          this.lastFocusable = elements[i];
+          break;
+        }
+      }
+    }
+    trapFocus(event) {
+      if (this.firstFocusable === document.activeElement && event.shiftKey) {
+        event.preventDefault();
+        this.lastFocusable.focus();
+      }
+      if (this.lastFocusable === document.activeElement && !event.shiftKey) {
+        event.preventDefault();
+        this.firstFocusable.focus();
+      }
+    }
+    static isVisible(element) {
+      return element.offsetWidth || element.offsetHeight || element.getClientRects().length;
+    }
+    static moveFocus(element) {
+      element.focus({
+        preventScroll: true
+      });
+      if (document.activeElement !== element) {
+        element.setAttribute('tabindex', '-1');
+        element.focus();
+      }
     }
     static setAttributes(el, attrs) {
       Object.keys(attrs).forEach(key => el.setAttribute(key, attrs[key]));
     }
   }
 
-  /* eslint-disable no-shadow */
-  /* eslint-disable no-continue */
-  /* eslint-disable consistent-return */
-  /* eslint-disable no-script-url */
-  /* eslint-disable no-restricted-syntax */
-  /*!
-   * Sanitize an HTML string
-   * (c) 2021 Chris Ferdinandi, MIT License, https://gomakethings.com
-   * @param  {String}          str   The HTML string to sanitize
-   * @param  {Boolean}         nodes If true, returns HTML nodes instead of a string
-   * @return {String|NodeList}       The sanitized string or nodes
-   */
+  /* eslint-disable max-len */
+  class Select {
+    constructor(element) {
+      this.element = element;
+      this.select = this.element.querySelector('select');
+      this.optGroups = this.select.getElementsByTagName('optgroup');
+      this.options = this.select.getElementsByTagName('option');
+      this.selectId = this.select.getAttribute('id');
+      this.trigger = false;
+      this.dropdown = false;
+      this.customOptions = false;
+      this.list = false;
+      this.allButton = false;
+      this.arrowIcon = this.element.getElementsByTagName('svg');
+      this.label = document.querySelector(`[for="${this.selectId}"]`);
+      this.selectedOptCounter = 0;
+      this.optionIndex = 0;
+      this.noSelectText = this.element.getAttribute('data-select-text') || 'Select';
+      this.multiSelectText = this.element.getAttribute('data-multi-select-text') || '{n} items selected';
+      this.nMultiSelect = this.element.getAttribute('data-n-multi-select') || 1;
+      this.noUpdateLabel = this.element.getAttribute('data-update-text') && this.element.getAttribute('data-update-text') === 'off';
+      this.insetLabel = this.element.getAttribute('data-inset-label') && this.element.getAttribute('data-inset-label') === 'on';
+      this.hideClass = 'nsw-display-none';
+      this.showClass = 'active';
+      this.errorClass = 'has-error';
+      this.srClass = 'sr-only';
+      this.prefix = 'nsw-';
+      this.class = 'multi-select';
+      this.buttonClass = `${this.class}__button`;
+      this.allButtonClass = `${this.class}__all`;
+      this.listClass = `${this.class}__list`;
+      this.optionClass = `${this.class}__option`;
+      this.dropdownClass = `${this.class}__dropdown`;
+      this.checkboxClass = `${this.class}__checkbox`;
+      this.itemClass = `${this.class}__item`;
+      this.labelClass = `${this.class}__label`;
+      this.termClass = `${this.class}__term`;
+      this.detailsClass = `${this.class}__details`;
+      this.selectClass = 'form__select';
+      this.checkboxLabelClass = 'form__checkbox-label';
+      this.checkboxInputClass = 'form__checkbox-input';
+    }
+    init() {
+      this.element.insertAdjacentHTML('beforeend', this.initButtonSelect() + this.initListSelect());
+      this.dropdown = this.element.querySelector(`.js-${this.dropdownClass}`);
+      this.trigger = this.element.querySelector(`.js-${this.buttonClass}`);
+      this.customOptions = this.dropdown.querySelectorAll(`.js-${this.optionClass}`);
+      this.list = this.dropdown.querySelector(`.js-${this.listClass}`);
+      this.list.insertAdjacentHTML('afterbegin', this.initAllButton());
+      this.allButton = this.list.querySelector(`.js-${this.allButtonClass}`);
+      this.select.classList.add(this.hideClass);
+      if (this.arrowIcon.length > 0) this.arrowIcon[0].style.display = 'none';
+      this.initCustomSelectEvents();
+      this.updateAllButton();
+    }
+    initCustomSelectEvents() {
+      this.initSelection();
+      this.trigger.addEventListener('click', event => {
+        event.preventDefault();
+        this.toggleCustomSelect(false);
+      });
+      if (this.label) {
+        this.label.addEventListener('click', () => {
+          this.constructor.moveFocusFn(this.trigger);
+        });
+      }
+      this.dropdown.addEventListener('keydown', event => {
+        if (event.key && event.key.toLowerCase() === 'arrowup') {
+          this.keyboardCustomSelect('prev', event);
+        } else if (event.key && event.key.toLowerCase() === 'arrowdown') {
+          this.keyboardCustomSelect('next', event);
+        }
+      });
+      window.addEventListener('keyup', event => {
+        if (event.key && event.key.toLowerCase() === 'escape') {
+          this.moveFocusToSelectTrigger();
+          this.toggleCustomSelect('false');
+        }
+      });
+      window.addEventListener('click', event => {
+        this.checkCustomSelectClick(event.target);
+      });
+    }
+    toggleCustomSelect(bool) {
+      let ariaExpanded;
+      if (bool) {
+        ariaExpanded = bool;
+      } else {
+        ariaExpanded = this.trigger.getAttribute('aria-expanded') === 'true' ? 'false' : 'true';
+      }
+      this.trigger.setAttribute('aria-expanded', ariaExpanded);
+      if (ariaExpanded === 'true') {
+        const selectedOption = this.getSelectedOption() || this.allButton;
+        this.constructor.moveFocusFn(selectedOption);
+        const cb = () => {
+          this.constructor.moveFocusFn(selectedOption);
+          this.dropdown.removeEventListener('transitionend', cb);
+        };
+        this.dropdown.addEventListener('transitionend', cb);
+        this.constructor.trapFocus(this.dropdown);
+        this.placeDropdown();
+      }
+    }
+    placeDropdown() {
+      const {
+        top,
+        bottom,
+        left
+      } = this.trigger.getBoundingClientRect();
+      this.dropdown.classList.toggle(`${this.prefix}${this.dropdownClass}--right`, window.innerWidth < left + this.dropdown.offsetWidth);
+      const moveUp = window.innerHeight - bottom < top;
+      this.dropdown.classList.toggle(`${this.prefix}${this.dropdownClass}--up`, moveUp);
+      const maxHeight = moveUp ? top - 20 : window.innerHeight - bottom - 20;
+      const vhCalc = Math.ceil(100 * maxHeight / window.innerHeight);
+      this.dropdown.setAttribute('style', `max-height: ${vhCalc}vh;`);
+    }
+    keyboardCustomSelect(direction, event) {
+      event.preventDefault();
+      const allOptions = [...this.customOptions, this.allButton];
+      let index = allOptions.findIndex(option => option === document.activeElement.closest(`.js-${this.optionClass}`));
+      index = direction === 'next' ? index + 1 : index - 1;
+      if (index < 0) index = allOptions.length - 1;
+      if (index >= allOptions.length) index = 0;
+      const targetOption = allOptions[index].querySelector(`.js-${this.checkboxClass}`) || this.allButton;
+      this.constructor.moveFocusFn(targetOption);
+    }
+    toggleAllButton() {
+      const status = !this.allButton.classList.contains(this.showClass);
+      this.allButton.classList.toggle(this.showClass, status);
+      const [optionsArray, totalOptions, selectedOptions] = this.getOptions();
+      optionsArray.forEach(option => {
+        option.setAttribute('aria-selected', 'false');
+        this.selectOption(option);
+      });
+      if (selectedOptions === totalOptions) {
+        optionsArray.forEach(option => this.selectOption(option));
+      }
+    }
+    initSelection() {
+      this.allButton.addEventListener('click', event => {
+        event.preventDefault();
+        this.toggleAllButton();
+      });
+      this.dropdown.addEventListener('change', event => {
+        const option = event.target.closest(`.js-${this.optionClass}`);
+        if (!option) return;
+        this.selectOption(option);
+      });
+      this.dropdown.addEventListener('click', event => {
+        const option = event.target.closest(`.js-${this.optionClass}`);
+        if (!option || !event.target.classList.contains(`js-${this.optionClass}`)) return;
+        this.selectOption(option);
+      });
+    }
+    selectOption(option) {
+      const input = option.querySelector(`.js-${this.checkboxClass}`);
+      if (option.hasAttribute('aria-selected') && option.getAttribute('aria-selected') === 'true') {
+        input.checked = false;
+        input.removeAttribute('checked');
+        option.setAttribute('aria-selected', 'false');
+        this.updateNativeSelect(option.getAttribute('data-index'), false);
+      } else {
+        input.checked = true;
+        input.value = true;
+        input.setAttribute('checked', '');
+        option.setAttribute('aria-selected', 'true');
+        this.updateNativeSelect(option.getAttribute('data-index'), true);
+      }
+      const triggerLabel = this.getSelectedOptionText();
+      const [selectedLabel] = triggerLabel;
+      this.trigger.querySelector(`.js-${this.labelClass}`).innerHTML = selectedLabel;
+      this.trigger.classList.toggle(`${this.prefix}${this.buttonClass}--active`, this.selectedOptCounter > 0);
+      this.updateTriggerAria(triggerLabel[1]);
+      this.updateAllButton();
+    }
+    updateAllButton() {
+      const [, totalOptions, selectedOptions] = this.getOptions();
+      if (selectedOptions === totalOptions) {
+        this.allButton.classList.add(this.showClass);
+      } else {
+        this.allButton.classList.remove(this.showClass);
+      }
+    }
+    updateNativeSelect(index, bool) {
+      this.options[index].selected = bool;
+      this.select.dispatchEvent(new CustomEvent('change', {
+        bubbles: true
+      }));
+    }
+    updateTriggerAria(ariaLabel) {
+      this.trigger.setAttribute('aria-label', ariaLabel);
+    }
+    getSelectedOptionText() {
+      const noSelectionText = `<span class="${this.prefix}${this.termClass}">${this.noSelectText}</span>`;
+      if (this.noUpdateLabel) return [noSelectionText, this.noSelectText];
+      let label = '';
+      let ariaLabel = '';
+      this.selectedOptCounter = 0;
+      for (let i = 0; i < this.options.length; i += 1) {
+        if (this.options[i].selected) {
+          if (this.selectedOptCounter !== 0) label += ', ';
+          label = `${label}${this.options[i].text}`;
+          this.selectedOptCounter += 1;
+        }
+      }
+      if (this.selectedOptCounter > this.nMultiSelect) {
+        label = `<span class="${this.prefix}${this.detailsClass}">${this.multiSelectText.replace('{n}', this.selectedOptCounter)}</span>`;
+        ariaLabel = `${this.multiSelectText.replace('{n}', this.selectedOptCounter)}, ${this.noSelectText}`;
+      } else if (this.selectedOptCounter > 0) {
+        ariaLabel = `${label}, ${this.noSelectText}`;
+        label = `<span class="${this.prefix}${this.detailsClass}">${label}</span>`;
+      } else {
+        label = noSelectionText;
+        ariaLabel = this.noSelectText;
+      }
+      if (this.insetLabel && this.selectedOptCounter > 0) label = noSelectionText + label;
+      return [label, ariaLabel];
+    }
+    initButtonSelect() {
+      const customClasses = this.element.getAttribute('data-trigger-class') ? ` ${this.element.getAttribute('data-trigger-class')}` : '';
+      const error = this.select.getAttribute('aria-invalid');
+      const triggerLabel = this.getSelectedOptionText();
+      const activeSelectionClass = this.selectedOptCounter > 0 ? ` ${this.buttonClass}--active` : '';
+      let button = `<button class="js-${this.buttonClass} ${error === 'true' ? this.errorClass : ''} ${this.prefix}${this.selectClass} ${this.prefix}${this.buttonClass}${customClasses}${activeSelectionClass}" aria-label="${triggerLabel[1]}" aria-expanded="false" aria-controls="${this.selectId}-dropdown"><span aria-hidden="true" class="js-${this.labelClass} ${this.prefix}${this.labelClass}">${triggerLabel[0]}</span><span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_down</span>`;
+      if (this.arrowIcon.length > 0 && this.arrowIcon[0].outerHTML) {
+        button += this.arrowIcon[0].outerHTML;
+      }
+      return `${button}</button>`;
+    }
+    initListSelect() {
+      let list = `<div class="js-${this.dropdownClass} ${this.prefix}${this.dropdownClass}" aria-describedby="${this.selectId}-description" id="${this.selectId}-dropdown">`;
+      list += this.getSelectLabelSR();
+      if (this.optGroups.length > 0) {
+        for (let i = 0; i < this.optGroups.length; i += 1) {
+          const optGroupList = this.optGroups[i].getElementsByTagName('option');
+          const optGroupLabel = `<li><span class="${this.prefix}${this.itemClass} ${this.prefix}${this.itemClass}--optgroup">${this.optGroups[i].getAttribute('label')}</span></li>`;
+          list = `${list}<ul class="${this.prefix}${this.listClass}" role="listbox" aria-multiselectable="true">${optGroupLabel}${this.getOptionsList(optGroupList)}</ul>`;
+        }
+      } else {
+        list = `${list}<ul class="${this.prefix}${this.listClass} js-${this.listClass}" role="listbox" aria-multiselectable="true">${this.getOptionsList(this.options)}</ul>`;
+      }
+      return list;
+    }
+    initAllButton() {
+      return `<button class="${this.prefix}${this.allButtonClass} js-${this.allButtonClass}"><span>All</span></button>`;
+    }
+    getSelectLabelSR() {
+      if (this.label) {
+        return `<p class="${this.srClass}" id="${this.selectId}-description">${this.label.textContent}</p>`;
+      }
+      return '';
+    }
+    getOptionsList(options) {
+      let list = '';
+      for (let i = 0; i < options.length; i += 1) {
+        const selected = options[i].hasAttribute('selected') ? ' aria-selected="true"' : ' aria-selected="false"';
+        const disabled = options[i].hasAttribute('disabled') ? 'disabled' : '';
+        const checked = options[i].hasAttribute('selected') ? 'checked' : '';
+        const uniqueName = this.constructor.createSafeCss(`${this.selectId}-${options[i].value}-${this.optionIndex.toString()}`);
+        list = `${list}<li class="js-${this.optionClass}" role="option" data-value="${options[i].value}" ${selected} data-label="${options[i].text}" data-index="${this.optionIndex}"><input aria-hidden="true" class="${this.prefix}${this.checkboxInputClass} js-${this.checkboxClass}" type="checkbox" id="${uniqueName}" ${checked} ${disabled}><label class="${this.prefix}${this.checkboxLabelClass} ${this.prefix}${this.itemClass} ${this.prefix}${this.itemClass}--option" aria-hidden="true" for="${uniqueName}"><span>${options[i].text}</span></label></li>`;
+        this.optionIndex += 1;
+      }
+      return list;
+    }
+    getSelectedOption() {
+      const option = this.dropdown.querySelector('[aria-selected="true"]');
+      if (option) return option.querySelector(`.js-${this.checkboxClass}`);
+      return this.allButton;
+    }
+    getOptions() {
+      const options = Array.from(this.dropdown.querySelectorAll(`.js-${this.optionClass}`));
+      const total = options.length;
+      const selected = options.filter(option => option.getAttribute('aria-selected') === 'true').length;
+      return [options, total, selected];
+    }
+    moveFocusToSelectTrigger() {
+      if (!document.activeElement.closest(`.js-${this.class}`)) return;
+      this.trigger.focus();
+    }
+    static trapFocus(element) {
+      const focusableElements = 'a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])';
+      const firstFocusableElement = element.querySelectorAll(focusableElements)[0];
+      const focusableContent = element.querySelectorAll(focusableElements);
+      const lastFocusableElement = focusableContent[focusableContent.length - 1];
+      document.addEventListener('keydown', event => {
+        const isTabPressed = event.key === 'Tab' || event.code === 9;
+        if (!isTabPressed) {
+          return;
+        }
+        if (event.shiftKey) {
+          if (document.activeElement === firstFocusableElement) {
+            lastFocusableElement.focus();
+            event.preventDefault();
+          }
+        } else if (document.activeElement === lastFocusableElement) {
+          firstFocusableElement.focus();
+          event.preventDefault();
+        }
+      });
+      firstFocusableElement.focus();
+    }
+    checkCustomSelectClick(target) {
+      if (!this.element.contains(target)) this.toggleCustomSelect('false');
+    }
+    static createSafeCss(str) {
+      const invalidBeginningOfClassname = /^([0-9]|--|-[0-9])/;
+      if (typeof str !== 'string') {
+        return '';
+      }
+      const strippedClassname = str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g).map(x => x.toLowerCase()).join('-');
+      return invalidBeginningOfClassname.test(strippedClassname) ? `_${strippedClassname}` : strippedClassname;
+    }
+    static moveFocusFn(element) {
+      element.focus();
+      if (document.activeElement !== element) {
+        element.setAttribute('tabindex', '-1');
+        element.focus();
+      }
+    }
+  }
+
+  class SiteSearch {
+    constructor(element) {
+      this.triggerButton = element;
+      this.originalButton = document.querySelector('.js-open-search');
+      this.targetElement = document.getElementById(this.triggerButton.getAttribute('aria-controls'));
+      this.searchInput = this.targetElement.querySelector('.js-search-input');
+      this.pressed = this.triggerButton.getAttribute('aria-expanded') === 'true';
+    }
+    init() {
+      this.controls();
+    }
+    controls() {
+      this.triggerButton.addEventListener('click', this.showHide.bind(this), false);
+    }
+    showHide() {
+      if (this.pressed) {
+        this.targetElement.hidden = true;
+        this.originalButton.hidden = false;
+        this.originalButton.focus();
+      } else {
+        this.targetElement.hidden = false;
+        this.originalButton.hidden = true;
+        this.searchInput.focus();
+      }
+    }
+  }
+
+  class Tabs {
+    constructor(element, showTab) {
+      this.tablistClass = '.nsw-tabs__list';
+      this.tablistItemClass = 'li';
+      this.tablistLinkClass = 'a';
+      this.tab = element;
+      this.showTab = showTab;
+      this.tabList = element.querySelector(this.tablistClass);
+      this.tabItems = this.tabList.querySelectorAll(this.tablistItemClass);
+      this.allowedKeys = [35, 36, 37, 39, 40];
+      this.tabLinks = [];
+      this.tabPanel = [];
+      this.selectedTab = null;
+      this.clickTabEvent = e => this.clickTab(e);
+      this.arrowKeysEvent = e => this.arrowKeys(e);
+      this.owns = [];
+    }
+    init() {
+      this.setUpDom();
+      this.controls();
+      this.setInitalTab();
+    }
+    setUpDom() {
+      const tabListWrapper = document.createElement('div');
+      tabListWrapper.classList.add('nsw-tabs__list-wrapper');
+      this.tab.prepend(tabListWrapper);
+      tabListWrapper.prepend(this.tabList);
+      this.tabList.setAttribute('role', 'tablist');
+      this.tabItems.forEach(item => {
+        const itemElem = item;
+        const itemLink = item.querySelector(this.tablistLinkClass);
+        const panel = this.tab.querySelector(itemLink.hash);
+        const uID = uniqueId('tab');
+        this.owns.push(uID);
+        itemElem.setAttribute('role', 'presentation');
+        this.enhanceTabLink(itemLink, uID);
+        this.enhanceTabPanel(panel, uID);
+      });
+      this.tabList.setAttribute('aria-owns', this.owns.join(' '));
+    }
+    enhanceTabLink(link, id) {
+      link.setAttribute('role', 'tab');
+      link.setAttribute('id', id);
+      link.setAttribute('aria-selected', false);
+      link.setAttribute('tabindex', '-1');
+      this.tabLinks.push(link);
+    }
+    enhanceTabPanel(panel, id) {
+      const panelElem = panel;
+      panelElem.setAttribute('role', 'tabpanel');
+      panelElem.setAttribute('role', 'tabpanel');
+      panelElem.setAttribute('aria-labelledBy', id);
+      panelElem.setAttribute('tabindex', '0');
+      panelElem.hidden = true;
+      this.tabPanel.push(panelElem);
+    }
+    setInitalTab() {
+      const {
+        tabLinks,
+        tabPanel,
+        showTab
+      } = this;
+      const index = showTab === undefined ? 0 : showTab;
+      const selectedLink = tabLinks[index];
+      selectedLink.classList.add('active');
+      selectedLink.removeAttribute('tabindex');
+      selectedLink.setAttribute('aria-selected', true);
+      tabPanel[index].hidden = false;
+      this.selectedTab = selectedLink;
+    }
+    clickTab(e) {
+      e.preventDefault();
+      this.switchTabs(e.currentTarget);
+    }
+    switchTabs(elem) {
+      const clickedTab = elem;
+      if (clickedTab !== this.selectedTab) {
+        clickedTab.focus();
+        clickedTab.removeAttribute('tabindex');
+        clickedTab.setAttribute('aria-selected', true);
+        clickedTab.classList.add('active');
+        this.selectedTab.setAttribute('aria-selected', false);
+        this.selectedTab.setAttribute('tabindex', '-1');
+        this.selectedTab.classList.remove('active');
+        const clickedTabIndex = this.tabLinks.indexOf(clickedTab);
+        const selectedTabIndex = this.tabLinks.indexOf(this.selectedTab);
+        this.tabPanel[clickedTabIndex].hidden = false;
+        this.tabPanel[selectedTabIndex].hidden = true;
+        this.selectedTab = clickedTab;
+        if (!clickedTab.classList.contains('js-tabs-fixed')) {
+          clickedTab.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'nearest'
+          });
+        }
+      }
+    }
+    arrowKeys(_ref) {
+      let {
+        which
+      } = _ref;
+      const linkLength = this.tabLinks.length - 1;
+      let index = this.tabLinks.indexOf(this.selectedTab);
+      let down = false;
+      if (this.allowedKeys.includes(which)) {
+        switch (which) {
+          case 35:
+            index = linkLength;
+            break;
+          case 36:
+            index = 0;
+            break;
+          case 37:
+            index = index === 0 ? -1 : index -= 1;
+            break;
+          case 39:
+            index = index === linkLength ? -1 : index += 1;
+            break;
+          case 40:
+            down = true;
+            break;
+        }
+        if (index > -1) {
+          if (down) {
+            this.tabPanel[index].focus();
+          } else {
+            this.switchTabs(this.tabLinks[index]);
+          }
+        }
+      }
+    }
+    controls() {
+      this.tabLinks.forEach(link => {
+        link.addEventListener('click', this.clickTabEvent, false);
+        link.addEventListener('keydown', this.arrowKeysEvent, false);
+      });
+    }
+  }
+
+  /* eslint-disable */
   function cleanHTML(str, nodes) {
-    /**
-    * Convert the string to an HTML document
-    * @return {Node} An HTML document
-    */
     function stringToHTML() {
       const parser = new DOMParser();
       const doc = parser.parseFromString(str, 'text/html');
       return doc.body || document.createElement('body');
     }
-
-    /**
-    * Remove <script> elements
-    * @param  {Node} html The HTML
-    */
     function removeScripts(html) {
       const scripts = html.querySelectorAll('script');
       for (const script of scripts) {
         script.remove();
       }
     }
-
-    /**
-    * Check if the attribute is potentially dangerous
-    * @param  {String}  name  The attribute name
-    * @param  {String}  value The attribute value
-    * @return {Boolean}       If true, the attribute is potentially dangerous
-    */
     function isPossiblyDangerous(name, value) {
       const val = value.replace(/\s+/g, '').toLowerCase();
       if (['src', 'href', 'xlink:href'].includes(name)) {
         if (val.includes('javascript:') || val.includes('data:text/html')) return true;
       }
       if (name.startsWith('on')) return true;
+      return false;
     }
-
-    /**
-    * Remove potentially dangerous attributes from an element
-    * @param  {Node} elem The element
-    */
     function removeAttributes(elem) {
-      // Loop through each attribute
-      // If it's dangerous, remove it
       const atts = elem.attributes;
       for (const {
         name,
@@ -2967,28 +3078,16 @@
         elem.removeAttribute(name);
       }
     }
-
-    /**
-    * Remove dangerous stuff from the HTML document's nodes
-    * @param  {Node} html The HTML document
-    */
     function clean(html) {
-      const nodes = html.children;
-      for (const node of nodes) {
+      const htmlNodes = html.children;
+      for (const node of htmlNodes) {
         removeAttributes(node);
         clean(node);
       }
     }
-
-    // Convert the string to HTML
     const html = stringToHTML();
-
-    // Sanitize it
     removeScripts(html);
     clean(html);
-
-    // If the user wants HTML nodes back, return them
-    // Otherwise, pass a sanitized string back
     return nodes ? html.childNodes : html.innerHTML;
   }
 
@@ -3205,330 +3304,272 @@
     }
   }
 
-  class ExternalLink {
-    constructor(element) {
-      this.link = element;
-      this.uID = uniqueId('external');
-      this.linkIcon = this.link.querySelector('.nsw-material-icons');
-      this.linkIconTitle = this.linkIcon.getAttribute('title');
-      this.linkElement = false;
-    }
-    init() {
-      this.link.classList.add('nsw-link', 'nsw-link--icon');
-      this.constructor.setAttributes(this.link, {
-        target: '_blank',
-        rel: 'noopener'
-      });
-      this.constructor.setAttributes(this.linkIcon, {
-        focusable: 'false',
-        'aria-hidden': 'true'
-      });
-      this.createElement(this.linkIconTitle);
-    }
-    createElement(title) {
-      if (title) {
-        this.linkElement = document.createElement('span');
-        this.linkElement.id = this.uID;
-        this.linkElement.classList.add('sr-only');
-        this.linkElement.innerText = title;
-        this.link.insertAdjacentElement('afterend', this.linkElement);
-        this.constructor.setAttributes(this.link, {
-          'aria-describedby': this.uID
-        });
-      }
-    }
-    static setAttributes(el, attrs) {
-      Object.keys(attrs).forEach(key => el.setAttribute(key, attrs[key]));
-    }
-  }
-
   /* eslint-disable max-len */
-  class Popover {
+  class Tooltip {
     constructor(element) {
-      this.popover = element;
-      this.popoverId = this.popover.getAttribute('aria-controls');
-      this.popoverPosition = this.popover.dataset.popoverPosition || 'bottom';
-      this.popoverClassList = this.popover.dataset.popoverClass;
-      this.popoverGap = this.popover.dataset.popoverGap || 5;
-      this.popoverAnchor = this.popover.querySelector('[data-anchor]') || this.popover;
-      this.popoverElement = document.querySelector(`#${this.popoverId}`);
-      this.popoverVisibleClass = 'active';
-      this.popoverContent = false;
-      this.popoverIsOpen = false;
-      this.firstFocusable = false;
-      this.lastFocusable = false;
+      this.tooltip = element;
+      this.uID = uniqueId('tooltip');
+      this.tooltipElement = false;
+      this.arrowElement = false;
+      this.tooltipContent = false;
+      this.tooltipDelay = 400;
+      this.screenSize = false;
+      this.tooltipTheme = this.tooltip.getAttribute('data-theme') || 'dark';
     }
     init() {
-      this.constructor.setAttributes(this.popover, {
-        tabindex: '0',
-        'aria-haspopup': 'dialog'
+      this.tooltipContent = this.tooltip.getAttribute('title');
+      this.constructor.setAttributes(this.tooltip, {
+        'data-tooltip-content': this.tooltipContent,
+        'aria-describedby': this.uID,
+        tabindex: '0'
       });
-      this.initEvents();
-    }
-    initEvents() {
-      this.popover.addEventListener('click', this.togglePopover.bind(this));
-      this.popover.addEventListener('keyup', event => {
-        if (event.code && event.code.toLowerCase() === 'enter' || event.key && event.key.toLowerCase() === 'enter') {
-          this.togglePopover();
-        }
-      });
-      window.addEventListener('DOMContentLoaded', () => {
-        this.popoverContent = this.popoverElement.innerHTML;
-      });
-      this.popoverElement.addEventListener('keydown', this.trapFocus.bind(this));
-      window.addEventListener('click', event => {
-        this.checkPopoverClick(event.target);
-      });
-      window.addEventListener('keyup', event => {
-        if (event.code && event.code.toLowerCase() === 'escape' || event.key && event.key.toLowerCase() === 'escape') {
-          this.checkPopoverFocus();
-        }
-      });
-      window.addEventListener('resize', () => {
-        if (this.popoverIsOpen) this.togglePopover();
-      });
-      window.addEventListener('scroll', () => {
-        if (this.popoverIsOpen) this.togglePopover();
+      this.tooltip.removeAttribute('title');
+      const eventArray = ['mouseenter', 'mouseleave', 'focus', 'blur'];
+      eventArray.forEach((event, _ref) => {
+        let {
+          listener = this.handleEvent.bind(this)
+        } = _ref;
+        this.tooltip.addEventListener(event, listener);
       });
     }
-    togglePopover() {
-      if (this.popoverElement.classList.contains('active')) {
-        this.hidePopover();
-      } else {
-        this.popoverElement.focus();
-        this.showPopover();
+    handleEvent(event) {
+      switch (event.type) {
+        case 'mouseenter':
+        case 'focus':
+          this.showTooltip(this, event);
+          break;
+        case 'mouseleave':
+        case 'blur':
+          this.hideTooltip(this, event);
+          break;
+        default:
+          console.log(`Unexpected event type: ${event.type}`);
+          break;
       }
     }
-    showPopover() {
-      this.constructor.setAttributes(this.popoverElement, {
-        tabindex: '0',
-        role: 'dialog'
+    createTooltipElement() {
+      if (!this.tooltipElement) {
+        this.tooltipElement = document.createElement('div');
+        document.body.appendChild(this.tooltipElement);
+      }
+      this.constructor.setAttributes(this.tooltipElement, {
+        id: this.uID,
+        class: `nsw-tooltip__element nsw-tooltip__element--${this.tooltipTheme}`,
+        role: 'tooltip'
       });
-      this.popoverElement.setAttribute('aria-expanded', 'true');
-      this.popoverElement.classList.add('active');
-      this.popoverIsOpen = true;
-      this.getFocusableElements();
-      this.popoverElement.focus({
-        preventScroll: true
-      });
-      this.popover.addEventListener('transitionend', () => {
-        this.focusPopover();
-      }, {
-        once: true
-      });
-      this.updatePopover(this.popoverElement, this.popoverPosition);
+      if (this.tooltip) {
+        this.arrowElement = document.createElement('div');
+        this.arrowElement.className = 'nsw-tooltip__arrow';
+      }
+      this.tooltipContent = this.tooltip.getAttribute('data-tooltip-content');
+      this.tooltipElement.innerHTML = this.tooltipContent;
+      this.tooltipElement.insertAdjacentElement('beforeend', this.arrowElement);
     }
-    hidePopover() {
-      this.popoverElement.setAttribute('aria-expanded', 'false');
-      this.popoverElement.classList.remove('active');
-      this.popoverIsOpen = false;
+    showTooltip() {
+      setTimeout(() => {
+        this.createTooltipElement();
+        this.tooltipElement.classList.add('active');
+        const range = document.createRange();
+        const text = this.tooltipElement.childNodes[0];
+        range.setStartBefore(text);
+        range.setEndAfter(text);
+        const clientRect = range.getBoundingClientRect();
+        this.matchMedia();
+        this.tooltipElement.style.width = `${clientRect.width + this.screenSize}px`;
+        this.updateTooltip(this.tooltipElement, this.arrowElement);
+      }, this.tooltipDelay);
     }
-    updatePopover(popover, placement) {
-      let anchor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.popoverAnchor;
-      computePosition(anchor, popover, {
-        placement,
-        middleware: [offset(parseInt(this.popoverGap, 10)), flip({
-          fallbackAxisSideDirection: 'start',
-          crossAxis: false
-        }), shift({
-          limiter: limitShift()
+    hideTooltip() {
+      setTimeout(() => {
+        this.tooltipElement.classList.remove('active');
+        this.tooltipElement.style.width = '';
+      }, this.tooltipDelay);
+    }
+    matchMedia() {
+      if (window.matchMedia('(min-width: 576px)').matches) {
+        this.screenSize = 32;
+      } else {
+        this.screenSize = 16;
+      }
+    }
+    updateTooltip(tooltip, arrowElement) {
+      let anchor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.tooltip;
+      computePosition(anchor, tooltip, {
+        placement: 'top',
+        middleware: [offset(8), flip(), shift({
+          padding: 5
+        }), arrow({
+          element: arrowElement
         })]
-      }).then(_ref => {
+      }).then(_ref2 => {
         let {
           x,
-          y
-        } = _ref;
-        Object.assign(popover.style, {
+          y,
+          placement,
+          middlewareData
+        } = _ref2;
+        Object.assign(tooltip.style, {
           left: `${x}px`,
           top: `${y}px`
         });
-      });
-    }
-    checkPopoverClick(target) {
-      if (!this.popoverIsOpen) return;
-      if (!this.popoverElement.contains(target) && !target.closest(`[aria-controls="${this.popoverId}"]`)) this.togglePopover();
-    }
-    checkPopoverFocus() {
-      if (!this.popoverIsOpen) return;
-      this.constructor.moveFocus(this.popover);
-      this.togglePopover();
-    }
-    focusPopover() {
-      if (this.firstFocusable) {
-        this.firstFocusable.focus({
-          preventScroll: true
+
+        // Accessing the data
+        const {
+          x: arrowX,
+          y: arrowY
+        } = middlewareData.arrow;
+        const staticSide = {
+          top: 'bottom',
+          right: 'left',
+          bottom: 'top',
+          left: 'right'
+        }[placement.split('-')[0]];
+        Object.assign(arrowElement.style, {
+          left: arrowX != null ? `${arrowX}px` : '',
+          top: arrowY != null ? `${arrowY}px` : '',
+          right: '',
+          bottom: '',
+          [staticSide]: '-6px'
         });
-      } else {
-        this.constructor.moveFocus(this.popoverElement);
-      }
-    }
-    getFocusableElements() {
-      const focusableElString = '[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable], audio[controls], video[controls], summary';
-      const allFocusable = this.popoverElement.querySelectorAll(focusableElString);
-      this.getFirstVisible(allFocusable);
-      this.getLastVisible(allFocusable);
-    }
-    getFirstVisible(elements) {
-      for (let i = 0; i < elements.length; i += 1) {
-        if (this.constructor.isVisible(elements[i])) {
-          this.firstFocusable = elements[i];
-          break;
-        }
-      }
-    }
-    getLastVisible(elements) {
-      for (let i = elements.length - 1; i >= 0; i -= 1) {
-        if (this.constructor.isVisible(elements[i])) {
-          this.lastFocusable = elements[i];
-          break;
-        }
-      }
-    }
-    trapFocus(event) {
-      if (this.firstFocusable === document.activeElement && event.shiftKey) {
-        event.preventDefault();
-        this.lastFocusable.focus();
-      }
-      if (this.lastFocusable === document.activeElement && !event.shiftKey) {
-        event.preventDefault();
-        this.firstFocusable.focus();
-      }
-    }
-    static isVisible(element) {
-      return element.offsetWidth || element.offsetHeight || element.getClientRects().length;
-    }
-    static moveFocus(element) {
-      element.focus({
-        preventScroll: true
       });
-      if (document.activeElement !== element) {
-        element.setAttribute('tabindex', '-1');
-        element.focus();
-      }
     }
     static setAttributes(el, attrs) {
       Object.keys(attrs).forEach(key => el.setAttribute(key, attrs[key]));
     }
   }
 
-  class BackTop {
-    constructor(element) {
-      this.element = element;
-      this.dataElement = this.element.getAttribute('data-element');
-      this.scrollOffset = this.element.getAttribute('data-offset');
-      this.text = false;
-      this.icon = false;
-      this.scrollElement = this.dataElement ? document.querySelector(this.dataElement) : window;
-      this.scrollPosition = 0;
-      this.width = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-      this.height = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-      this.condition = false;
+  class UtilityList extends Toggletip {
+    constructor(element, toggletip) {
+      super(toggletip);
+      this.utility = element;
+      this.share = toggletip;
+      this.print = this.utility.querySelectorAll('.js-print-page');
+      this.download = this.utility.querySelectorAll('.js-download-page');
+      this.copy = this.utility.querySelectorAll('.js-copy-clipboard');
+      this.shareItems = this.share.querySelectorAll('a');
+      this.urlLocation = window.location.href;
+      this.copyElement = false;
     }
     init() {
-      this.createButton();
-      this.element.addEventListener('click', event => {
+      super.init();
+      this.shareItems.forEach(share => {
+        const shareLocation = share.getAttribute('data-url');
+        if (!shareLocation) {
+          share.setAttribute('data-url', window.location.href);
+        }
+      });
+      this.share.addEventListener('click', event => {
         event.preventDefault();
-        if (!window.requestAnimationFrame) {
-          this.scrollElement.scrollTo(0, 0);
-        } else if (this.dataElement) {
-          this.scrollElement.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          });
+        const button = event.target.closest('a');
+        const social = button.getAttribute('data-social');
+        const url = this.getSocialUrl(button, social);
+        if (social === 'mail') {
+          window.location.href = url;
         } else {
-          window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          });
+          window.open(url, `${social}-share-dialog`, 'width=626,height=436');
         }
       });
-      this.checkBackToTop();
-      const debounceEvent = this.debounce(this.checkBackToTop);
-      this.scrollElement.addEventListener('scroll', () => {
-        debounceEvent();
-      });
-      const debounceResize = this.debounce(this.resizeHandler);
-      window.addEventListener('resize', () => {
-        debounceResize();
-      });
-    }
-    createButton() {
-      const textSpan = this.constructor.createElement('span');
-      const iconSpan = this.constructor.createElement('span', ['material-icons', 'nsw-material-icons'], {
-        title: 'Back to top',
-        focusable: 'false',
-        'aria-hidden': 'true'
-      });
-      this.element.append(textSpan, iconSpan);
-      this.text = this.element.querySelector('span:not(.material-icons)');
-      this.icon = this.element.querySelector('span.material-icons');
-      this.createButtonContent();
-    }
-    createButtonContent() {
-      if (this.width < 768) {
-        this.text.innerText = 'Top';
-        this.icon.innerText = 'keyboard_arrow_up';
-      } else {
-        this.text.innerText = 'Back to top';
-        this.icon.innerText = 'north';
-      }
-    }
-    checkBackToTop() {
-      let windowTop = this.scrollElement.scrollTop || document.documentElement.scrollTop;
-      if (!this.dataElement) windowTop = window.scrollY || document.documentElement.scrollTop;
-      const scroll = this.scrollPosition;
-      this.scrollPosition = window.scrollY;
-      if (this.scrollOffset && this.scrollOffset > 0) {
-        this.condition = windowTop >= this.scrollOffset;
-        this.element.classList.toggle('active', this.condition);
-      } else {
-        this.condition = scroll > this.scrollPosition && this.scrollPosition > 200;
-        this.element.classList.toggle('active', this.condition);
-      }
-    }
-    resizeHandler() {
-      const oldWidth = this.width;
-      const oldHeight = this.height;
-      this.width = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-      this.height = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-      if (oldWidth !== this.width && oldHeight === this.height) {
-        this.createButtonContent();
-      }
-    }
-    debounce(fn) {
-      var _this = this;
-      let wait = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 250;
-      let timeout;
-      return function () {
-        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-          args[_key] = arguments[_key];
-        }
-        const context = _this;
-        if (!window.requestAnimationFrame) {
-          clearTimeout(timeout);
-          timeout = setTimeout(() => fn.apply(context, args), wait);
-        } else {
-          if (timeout) {
-            window.cancelAnimationFrame(timeout);
+      this.print.forEach(element => {
+        element.setAttribute('tabindex', '0');
+        element.addEventListener('click', () => {
+          window.print();
+        });
+        element.addEventListener('keyup', event => {
+          if (event.code && event.code.toLowerCase() === 'enter' || event.key && event.key.toLowerCase() === 'enter') {
+            window.print();
           }
-          timeout = window.requestAnimationFrame(() => {
-            fn.apply(context, args);
-          });
-        }
-      };
-    }
-    static createElement(tag) {
-      let classes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-      let attributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-      const element = document.createElement(tag);
-      if (classes.length > 0) {
-        element.classList.add(...classes);
-      }
-      Object.entries(attributes).forEach(_ref => {
-        let [key, value] = _ref;
-        element.setAttribute(key, value);
+        });
       });
-      return element;
+      this.download.forEach(element => {
+        element.setAttribute('tabindex', '0');
+      });
+      this.copy.forEach(element => {
+        element.setAttribute('tabindex', '0');
+        element.addEventListener('click', () => {
+          this.copyToClipboard(element);
+        });
+        element.addEventListener('keyup', event => {
+          if (event.code && event.code.toLowerCase() === 'enter' || event.key && event.key.toLowerCase() === 'enter') {
+            this.copyToClipboard(element);
+          }
+        });
+      });
+    }
+    getSocialUrl(button, social) {
+      const params = this.getSocialParams(social);
+      let newUrl = '';
+      if (social === 'twitter') {
+        this.getTwitterText(button);
+      }
+      params.forEach(param => {
+        let paramValue = button.getAttribute(`data-${param}`);
+        if (param === 'hashtags') paramValue = encodeURI(paramValue.replace(/#| /g, ''));
+        if (paramValue) {
+          if (social === 'facebook') {
+            newUrl = `${newUrl}u=${encodeURIComponent(paramValue)}&`;
+          } else {
+            newUrl = `${newUrl + param}=${encodeURIComponent(paramValue)}&`;
+          }
+        }
+      });
+      if (social === 'linkedin') newUrl = `mini=true&${newUrl}`;
+      return `${button.getAttribute('href')}?${newUrl}`;
+    }
+    getSocialParams(social) {
+      switch (social) {
+        case 'twitter':
+          this.socialParams = ['text', 'hashtags'];
+          break;
+        case 'facebook':
+        case 'linkedin':
+          this.socialParams = ['url'];
+          break;
+        case 'mail':
+          this.socialParams = ['subject', 'body'];
+          break;
+        default:
+          console.log('No social links found');
+          break;
+      }
+      return this.socialParams;
+    }
+    getTwitterText(button) {
+      let twitText = button.getAttribute('data-text');
+      const twitUrl = button.getAttribute('data-url') || this.urlLocation;
+      const twitUsername = button.getAttribute('data-username');
+      if (twitUsername) {
+        twitText = `${twitText} ${twitUrl} via ${twitUsername}`;
+      } else {
+        twitText = `${twitText} ${twitUrl}`;
+      }
+      button.setAttribute('data-text', twitText);
+      button.removeAttribute('data-url');
+      button.removeAttribute('data-username');
+    }
+    copyToClipboard(element) {
+      if (!navigator.clipboard) {
+        const input = document.createElement('input');
+        input.setAttribute('value', this.urlLocation);
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        this.copiedMessage(element);
+      } else {
+        navigator.clipboard.writeText(this.urlLocation).then(() => {
+          this.copiedMessage(element);
+        });
+      }
+    }
+    copiedMessage(element) {
+      this.copyElement = element;
+      const icon = '<span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">link</span>';
+      this.copyElement.classList.add('copied');
+      this.copyElement.innerHTML = `${icon} Copied`;
+      setTimeout(() => {
+        this.copyElement.classList.remove('copied');
+        this.copyElement.innerHTML = `${icon} Copy link`;
+      }, 3000);
     }
   }
 
@@ -3552,25 +3593,30 @@
     };
   }
   function initSite() {
-    // Header Search
-    const openSearchButton = document.querySelectorAll('.js-open-search');
-    const closeSearchButton = document.querySelectorAll('.js-close-search');
-    const navigation = document.getElementById('main-nav');
     const accordions = document.querySelectorAll('.js-accordion');
+    const backTop = document.querySelectorAll('.js-back-to-top');
+    const closeSearchButton = document.querySelectorAll('.js-close-search');
     const dialogs = document.querySelectorAll('.js-dialog');
     const fileUpload = document.querySelectorAll('.js-file-upload');
     const filters = document.querySelectorAll('.js-filters');
-    const tabs = document.querySelectorAll('.js-tabs');
     const globalAlert = document.querySelectorAll('.js-global-alert');
-    const multiSelect = document.querySelectorAll('.js-multi-select');
-    const tooltip = document.querySelectorAll('.js-tooltip');
-    const toggletip = document.querySelectorAll('.js-toggletip');
     const link = document.querySelectorAll('.js-link');
+    const multiSelect = document.querySelectorAll('.js-multi-select');
+    const navigation = document.getElementById('main-nav');
+    const openSearchButton = document.querySelectorAll('.js-open-search');
     const popover = document.querySelectorAll('.js-popover');
-    const backTop = document.querySelectorAll('.js-back-to-top');
-    if (openSearchButton) {
-      openSearchButton.forEach(element => {
-        new SiteSearch(element).init();
+    const tabs = document.querySelectorAll('.js-tabs');
+    const toggletip = document.querySelectorAll('.js-toggletip');
+    const tooltip = document.querySelectorAll('.js-tooltip');
+    const utilityList = document.querySelectorAll('.js-utility-list');
+    if (accordions) {
+      accordions.forEach(element => {
+        new Accordion(element).init();
+      });
+    }
+    if (backTop) {
+      backTop.forEach(element => {
+        new BackTop(element).init();
       });
     }
     if (closeSearchButton) {
@@ -3578,15 +3624,11 @@
         new SiteSearch(element).init();
       });
     }
-    if (navigation) {
-      new Navigation(navigation).init();
+    if (dialogs) {
+      dialogs.forEach(element => {
+        new Dialog(element).init();
+      });
     }
-    accordions.forEach(element => {
-      new Accordion(element).init();
-    });
-    dialogs.forEach(element => {
-      new Dialog(element).init();
-    });
     if (fileUpload) {
       fileUpload.forEach(element => {
         new FileUpload(element).init();
@@ -3597,29 +3639,9 @@
         new Filters(element).init();
       });
     }
-    if (tabs) {
-      tabs.forEach(element => {
-        new Tabs(element).init();
-      });
-    }
     if (globalAlert) {
       globalAlert.forEach(element => {
         new GlobalAlert(element).init();
-      });
-    }
-    if (multiSelect) {
-      multiSelect.forEach(element => {
-        new Select(element).init();
-      });
-    }
-    if (tooltip) {
-      tooltip.forEach(element => {
-        new Tooltip(element).init();
-      });
-    }
-    if (toggletip) {
-      toggletip.forEach(element => {
-        new Toggletip(element).init();
       });
     }
     if (link) {
@@ -3627,14 +3649,43 @@
         new ExternalLink(element).init();
       });
     }
+    if (multiSelect) {
+      multiSelect.forEach(element => {
+        new Select(element).init();
+      });
+    }
+    if (navigation) {
+      new Navigation(navigation).init();
+    }
+    if (openSearchButton) {
+      openSearchButton.forEach(element => {
+        new SiteSearch(element).init();
+      });
+    }
     if (popover) {
       popover.forEach(element => {
         new Popover(element).init();
       });
     }
-    if (backTop) {
-      backTop.forEach(element => {
-        new BackTop(element).init();
+    if (tabs) {
+      tabs.forEach(element => {
+        new Tabs(element).init();
+      });
+    }
+    if (toggletip) {
+      toggletip.forEach(element => {
+        new Toggletip(element).init();
+      });
+    }
+    if (tooltip) {
+      tooltip.forEach(element => {
+        new Tooltip(element).init();
+      });
+    }
+    if (utilityList) {
+      utilityList.forEach(element => {
+        const shareItem = element.querySelector('.js-share');
+        new UtilityList(element, shareItem).init();
       });
     }
   }
@@ -3653,6 +3704,7 @@
   exports.Tabs = Tabs;
   exports.Toggletip = Toggletip;
   exports.Tooltip = Tooltip;
+  exports.UtilityList = UtilityList;
   exports.initSite = initSite;
 
 }));
