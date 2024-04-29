@@ -6,6 +6,47 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v0.1.8](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.8) - 2024-04-29
+
+<small>[Compare with v0.1.8a3](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.8a3...v0.1.8)</small>
+
+### Bug Fixes
+
+- script.js is not loaded because of name conflict ([b35bd7c](https://github.com/DataShades/ckanext-nswdesignsystem/commit/b35bd7ccd8adaf5588ef481c35b09e9832d144d0) by Sergey Motornyuk).
+
+## [v0.1.8a3](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.8a3) - 2024-02-04
+
+<small>[Compare with v0.1.8a2](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.8a2...v0.1.8a3)</small>
+
+### Features
+
+- add submit_on_change to filters ([69aaa9b](https://github.com/DataShades/ckanext-nswdesignsystem/commit/69aaa9b6786a00d91e55e7fb7f4b179975622515) by Sergey Motornyuk).
+
+## [v0.1.8a2](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.8a2) - 2024-01-09
+
+<small>[Compare with v0.1.8a1](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.8a1...v0.1.8a2)</small>
+
+### Features
+
+- update nsw-design-system to v3.14.1 ([a2d1de7](https://github.com/DataShades/ckanext-nswdesignsystem/commit/a2d1de765b717dc2f0f4af1fe0dc967636d3306e) by Sergey Motornyuk).
+- nswdesignsystem v3.13.0 ([7f7202c](https://github.com/DataShades/ckanext-nswdesignsystem/commit/7f7202cc32b789d199e0b653a2691da5b7ce62ea) by Sergey Motornyuk).
+
+## [v0.1.8a1](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.8a1) - 2023-11-16
+
+<small>[Compare with v0.1.8a0](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.8a0...v0.1.8a1)</small>
+
+### Features
+
+- add icon to in_page_alert ([1021bbf](https://github.com/DataShades/ckanext-nswdesignsystem/commit/1021bbfc327836c62f48d9e002c5da73e90074fd) by Sergey Motornyuk).
+
+## [v0.1.8a0](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.8a0) - 2023-11-08
+
+<small>[Compare with v0.1.7](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.7...v0.1.8a0)</small>
+
+### Features
+
+- add cancel_url to filter ([70df716](https://github.com/DataShades/ckanext-nswdesignsystem/commit/70df71618cc75d00736d4f184497c5a650feffd6) by Sergey Motornyuk).
+
 ## [v0.1.7](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.7) - 2023-10-25
 
 <small>[Compare with v0.1.6](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.6...v0.1.7)</small>
