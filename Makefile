@@ -13,8 +13,8 @@ help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 vendor:  ## copy NSW Design System JS/CSS from node_modules into CKAN assets
-	cp -f "$(nds_node_path)/js/main.js" "$(nds_ckan_path)/"
-	cp -f "$(nds_node_path)/css/main.css" "$(nds_ckan_path)/"
+	cp -f "$(nds_node_path)/js/main.js" "$(nds_ckan_path)/nswdesignsystem.js"
+	cp -f "$(nds_node_path)/css/main.css" "$(nds_ckan_path)/nswdesignsystem.css"
 
 hljs:  ## build and copy highlight.js into CKAN assets
 	npm explore highlight.js -- npm i; \
