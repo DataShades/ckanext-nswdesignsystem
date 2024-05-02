@@ -47,13 +47,13 @@ def nswdesignsystem_get_active_path(links: Iterable[types.NavDict], current: str
 
 def _search_current_path(links: Iterable[types.NavDict], current: str) -> list[int]:
     for idx, item in enumerate(links):
-        # endswith bypass root-path
-        if item["href"].endswith(current):
-            return [idx]
-
         if "subnav" in item:
             if path := _search_current_path(item["subnav"]["children"], current):
                 return [idx] + path
+
+        # endswith return root-path
+        if item["href"].endswith(current):
+            return [idx]
 
     return []
 
