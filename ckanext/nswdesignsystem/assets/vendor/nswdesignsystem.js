@@ -133,25 +133,25 @@
   }
   class Accordion {
     constructor(element) {
-      const [expandAll, collapseAll] = Array.from(element.querySelectorAll('.nsw-accordion__toggle button'));
+      this.element = element;
+      const [expandAll, collapseAll] = Array.from(this.element.querySelectorAll('.nsw-accordion__toggle button'));
       this.accordionHeadingClass = '.nsw-accordion__title';
-      this.accordion = element;
-      this.headings = element.querySelectorAll(this.accordionHeadingClass);
+      this.headings = this.element.querySelectorAll(this.accordionHeadingClass);
       this.expandAllBtn = expandAll;
       this.collapseAllBtn = collapseAll;
-      this.isExpandedOnLoad = element.querySelectorAll('.nsw-accordion__open');
+      this.isExpandedOnLoad = this.element.querySelectorAll('.nsw-accordion__open');
       this.buttons = [];
       this.content = [];
-      this.toggleEvent = e => this.toggle(e);
-      this.expandAllEvent = e => this.expandAll(e);
-      this.collapseAllEvent = e => this.collapseAll(e);
+      this.toggleEvent = event => this.toggle(event);
+      this.expandAllEvent = event => this.expandAll(event);
+      this.collapseAllEvent = event => this.collapseAll(event);
     }
     init() {
       this.setUpDom();
       this.controls();
     }
     setUpDom() {
-      this.accordion.classList.add('ready');
+      this.element.classList.add('ready');
       if (this.collapseAllBtn) {
         this.collapseAllBtn.disabled = true;
       }
@@ -162,9 +162,11 @@
         headingElem.textContent = '';
         headingElem.appendChild(buttonFrag);
         const buttonElem = headingElem.getElementsByTagName('button')[0];
-        contentElem.id = buttonElem.getAttribute('aria-controls');
-        contentElem.hidden = true;
-        this.content.push(contentElem);
+        if (contentElem) {
+          contentElem.id = buttonElem.getAttribute('aria-controls');
+          contentElem.hidden = 'until-found';
+          this.content.push(contentElem);
+        }
         this.buttons.push(buttonElem);
       });
       if (this.isExpandedOnLoad) {
@@ -177,6 +179,7 @@
     controls() {
       this.buttons.forEach(element => {
         element.addEventListener('click', this.toggleEvent, false);
+        element.addEventListener('beforematch', this.toggleEvent, false);
       });
       if (this.expandAllBtn && this.collapseAllBtn) {
         this.expandAllBtn.addEventListener('click', this.expandAllEvent, false);
@@ -196,23 +199,25 @@
       } else if (state === 'close') {
         element.classList.remove('active');
         element.setAttribute('aria-expanded', 'false');
-        targetContent.hidden = true;
+        targetContent.hidden = 'until-found';
       }
     }
-    toggle(e) {
+    toggle(event) {
       const {
         currentTarget
-      } = e;
+      } = event;
       const targetContent = this.getTargetContent(currentTarget);
-      const isHidden = targetContent.hidden;
-      if (isHidden) {
-        this.setAccordionState(currentTarget, 'open');
-      } else {
-        this.setAccordionState(currentTarget, 'close');
-      }
-      if (this.expandAllBtn && this.collapseAllBtn) {
-        this.expandAllBtn.disabled = this.content.every(item => item.hidden === false);
-        this.collapseAllBtn.disabled = this.content.every(item => item.hidden === true);
+      if (targetContent) {
+        const isHidden = targetContent.hidden;
+        if (isHidden === true || isHidden === 'until-found') {
+          this.setAccordionState(currentTarget, 'open');
+        } else {
+          this.setAccordionState(currentTarget, 'close');
+        }
+        if (this.expandAllBtn && this.collapseAllBtn) {
+          this.expandAllBtn.disabled = this.content.every(item => item.hidden === false);
+          this.collapseAllBtn.disabled = this.content.every(item => item.hidden === 'until-found');
+        }
       }
     }
     expandAll() {
@@ -352,76 +357,1372 @@
     }
   }
 
+  /* eslint-disable max-len */
+  class DatePicker {
+    constructor(element) {
+      this.element = element;
+      this.prefix = 'nsw-';
+      this.class = 'date-picker';
+      this.uID = uniqueId('calendar-label');
+      this.dateClass = `${this.prefix}${this.class}__date`;
+      this.todayClass = `${this.dateClass}--today`;
+      this.selectedClass = `${this.dateClass}--selected`;
+      this.keyboardFocusClass = `${this.dateClass}--keyboard-focus`;
+      this.visibleClass = `${this.prefix}${this.class}--is-visible`;
+      this.months = this.element.getAttribute('data-months') ? this.element.getAttribute('data-months') : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      this.dateFormat = this.element.getAttribute('data-date-format') ? this.element.getAttribute('data-date-format') : 'd-m-y';
+      this.dateSeparator = this.element.getAttribute('data-date-separator') ? this.element.getAttribute('data-date-separator') : '/';
+      this.datesDisabled = this.element.getAttribute('data-dates-disabled') ? this.element.getAttribute('data-dates-disabled') : '';
+      this.minDate = this.element.getAttribute('data-min-date') ? this.element.getAttribute('data-min-date') : '';
+      this.maxDate = this.element.getAttribute('data-max-date') ? this.element.getAttribute('data-max-date') : '';
+      this.input = this.element.querySelector('.js-date-input__text');
+      this.trigger = this.element.querySelector('.js-date-input__trigger');
+      this.triggerLabel = this.trigger && this.trigger.getAttribute('aria-label') ? this.trigger.getAttribute('aria-label') : 'Select a date';
+      this.datePicker = this.element.querySelector('.js-date-picker');
+      this.body = this.datePicker && this.datePicker.querySelector('.js-date-picker__dates');
+      this.navigation = this.datePicker && this.datePicker.querySelector('.js-date-picker__title-nav');
+      this.heading = this.datePicker && this.datePicker.querySelector('.js-date-picker__title-label');
+      this.close = this.datePicker && this.datePicker.querySelector('.js-date-picker__close');
+      this.accept = this.datePicker && this.datePicker.querySelector('.js-date-picker__accept');
+      this.multipleInput = this.element.querySelector('.js-date-input-multiple');
+      this.dateInput = this.multipleInput && this.multipleInput.querySelector('.js-date-picker-date');
+      this.monthInput = this.multipleInput && this.multipleInput.querySelector('.js-date-picker-month');
+      this.yearInput = this.multipleInput && this.multipleInput.querySelector('.js-date-picker-year');
+      this.multiDateArray = [this.dateInput, this.monthInput, this.yearInput];
+      this.dateIndexes = this.getDateIndexes();
+      this.pickerVisible = false;
+      this.dateSelected = false;
+      this.selectedDay = false;
+      this.selectedMonth = false;
+      this.selectedYear = false;
+      this.firstFocusable = false;
+      this.lastFocusable = false;
+      this.disabledArray = false;
+    }
+    init() {
+      if (!this.input && !this.multipleInput) return;
+      if (!this.datePicker) {
+        this.initCreateCalendar();
+      }
+      this.disabledDates();
+      this.resetCalendar();
+      this.initCalendarAria();
+      this.initCalendarEvents();
+      this.placeCalendar();
+    }
+    initCreateCalendar() {
+      const calendar = `
+    <div class="nsw-date-picker js-date-picker" role="dialog" aria-labelledby="${this.uID}">
+      <header class="nsw-date-picker__header">
+        <div class="nsw-date-picker__title">
+          <span class="nsw-date-picker__title-label js-date-picker__title-label" id="${this.uID}"></span>
+
+          <nav>
+            <ul class="nsw-date-picker__title-nav js-date-picker__title-nav">
+              <li>
+                <button class="nsw-icon-button nsw-date-picker__title-nav-btn js-date-picker__year-nav-btn js-date-picker__year-nav-btn--prev" type="button">
+                  <span class="material-icons nsw-material-icons">keyboard_double_arrow_left</span>
+                </button>
+                <button class="nsw-icon-button nsw-date-picker__title-nav-btn js-date-picker__month-nav-btn js-date-picker__month-nav-btn--prev" type="button">
+                  <span class="material-icons nsw-material-icons">chevron_left</span>
+                </button>
+              </li>
+
+              <li>
+                <button class="nsw-icon-button nsw-date-picker__title-nav-btn js-date-picker__month-nav-btn js-date-picker__month-nav-btn--next" type="button">
+                  <span class="material-icons nsw-material-icons">chevron_right</span>
+                </button>
+                <button class="nsw-icon-button nsw-date-picker__title-nav-btn js-date-picker__year-nav-btn js-date-picker__year-nav-btn--next" type="button">
+                  <span class="material-icons nsw-material-icons">keyboard_double_arrow_right</span>
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <ol class="nsw-date-picker__week">
+          <li><div class="nsw-date-picker__day">M<span class="sr-only">onday</span></div></li>
+          <li><div class="nsw-date-picker__day">T<span class="sr-only">uesday</span></div></li>
+          <li><div class="nsw-date-picker__day">W<span class="sr-only">ednesday</span></div></li>
+          <li><div class="nsw-date-picker__day">T<span class="sr-only">hursday</span></div></li>
+          <li><div class="nsw-date-picker__day">F<span class="sr-only">riday</span></div></li>
+          <li><div class="nsw-date-picker__day">S<span class="sr-only">aturday</span></div></li>
+          <li><div class="nsw-date-picker__day">S<span class="sr-only">unday</span></div></li>
+        </ol>
+      </header>
+
+      <ol class="nsw-date-picker__dates js-date-picker__dates" aria-labelledby="${this.uID}">
+        
+      </ol>
+
+      <div class="nsw-date-picker__buttongroup">
+        <button type="button" class="nsw-button nsw-button--dark-outline-solid js-date-picker__close" value="cancel">Cancel</button>
+        <button type="button" class="nsw-button nsw-button--dark js-date-picker__accept" value="ok">OK</button>
+      </div>
+    </div>`;
+      this.element.insertAdjacentHTML('beforeend', calendar);
+      this.datePicker = this.element.querySelector('.js-date-picker');
+      this.body = this.datePicker.querySelector('.js-date-picker__dates');
+      this.navigation = this.datePicker.querySelector('.js-date-picker__title-nav');
+      this.heading = this.datePicker.querySelector('.js-date-picker__title-label');
+      this.close = this.datePicker.querySelector('.js-date-picker__close');
+      this.accept = this.datePicker.querySelector('.js-date-picker__accept');
+    }
+    initCalendarAria() {
+      this.resetLabelCalendarTrigger();
+      const srLiveReagion = document.createElement('div');
+      srLiveReagion.setAttribute('aria-live', 'polite');
+      srLiveReagion.classList.add('sr-only', 'js-date-input__sr-live');
+      this.element.appendChild(srLiveReagion);
+      this.srLiveReagion = this.element.querySelector('.js-date-input__sr-live');
+    }
+    initCalendarEvents() {
+      if (this.input) {
+        this.input.addEventListener('focus', () => {
+          this.toggleCalendar(true);
+        });
+      }
+      if (this.multipleInput) {
+        this.multiDateArray.forEach(element => {
+          element.addEventListener('focus', () => {
+            this.hideCalendar();
+          });
+        });
+      }
+      if (this.trigger) {
+        this.trigger.addEventListener('click', event => {
+          event.preventDefault();
+          this.pickerVisible = false;
+          this.toggleCalendar();
+          this.trigger.setAttribute('aria-expanded', 'true');
+        });
+      }
+      if (this.close) {
+        this.close.addEventListener('click', event => {
+          event.preventDefault();
+          this.hideCalendar();
+        });
+      }
+      if (this.accept) {
+        this.accept.addEventListener('click', event => {
+          event.preventDefault();
+          const day = this.body.querySelector('button[tabindex="0"]');
+          if (day) {
+            this.dateSelected = true;
+            this.selectedDay = day.innerText;
+            this.selectedMonth = this.currentMonth;
+            this.selectedYear = this.currentYear;
+            this.setInputValue();
+            if (this.input) {
+              this.input.focus();
+            } else if (this.multipleInput) {
+              this.trigger.focus();
+              this.hideCalendar();
+            }
+            this.resetLabelCalendarTrigger();
+          }
+        });
+      }
+      this.body.addEventListener('click', event => {
+        event.preventDefault();
+        const day = event.target.closest('button');
+        if (day) {
+          this.dateSelected = true;
+          this.selectedDay = day.innerText;
+          this.selectedMonth = this.currentMonth;
+          this.selectedYear = this.currentYear;
+          this.setInputValue();
+          if (this.input) {
+            this.input.focus();
+          } else if (this.multipleInput) {
+            this.trigger.focus();
+            this.hideCalendar();
+          }
+          this.resetLabelCalendarTrigger();
+        }
+      });
+      this.navigation.addEventListener('click', event => {
+        event.preventDefault();
+        const monthBtn = event.target.closest('.js-date-picker__month-nav-btn');
+        const yearBtn = event.target.closest('.js-date-picker__year-nav-btn');
+        if (monthBtn && monthBtn.classList.contains('js-date-picker__month-nav-btn--prev')) {
+          this.showPrevMonth(true);
+        } else if (monthBtn && monthBtn.classList.contains('js-date-picker__month-nav-btn--next')) {
+          this.showNextMonth(true);
+        } else if (yearBtn && yearBtn.classList.contains('js-date-picker__year-nav-btn--prev')) {
+          this.showPrevYear(true);
+        } else if (yearBtn && yearBtn.classList.contains('js-date-picker__year-nav-btn--next')) {
+          this.showNextYear(true);
+        }
+      });
+      window.addEventListener('keydown', event => {
+        if (event.code && event.code === 27 || event.key && event.key.toLowerCase() === 'escape') {
+          if (document.activeElement.closest('.js-date-picker')) {
+            const activeInput = document.activeElement.closest('.js-date-input').querySelector('input');
+            activeInput.focus();
+          } else {
+            this.hideCalendar();
+          }
+        }
+      });
+      window.addEventListener('click', event => {
+        if (!event.target.closest('.js-date-picker') && !event.target.closest('.js-date-input') && this.pickerVisible) {
+          this.hideCalendar();
+        }
+      });
+      this.body.addEventListener('keydown', event => {
+        let day = this.currentDay;
+        if (event.code && event.code === 40 || event.key && event.key.toLowerCase() === 'arrowdown') {
+          day += 7;
+          this.resetDayValue(day);
+        } else if (event.code && event.code === 39 || event.key && event.key.toLowerCase() === 'arrowright') {
+          day += 1;
+          this.resetDayValue(day);
+        } else if (event.code && event.code === 37 || event.key && event.key.toLowerCase() === 'arrowleft') {
+          day -= 1;
+          this.resetDayValue(day);
+        } else if (event.code && event.code === 38 || event.key && event.key.toLowerCase() === 'arrowup') {
+          day -= 7;
+          this.resetDayValue(day);
+        } else if (event.code && event.code === 35 || event.key && event.key.toLowerCase() === 'end') {
+          event.preventDefault();
+          day = day + 6 - this.getDayOfWeek(this.currentYear, this.currentMonth, day);
+          this.resetDayValue(day);
+        } else if (event.code && event.code === 36 || event.key && event.key.toLowerCase() === 'home') {
+          event.preventDefault();
+          day -= this.getDayOfWeek(this.currentYear, this.currentMonth, day);
+          this.resetDayValue(day);
+        } else if (event.code && event.code === 34 || event.key && event.key.toLowerCase() === 'pagedown') {
+          event.preventDefault();
+          this.showNextMonth();
+        } else if (event.code && event.code === 33 || event.key && event.key.toLowerCase() === 'pageup') {
+          event.preventDefault();
+          this.showPrevMonth();
+        }
+      });
+      this.datePicker.addEventListener('keydown', event => {
+        if (event.code && event.code === 9 || event.key && event.key === 'Tab') {
+          this.trapFocus(event);
+        }
+      });
+      if (this.input) {
+        this.input.addEventListener('keydown', event => {
+          if (event.code && event.code === 13 || event.key && event.key.toLowerCase() === 'enter') {
+            this.resetCalendar();
+            this.resetLabelCalendarTrigger();
+            this.hideCalendar();
+          } else if (event.code && event.code === 40 || event.key && event.key.toLowerCase() === 'arrowdown' && this.pickerVisible) {
+            this.body.querySelector('button[tabindex="0"]').focus();
+          }
+        });
+      }
+      if (this.multipleInput) {
+        this.multiDateArray.forEach(element => {
+          element.addEventListener('keydown', event => {
+            if (event.code && event.code === 13 || event.key && event.key.toLowerCase() === 'enter') {
+              this.resetCalendar();
+              this.resetLabelCalendarTrigger();
+              this.hideCalendar();
+            } else if (event.code && event.code === 40 || event.key && event.key.toLowerCase() === 'arrowdown' && this.pickerVisible) {
+              this.body.querySelector('button[tabindex="0"]').focus();
+            }
+          });
+        });
+      }
+    }
+    getCurrentDay(date) {
+      return date ? this.getDayFromDate(date) : new Date().getDate();
+    }
+    getCurrentMonth(date) {
+      return date ? this.getMonthFromDate(date) : new Date().getMonth();
+    }
+    getCurrentYear(date) {
+      return date ? this.getYearFromDate(date) : new Date().getFullYear();
+    }
+    getDayFromDate(date) {
+      const day = parseInt(date.split('-')[2], 10);
+      return Number.isNaN(day) ? this.getCurrentDay(false) : day;
+    }
+    getMonthFromDate(date) {
+      const month = parseInt(date.split('-')[1], 10) - 1;
+      return Number.isNaN(month) ? this.getCurrentMonth(false) : month;
+    }
+    getYearFromDate(date) {
+      const year = parseInt(date.split('-')[0], 10);
+      return Number.isNaN(year) ? this.getCurrentYear(false) : year;
+    }
+    showNextMonth(bool) {
+      this.currentYear = this.currentMonth === 11 ? this.currentYear + 1 : this.currentYear;
+      this.currentMonth = (this.currentMonth + 1) % 12;
+      this.currentDay = this.checkDayInMonth();
+      this.showCalendar(bool);
+      this.srLiveReagion.textContent = `${this.months[this.currentMonth]} ${this.currentYear}`;
+    }
+    showPrevMonth(bool) {
+      this.currentYear = this.currentMonth === 0 ? this.currentYear - 1 : this.currentYear;
+      this.currentMonth = this.currentMonth === 0 ? 11 : this.currentMonth - 1;
+      this.currentDay = this.checkDayInMonth();
+      this.showCalendar(bool);
+      this.srLiveReagion.textContent = `${this.months[this.currentMonth]} ${this.currentYear}`;
+    }
+    showNextYear(bool) {
+      this.currentYear += 1;
+      this.currentMonth %= 12;
+      this.currentDay = this.checkDayInMonth();
+      this.showCalendar(bool);
+      this.srLiveReagion.textContent = `${this.months[this.currentMonth]} ${this.currentYear}`;
+    }
+    showPrevYear(bool) {
+      this.currentYear -= 1;
+      this.currentMonth %= 12;
+      this.currentDay = this.checkDayInMonth();
+      this.showCalendar(bool);
+      this.srLiveReagion.textContent = `${this.months[this.currentMonth]} ${this.currentYear}`;
+    }
+    checkDayInMonth() {
+      return this.currentDay > this.constructor.daysInMonth(this.currentYear, this.currentMonth) ? 1 : this.currentDay;
+    }
+    static daysInMonth(year, month) {
+      return 32 - new Date(year, month, 32).getDate();
+    }
+    resetCalendar() {
+      let currentDate = false;
+      let selectedDate;
+      if (this.input) {
+        selectedDate = this.input.value;
+      } else if (this.multipleInput) {
+        if (this.dateInput.value !== '' && this.monthInput.value !== '' && this.yearInput.value !== '') {
+          selectedDate = `${this.dateInput.value}/${this.monthInput.value}/${this.yearInput.value}`;
+        } else {
+          selectedDate = '';
+        }
+      }
+      this.dateSelected = false;
+      if (selectedDate !== '') {
+        const date = this.getDateFromInput();
+        this.dateSelected = true;
+        currentDate = date;
+      }
+      this.currentDay = this.getCurrentDay(currentDate);
+      this.currentMonth = this.getCurrentMonth(currentDate);
+      this.currentYear = this.getCurrentYear(currentDate);
+      this.selectedDay = this.dateSelected ? this.currentDay : false;
+      this.selectedMonth = this.dateSelected ? this.currentMonth : false;
+      this.selectedYear = this.dateSelected ? this.currentYear : false;
+    }
+    disabledDates() {
+      this.disabledArray = [];
+      if (this.datesDisabled) {
+        const disabledDates = this.datesDisabled.split(' ');
+        disabledDates.forEach(element => {
+          this.disabledArray.push(element);
+        });
+      }
+    }
+    convertDateToParse(date) {
+      const dateArray = date.split(this.dateSeparator);
+      return `${dateArray[this.dateIndexes[2]]}, ${dateArray[this.dateIndexes[1]]}, ${dateArray[this.dateIndexes[0]]}`;
+    }
+    isDisabledDate(day, month, year) {
+      let disabled = false;
+      const dateParse = new Date(year, month, day);
+      const minDate = new Date(this.convertDateToParse(this.minDate));
+      const maxDate = new Date(this.convertDateToParse(this.maxDate));
+      if (this.minDate && minDate > dateParse) {
+        disabled = true;
+      }
+      if (this.maxDate && maxDate < dateParse) {
+        disabled = true;
+      }
+      if (this.disabledArray.length > 0) {
+        this.disabledArray.forEach(element => {
+          const disabledDate = new Date(this.convertDateToParse(element));
+          if (dateParse.getTime() === disabledDate.getTime()) {
+            disabled = true;
+          }
+        });
+      }
+      return disabled;
+    }
+    showCalendar(bool) {
+      const firstDay = this.constructor.getDayOfWeek(this.currentYear, this.currentMonth, '01');
+      this.body.innerHTML = '';
+      this.heading.innerHTML = `${this.months[this.currentMonth]} ${this.currentYear}`;
+      let date = 1;
+      let calendar = '';
+      for (let i = 0; i < 6; i += 1) {
+        for (let j = 0; j < 7; j += 1) {
+          if (i === 0 && j < firstDay) {
+            calendar += '<li></li>';
+          } else if (date > this.constructor.daysInMonth(this.currentYear, this.currentMonth)) {
+            break;
+          } else {
+            let classListDate = '';
+            let tabindexValue = '-1';
+            let disabled;
+            if (date === this.currentDay) {
+              tabindexValue = '0';
+            }
+            if (this.getCurrentMonth() === this.currentMonth && this.getCurrentYear() === this.currentYear && date === this.getCurrentDay()) {
+              classListDate += ` ${this.todayClass}`;
+            }
+            if (this.isDisabledDate(date, this.currentMonth, this.currentYear)) {
+              classListDate += ` ${this.dateClass}--disabled`;
+              disabled = 'aria-disabled="true"';
+            }
+            if (this.dateSelected && date === this.selectedDay && this.currentYear === this.selectedYear && this.currentMonth === this.selectedMonth) {
+              classListDate += ` ${this.selectedClass}`;
+            }
+            calendar = `${calendar}<li><button class="${this.dateClass}${classListDate}" tabindex="${tabindexValue}" type="button" ${disabled || ''}>${date}</button></li>`;
+            date += 1;
+          }
+        }
+      }
+      this.body.innerHTML = calendar;
+      if (!this.pickerVisible) this.datePicker.classList.add(this.visibleClass);
+      this.pickerVisible = true;
+      if (!bool) this.body.querySelector('button[tabindex="0"]').focus();
+      this.getFocusableElements();
+      this.placeCalendar();
+    }
+    hideCalendar() {
+      this.datePicker.classList.remove(this.visibleClass);
+      this.pickerVisible = false;
+      this.firstFocusable = false;
+      this.lastFocusable = false;
+      if (this.trigger) this.trigger.setAttribute('aria-expanded', 'false');
+    }
+    toggleCalendar(bool) {
+      if (!this.pickerVisible) {
+        this.resetCalendar();
+        this.showCalendar(bool);
+      } else {
+        this.hideCalendar();
+      }
+    }
+    static getDayOfWeek(year, month, day) {
+      let weekDay = new Date(year, month, day).getDay() - 1;
+      if (weekDay < 0) weekDay = 6;
+      return weekDay;
+    }
+    getDateIndexes() {
+      const dateFormat = this.dateFormat.toLowerCase().replace(/-/g, '');
+      return [dateFormat.indexOf('d'), dateFormat.indexOf('m'), dateFormat.indexOf('y')];
+    }
+    setInputValue() {
+      if (this.input) {
+        this.input.value = this.getDateForInput(this.selectedDay, this.selectedMonth, this.selectedYear);
+      } else if (this.multipleInput) {
+        this.dateInput.value = this.constructor.getReadableDate(this.selectedDay);
+        this.monthInput.value = this.constructor.getReadableDate(this.selectedMonth + 1);
+        this.yearInput.value = this.selectedYear;
+      }
+    }
+    getDateForInput(day, month, year) {
+      const dateArray = [];
+      dateArray[this.dateIndexes[0]] = this.constructor.getReadableDate(day);
+      dateArray[this.dateIndexes[1]] = this.constructor.getReadableDate(month + 1);
+      dateArray[this.dateIndexes[2]] = year;
+      return dateArray[0] + this.dateSeparator + dateArray[1] + this.dateSeparator + dateArray[2];
+    }
+    getDateFromInput() {
+      let dateArray;
+      if (this.input) {
+        dateArray = this.input.value.split(this.dateSeparator);
+      } else if (this.multipleInput) {
+        dateArray = [this.dateInput.value, this.monthInput.value, this.yearInput.value];
+      }
+      return `${dateArray[this.dateIndexes[2]]}-${dateArray[this.dateIndexes[1]]}-${dateArray[this.dateIndexes[0]]}`;
+    }
+    static getReadableDate(date) {
+      return date < 10 ? `0${date}` : date;
+    }
+    resetDayValue(day) {
+      const totDays = this.constructor.daysInMonth(this.currentYear, this.currentMonth);
+      if (day > totDays) {
+        this.currentDay = day - totDays;
+        this.showNextMonth(false);
+      } else if (day < 1) {
+        const newMonth = this.currentMonth === 0 ? 11 : this.currentMonth - 1;
+        this.currentDay = this.constructor.daysInMonth(this.currentYear, newMonth) + day;
+        this.showPrevMonth(false);
+      } else {
+        this.currentDay = day;
+        const focusItem = this.body.querySelector('button[tabindex="0"]');
+        focusItem.setAttribute('tabindex', '-1');
+        focusItem.classList.remove(this.keyboardFocusClass);
+        const buttons = this.body.getElementsByTagName('button');
+        for (let i = 0; i < buttons.length; i += 1) {
+          if (parseInt(buttons[i].textContent, 10) === this.currentDay) {
+            buttons[i].setAttribute('tabindex', '0');
+            buttons[i].classList.add(this.keyboardFocusClass);
+            buttons[i].focus();
+            break;
+          }
+        }
+        this.getFocusableElements();
+      }
+    }
+    resetLabelCalendarTrigger() {
+      if (!this.trigger) return;
+      if (this.selectedYear && this.selectedMonth !== false && this.selectedDay) {
+        this.trigger.setAttribute('aria-label', `Selected date is ${new Date(this.selectedYear, this.selectedMonth, this.selectedDay).toDateString()}`);
+      } else {
+        this.trigger.setAttribute('aria-label', this.triggerLabel);
+      }
+    }
+    getFocusableElements() {
+      const allFocusable = this.datePicker.querySelectorAll('[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable], audio[controls], video[controls], summary');
+      this.getFirstFocusable(allFocusable);
+      this.getLastFocusable(allFocusable);
+    }
+    getFirstFocusable(elements) {
+      for (let i = 0; i < elements.length; i += 1) {
+        if ((elements[i].offsetWidth || elements[i].offsetHeight || elements[i].getClientRects().length) && elements[i].getAttribute('tabindex') !== '-1') {
+          this.firstFocusable = elements[i];
+          return true;
+        }
+      }
+      return false;
+    }
+    getLastFocusable(elements) {
+      for (let i = elements.length - 1; i >= 0; i -= 1) {
+        if ((elements[i].offsetWidth || elements[i].offsetHeight || elements[i].getClientRects().length) && elements[i].getAttribute('tabindex') !== '-1') {
+          this.lastFocusable = elements[i];
+          return true;
+        }
+      }
+      return false;
+    }
+    trapFocus(event) {
+      if (this.firstFocusable === document.activeElement && event.shiftKey) {
+        event.preventDefault();
+        this.lastFocusable.focus();
+      }
+      if (this.lastFocusable === document.activeElement && !event.shiftKey) {
+        event.preventDefault();
+        this.firstFocusable.focus();
+      }
+    }
+    placeCalendar() {
+      this.datePicker.style.left = '0px';
+      this.datePicker.style.right = 'auto';
+      const pickerBoundingRect = this.datePicker.getBoundingClientRect();
+      if (pickerBoundingRect.right > window.innerWidth) {
+        this.datePicker.style.left = 'auto';
+        this.datePicker.style.right = '0px';
+      }
+    }
+  }
+
+  function getSign(x) {
+    if (!Math.sign) {
+      return (x > 0) - (x < 0) || +x;
+    }
+    return Math.sign(x);
+  }
+  class SwipeContent {
+    constructor(element) {
+      this.element = element;
+      this.delta = [false, false];
+      this.dragging = false;
+      this.intervalId = false;
+      this.changedTouches = false;
+    }
+    init() {
+      this.element.addEventListener('mousedown', this.handleEvent.bind(this));
+      this.element.addEventListener('touchstart', this.handleEvent.bind(this), {
+        passive: true
+      });
+    }
+    initDragging() {
+      this.element.addEventListener('mousemove', this.handleEvent.bind(this));
+      this.element.addEventListener('touchmove', this.handleEvent.bind(this), {
+        passive: true
+      });
+      this.element.addEventListener('mouseup', this.handleEvent.bind(this));
+      this.element.addEventListener('mouseleave', this.handleEvent.bind(this));
+      this.element.addEventListener('touchend', this.handleEvent.bind(this));
+    }
+    cancelDragging() {
+      if (this.intervalId) {
+        if (!window.requestAnimationFrame) {
+          clearInterval(this.intervalId);
+        } else {
+          window.cancelAnimationFrame(this.intervalId);
+        }
+        this.intervalId = false;
+      }
+      this.element.removeEventListener('mousemove', this.handleEvent.bind(this));
+      this.element.removeEventListener('touchmove', this.handleEvent.bind(this));
+      this.element.removeEventListener('mouseup', this.handleEvent.bind(this));
+      this.element.removeEventListener('mouseleave', this.handleEvent.bind(this));
+      this.element.removeEventListener('touchend', this.handleEvent.bind(this));
+    }
+    handleEvent(event) {
+      switch (event.type) {
+        case 'mousedown':
+        case 'touchstart':
+          this.startDrag(event);
+          break;
+        case 'mousemove':
+        case 'touchmove':
+          this.drag(event);
+          break;
+        case 'mouseup':
+        case 'mouseleave':
+        case 'touchend':
+          this.endDrag(event);
+          break;
+        default:
+          console.log(`${event.type}.`);
+      }
+    }
+    startDrag(event) {
+      this.dragging = true;
+      this.initDragging();
+      this.delta = [parseInt(this.unify(event).clientX, 10), parseInt(this.unify(event).clientY, 10)];
+      this.emitSwipeEvents('dragStart', this.delta, event.target);
+    }
+    endDrag(event) {
+      this.cancelDragging();
+      const dx = parseInt(this.unify(event).clientX, 10);
+      const dy = parseInt(this.unify(event).clientY, 10);
+      if (this.delta && (this.delta[0] || this.delta[0] === 0)) {
+        const s = getSign(dx - this.delta[0]);
+        if (Math.abs(dx - this.delta[0]) > 30) {
+          if (s < 0) {
+            this.emitSwipeEvents('swipeLeft', [dx, dy]);
+          } else {
+            this.emitSwipeEvents('swipeRight', [dx, dy]);
+          }
+        }
+        this.delta[0] = false;
+      }
+      if (this.delta && (this.delta[1] || this.delta[1] === 0)) {
+        const y = getSign(dy - this.delta[1]);
+        if (Math.abs(dy - this.delta[1]) > 30) {
+          if (y < 0) {
+            this.emitSwipeEvents('swipeUp', [dx, dy]);
+          } else {
+            this.emitSwipeEvents('swipeDown', [dx, dy]);
+          }
+        }
+        this.delta[1] = false;
+      }
+      this.emitSwipeEvents('dragEnd', [dx, dy]);
+      this.dragging = false;
+    }
+    drag(event) {
+      if (!this.dragging) return;
+      if (!window.requestAnimationFrame) {
+        this.intervalId = setTimeout(() => {
+          this.emitDrag(event);
+        }, 250);
+      } else {
+        this.intervalId = window.requestAnimationFrame(() => {
+          this.emitDrag(event);
+        });
+      }
+    }
+    unify(event) {
+      this.changedTouches = event.changedTouches;
+      return this.changedTouches ? this.changedTouches[0] : event;
+    }
+    emitDrag(event) {
+      this.emitSwipeEvents('dragging', [parseInt(this.unify(event).clientX, 10), parseInt(this.unify(event).clientY, 10)]);
+    }
+    emitSwipeEvents(eventName, detail, el) {
+      let trigger = false;
+      if (el) trigger = el;
+      const event = new CustomEvent(eventName, {
+        detail: {
+          x: detail[0],
+          y: detail[1],
+          origin: trigger
+        }
+      });
+      this.element.dispatchEvent(event);
+    }
+  }
+
+  /* eslint-disable max-len */
+  class Carousel extends SwipeContent {
+    constructor(element) {
+      super(element);
+      this.element = element;
+      this.containerClass = 'nsw-carousel-container';
+      this.controlClass = 'js-carousel__control';
+      this.wrapperClass = 'js-carousel__wrapper';
+      this.counterClass = 'js-carousel__counter';
+      this.counterTorClass = 'js-carousel__counter-tot';
+      this.navClass = 'js-carousel__navigation';
+      this.navItemClass = 'js-carousel__nav-item';
+      this.navigationItemClass = this.element.getAttribute('data-navigation-item-class') ? this.element.getAttribute('data-navigation-item-class') : 'nsw-carousel__nav-item';
+      this.navigationClass = this.element.getAttribute('data-navigation-class') ? this.element.getAttribute('data-navigation-class') : 'nsw-carousel__navigation';
+      this.paginationClass = this.element.getAttribute('data-pagination-class') ? this.element.getAttribute('data-pagination-class') : 'nsw-carousel__navigation--pagination';
+      this.draggingClass = 'nsw-carousel--is-dragging';
+      this.loadedClass = 'nsw-carousel--loaded';
+      this.animateClass = 'nsw-carousel__list--animating';
+      this.cloneClass = 'js-clone';
+      this.srClass = 'sr-only';
+      this.srLiveAreaClass = 'js-carousel__aria-live';
+      this.hideControlsClass = 'nsw-carousel--hide-controls';
+      this.hideClass = 'nsw-display-none';
+      this.centerClass = 'nsw-justify-content-center';
+      this.listWrapper = this.element.querySelector(`.${this.wrapperClass}`);
+      this.list = this.listWrapper ? this.listWrapper.querySelector('ol') : false;
+      this.items = this.list ? this.list.getElementsByTagName('li') : false;
+      this.controls = this.element.querySelectorAll(`.${this.controlClass}`);
+      this.counter = this.element.querySelectorAll(`.${this.counterClass}`);
+      this.counterTor = this.element.querySelectorAll(`.${this.counterTorClass}`);
+      this.ariaLabel = this.element.getAttribute('data-description') ? this.element.getAttribute('data-description') : 'Card carousel';
+      this.dragEnabled = !!(this.element.getAttribute('data-drag') && this.element.getAttribute('data-drag') === 'on');
+      this.loop = !!(this.element.getAttribute('data-loop') && this.element.getAttribute('data-loop') === 'on');
+      this.nav = !(this.element.getAttribute('data-navigation') && this.element.getAttribute('data-navigation') === 'off');
+      this.navigationPagination = !!(this.element.getAttribute('data-navigation-pagination') && this.element.getAttribute('data-navigation-pagination') === 'on');
+      this.justifyContent = !!(this.element.getAttribute('data-justify-content') && this.element.getAttribute('data-justify-content') === 'on');
+      this.initItems = [];
+      this.itemsNb = this.items.length;
+      this.visibItemsNb = 1;
+      this.itemsWidth = 1;
+      this.itemOriginalWidth = false;
+      this.selectedItem = 0;
+      this.translateContainer = 0;
+      this.containerWidth = 0;
+      this.animating = false;
+      this.dragStart = false;
+      this.resizeId = false;
+      this.cloneList = [];
+      this.itemAutoSize = false;
+      this.totTranslate = 0;
+      if (this.nav) this.loop = false;
+      this.flexSupported = CSS.supports('align-items', 'stretch');
+      this.transitionSupported = CSS.supports('transition', 'transform');
+      this.cssPropertiesSupported = 'CSS' in window && CSS.supports('color', 'var(--color-var)');
+    }
+    init() {
+      if (!this.items) return;
+      this.initCarouselLayout();
+      this.setItemsWidth(true);
+      this.insertBefore(this.visibItemsNb);
+      this.updateCarouselClones();
+      this.resetItemsTabIndex();
+      this.initAriaLive();
+      this.initCarouselEvents();
+      this.initCarouselCounter();
+    }
+    initCarouselLayout() {
+      this.element.classList.add(this.loadedClass);
+      this.element.setAttribute('aria-roledescription', 'carousel');
+      this.element.setAttribute('aria-label', this.ariaLabel);
+      const itemsArray = Array.from(this.items);
+      itemsArray.forEach((element, index) => {
+        element.setAttribute('role', 'group');
+        element.setAttribute('aria-roledescription', 'slide');
+        element.setAttribute('aria-label', `${index + 1} of ${itemsArray.length}`);
+        element.setAttribute('data-index', index);
+      });
+      this.carouselCreateContainer();
+      const itemStyle = this.items && window.getComputedStyle(this.items[0]);
+      const containerStyle = this.listWrapper && window.getComputedStyle(this.listWrapper);
+      let itemWidth = itemStyle ? parseFloat(itemStyle.getPropertyValue('width')) : 0;
+      const itemMargin = itemStyle ? parseFloat(itemStyle.getPropertyValue('margin-right')) : 0;
+      const containerPadding = containerStyle ? parseFloat(containerStyle.getPropertyValue('padding-left')) : 0;
+      let containerWidth = containerStyle ? parseFloat(containerStyle.getPropertyValue('width')) : 0;
+      if (!this.itemAutoSize) {
+        this.itemAutoSize = itemWidth;
+      }
+      containerWidth = this.getCarouselWidth(containerWidth);
+      if (!this.itemOriginalWidth) {
+        this.itemOriginalWidth = itemWidth;
+      } else {
+        itemWidth = this.itemOriginalWidth;
+      }
+      if (this.itemAutoSize) {
+        this.itemOriginalWidth = parseInt(this.itemAutoSize, 10);
+        itemWidth = this.itemOriginalWidth;
+      }
+      if (containerWidth < itemWidth) {
+        this.itemOriginalWidth = containerWidth;
+        itemWidth = this.itemOriginalWidth;
+      }
+      this.visibItemsNb = parseInt((containerWidth - 2 * containerPadding + itemMargin) / (itemWidth + itemMargin), 10);
+      this.itemsWidth = parseFloat(((containerWidth - 2 * containerPadding + itemMargin) / this.visibItemsNb - itemMargin).toFixed(1));
+      this.containerWidth = (this.itemsWidth + itemMargin) * this.items.length;
+      this.translateContainer = 0 - (this.itemsWidth + itemMargin) * this.visibItemsNb;
+      if (!this.flexSupported) this.list.style.width = `${(this.itemsWidth + itemMargin) * this.visibItemsNb * 3}px`;
+      this.totTranslate = 0 - this.selectedItem * (this.itemsWidth + itemMargin);
+      if (this.items.length <= this.visibItemsNb) this.totTranslate = 0;
+      this.centerItems();
+    }
+    carouselCreateContainer() {
+      if (!this.element.parentElement.classList.contains(this.containerClass)) {
+        const el = document.createElement('div');
+        el.classList.add(this.containerClass);
+        this.element.parentNode.insertBefore(el, this.element);
+        el.appendChild(this.element);
+      }
+    }
+    setItemsWidth(bool) {
+      for (let i = 0; i < this.items.length; i += 1) {
+        this.items[i].style.width = `${this.itemsWidth}px`;
+        if (bool) this.initItems.push(this.items[i]);
+      }
+    }
+    updateCarouselClones() {
+      if (!this.loop) return;
+      if (this.items.length < this.visibItemsNb * 3) {
+        this.insertAfter(this.visibItemsNb * 3 - this.items.length, this.items.length - this.visibItemsNb * 2);
+      } else if (this.items.length > this.visibItemsNb * 3) {
+        this.removeClones(this.visibItemsNb * 3, this.items.length - this.visibItemsNb * 3);
+      }
+      this.setTranslate(`translateX(${this.translateContainer}px)`);
+    }
+    initCarouselEvents() {
+      if (this.nav) {
+        this.carouselCreateNavigation();
+        this.carouselInitNavigationEvents();
+      }
+      if (this.controls.length > 0) {
+        this.controls[0].addEventListener('click', event => {
+          event.preventDefault();
+          this.showPrevItems();
+          this.updateAriaLive();
+        });
+        this.controls[1].addEventListener('click', event => {
+          event.preventDefault();
+          this.showNextItems();
+          this.updateAriaLive();
+        });
+        this.resetCarouselControls();
+        this.emitCarouselActiveItemsEvent();
+      }
+      if (this.dragEnabled && window.requestAnimationFrame) {
+        super.init();
+        this.element.addEventListener('dragStart', event => {
+          if (event.detail.origin && event.detail.origin.closest(`.${this.controlClass}`)) return;
+          if (event.detail.origin && event.detail.origin.closest(`.${this.navClass}`)) return;
+          if (event.detail.origin && !event.detail.origin.closest(`.${this.wrapperClass}`)) return;
+          this.element.classList.add(this.draggingClass);
+          this.dragStart = event.detail.x;
+          this.animateDragEnd();
+        });
+        this.element.addEventListener('dragging', event => {
+          if (!this.dragStart) return;
+          if (this.animating || Math.abs(event.detail.x - this.dragStart) < 10) return;
+          let translate = event.detail.x - this.dragStart + this.translateContainer;
+          if (!this.loop) {
+            translate = event.detail.x - this.dragStart + this.totTranslate;
+          }
+          this.setTranslate(`translateX(${translate}px)`);
+        });
+      }
+      window.addEventListener('resize', () => {
+        clearTimeout(this.resizeId);
+        this.resizeId = setTimeout(() => {
+          this.resetCarouselResize();
+          this.resetDotsNavigation();
+          this.resetCarouselControls();
+          this.setCounterItem();
+          this.centerItems();
+          this.emitCarouselActiveItemsEvent();
+        }, 250);
+      });
+      this.element.addEventListener('keydown', event => {
+        if (event.key && event.key.toLowerCase() === 'arrowright') {
+          this.showNextItems();
+        } else if (event.key && event.key.toLowerCase() === 'arrowleft') {
+          this.showPrevItems();
+        } else if (event.key && event.key.toLowerCase() === 'home') {
+          this.showPrevItems();
+        } else if (event.key && event.key.toLowerCase() === 'end') {
+          this.showNextItems();
+        } else if (event.key && event.key.toLowerCase() === 'enter') {
+          event.preventDefault();
+          event.target.click();
+        }
+      });
+      const itemLinks = this.element.querySelectorAll('.nsw-carousel__item a');
+      if (itemLinks.length > 0) {
+        itemLinks.forEach((link, index) => {
+          link.addEventListener('focus', () => {
+            const slider = link.closest('.js-carousel__wrapper');
+            const carousel = slider.querySelector('.nsw-carousel__list');
+            if (carousel) {
+              link.focus({
+                preventScroll: true
+              });
+            }
+          });
+          link.addEventListener('focusout', () => {
+            const item = link.closest('.nsw-carousel__item');
+            const dataIndex = Number(item.getAttribute('data-index')) + 1;
+            if (dataIndex % this.visibItemsNb === 0 && dataIndex !== this.items.length) {
+              itemLinks[index + 1].focus({
+                preventScroll: true
+              });
+              this.showNextItems();
+            }
+          });
+        });
+      }
+    }
+    showPrevItems() {
+      if (this.animating) return;
+      this.animating = true;
+      this.selectedItem = this.getIndex(this.selectedItem - this.visibItemsNb);
+      this.animateList('0', 'prev');
+    }
+    showNextItems() {
+      if (this.animating) return;
+      this.animating = true;
+      this.selectedItem = this.getIndex(this.selectedItem + this.visibItemsNb);
+      this.animateList(`${this.translateContainer * 2}px`, 'next');
+    }
+    animateDragEnd() {
+      const cb = event => {
+        this.element.removeEventListener('dragEnd', cb);
+        this.element.classList.remove(this.draggingClass);
+        if (event.detail.x - this.dragStart < -40) {
+          this.animating = false;
+          this.showNextItems();
+        } else if (event.detail.x - this.dragStart > 40) {
+          this.animating = false;
+          this.showPrevItems();
+        } else if (event.detail.x - this.dragStart === 0) {
+          return;
+        } else {
+          this.animating = true;
+          this.animateList(`${this.translateContainer}px`, false);
+        }
+        this.dragStart = false;
+      };
+      this.element.addEventListener('dragEnd', cb);
+    }
+    animateList(translate, direction) {
+      let trans = translate;
+      this.list.classList.add(this.animateClass);
+      const initTranslate = this.totTranslate;
+      if (!this.loop) {
+        trans = this.noLoopTranslateValue(direction);
+      }
+      setTimeout(() => {
+        this.setTranslate(`translateX(${trans})`);
+      });
+      if (this.transitionSupported) {
+        const cb = event => {
+          if (event.propertyName && event.propertyName !== 'transform') return;
+          if (this.list) {
+            this.list.classList.remove(this.animateClass);
+            this.list.removeEventListener('transitionend', cb);
+          }
+          this.animateListCb(direction);
+        };
+        this.list.addEventListener('transitionend', cb);
+      } else {
+        this.animateListCb(direction);
+      }
+      if (!this.loop && initTranslate === this.totTranslate) {
+        this.list.dispatchEvent(new CustomEvent('transitionend'));
+      }
+      this.resetCarouselControls();
+      this.setCounterItem();
+      this.emitCarouselActiveItemsEvent();
+    }
+    noLoopTranslateValue(direction) {
+      let translate = this.totTranslate;
+      if (direction === 'next') {
+        translate = this.totTranslate + this.translateContainer;
+      } else if (direction === 'prev') {
+        translate = this.totTranslate - this.translateContainer;
+      } else if (direction === 'click') {
+        translate = this.selectedDotIndex * this.translateContainer;
+      }
+      if (translate > 0) {
+        translate = 0;
+        this.selectedItem = 0;
+      }
+      if (translate < -this.translateContainer - this.containerWidth) {
+        translate = -this.translateContainer - this.containerWidth;
+        this.selectedItem = this.items.length - this.visibItemsNb;
+      }
+      if (this.visibItemsNb > this.items.length) translate = 0;
+      this.totTranslate = translate;
+      return `${translate}px`;
+    }
+    animateListCb(direction) {
+      if (direction) this.updateClones(direction);
+      this.animating = false;
+      this.resetItemsTabIndex();
+    }
+    updateClones(direction) {
+      if (!this.loop) return;
+      const index = direction === 'next' ? 0 : this.items.length - this.visibItemsNb;
+      this.removeClones(index, false);
+      if (direction === 'next') {
+        this.insertAfter(this.visibItemsNb, 0);
+      } else {
+        this.insertBefore(this.visibItemsNb);
+      }
+      this.setTranslate(`translateX(${this.translateContainer}px)`);
+    }
+    insertBefore(nb, delta) {
+      if (!this.loop) return;
+      const clones = document.createDocumentFragment();
+      let start = 0;
+      if (delta) start = delta;
+      for (let i = start; i < nb; i += 1) {
+        const index = this.getIndex(this.selectedItem - i - 1);
+        const clone = this.initItems[index].cloneNode(true);
+        clone.classList.add(this.cloneClass);
+        clones.insertBefore(clone, clones.firstChild);
+      }
+      this.list.insertBefore(clones, this.list.firstChild);
+      this.emitCarouselUpdateEvent();
+    }
+    insertAfter(nb, init) {
+      if (!this.loop) return;
+      const clones = document.createDocumentFragment();
+      for (let i = init; i < nb + init; i += 1) {
+        const index = this.getIndex(this.selectedItem + this.visibItemsNb + i);
+        const clone = this.initItems[index].cloneNode(true);
+        clone.classList.add(this.cloneClass);
+        clones.appendChild(clone);
+      }
+      this.list.appendChild(clones);
+      this.emitCarouselUpdateEvent();
+    }
+    removeClones(index, bool) {
+      let newBool = bool;
+      if (!this.loop) return;
+      if (!bool) {
+        newBool = this.visibItemsNb;
+      }
+      for (let i = 0; i < newBool; i += 1) {
+        if (this.items[index]) this.list.removeChild(this.items[index]);
+      }
+    }
+    resetCarouselResize() {
+      const visibleItems = this.visibItemsNb;
+      this.resetItemAutoSize();
+      this.initCarouselLayout();
+      this.setItemsWidth(false);
+      this.resetItemsWidth();
+      if (this.loop) {
+        if (visibleItems > this.visibItemsNb) {
+          this.removeClones(0, visibleItems - this.visibItemsNb);
+        } else if (visibleItems < this.visibItemsNb) {
+          this.insertBefore(this.visibItemsNb, visibleItems);
+        }
+        this.updateCarouselClones();
+      } else {
+        const translate = this.noLoopTranslateValue();
+        this.setTranslate(`translateX(${translate})`);
+      }
+      this.resetItemsTabIndex();
+    }
+    resetItemAutoSize() {
+      if (!this.cssPropertiesSupported) return;
+      this.items[0].removeAttribute('style');
+      this.itemAutoSize = getComputedStyle(this.items[0]).getPropertyValue('width');
+    }
+    resetItemsWidth() {
+      this.initItems.forEach(element => {
+        const el = element;
+        el.style.width = `${this.itemsWidth}px`;
+      });
+    }
+    resetItemsTabIndex() {
+      const carouselActive = this.items.length > this.visibItemsNb;
+      let j = this.items.length;
+      for (let i = 0; i < this.items.length; i += 1) {
+        if (this.loop) {
+          if (i < this.visibItemsNb || i >= 2 * this.visibItemsNb) {
+            this.items[i].setAttribute('tabindex', '-1');
+            this.items[i].setAttribute('aria-hidden', 'true');
+            this.items[i].removeAttribute('aria-current');
+          } else {
+            if (i < j) j = i;
+            this.items[i].removeAttribute('tabindex');
+            this.items[i].removeAttribute('aria-hidden');
+            this.items[i].setAttribute('aria-current', 'true');
+          }
+        } else if ((i < this.selectedItem || i >= this.selectedItem + this.visibItemsNb) && carouselActive) {
+          this.items[i].setAttribute('tabindex', '-1');
+          this.items[i].setAttribute('aria-hidden', 'true');
+          this.items[i].removeAttribute('aria-current');
+        } else {
+          if (i < j) j = i;
+          this.items[i].removeAttribute('tabindex');
+          this.items[i].removeAttribute('aria-hidden');
+          this.items[i].setAttribute('aria-current', 'true');
+        }
+      }
+      this.resetVisibilityOverflowItems(j);
+    }
+    initAriaLive() {
+      const srLiveArea = document.createElement('div');
+      srLiveArea.setAttribute('class', `${this.srClass} ${this.srLiveAreaClass}`);
+      srLiveArea.setAttribute('aria-live', 'polite');
+      srLiveArea.setAttribute('aria-atomic', 'true');
+      this.element.appendChild(srLiveArea);
+      this.ariaLive = srLiveArea;
+    }
+    updateAriaLive() {
+      this.ariaLive.innerHTML = `Item ${this.selectedItem + 1} selected. ${this.visibItemsNb} items of ${this.initItems.length} visible`;
+    }
+    getIndex(index) {
+      let i = index;
+      if (i < 0) i = this.getPositiveValue(i, this.itemsNb);
+      if (i >= this.itemsNb) i %= this.itemsNb;
+      return i;
+    }
+    getPositiveValue(value, add) {
+      let val = value;
+      val += add;
+      if (val > 0) return val;
+      return this.getPositiveValue(val, add);
+    }
+    setTranslate(translate) {
+      this.list.style.transform = translate;
+      this.list.style.msTransform = translate;
+    }
+    getCarouselWidth(computedWidth) {
+      let comWidth = computedWidth;
+      const closestHidden = this.listWrapper.closest(`.${this.srClass}`);
+      if (closestHidden) {
+        closestHidden.classList.remove(this.srClass);
+        comWidth = this.listWrapper.offsetWidth;
+        closestHidden.classList.add(this.srClass);
+      } else if (Number.isNaN(comWidth)) {
+        comWidth = this.getHiddenParentWidth(this.element);
+      }
+      return comWidth;
+    }
+    getHiddenParentWidth(element) {
+      const parent = element.parentElement;
+      if (parent.tagName.toLowerCase() === 'html') return 0;
+      const style = window.getComputedStyle(parent);
+      if (style.display === 'none' || style.visibility === 'hidden') {
+        parent.setAttribute('style', 'display: block!important; visibility: visible!important;');
+        const computedWidth = this.listWrapper.offsetWidth;
+        parent.style.display = '';
+        parent.style.visibility = '';
+        return computedWidth;
+      }
+      return this.getHiddenParentWidth(parent);
+    }
+    resetCarouselControls() {
+      if (this.loop) return;
+      if (this.controls.length > 0) {
+        if (this.totTranslate === 0) {
+          this.controls[0].setAttribute('disabled', true);
+        } else {
+          this.controls[0].removeAttribute('disabled');
+        }
+        if (this.totTranslate === -this.translateContainer - this.containerWidth || this.items.length <= this.visibItemsNb) {
+          this.controls[1].setAttribute('disabled', true);
+        } else {
+          this.controls[1].removeAttribute('disabled');
+        }
+      }
+      if (this.nav) {
+        const selectedDot = this.navigation.querySelectorAll(`.${this.navigationItemClass}--selected`);
+        if (selectedDot.length > 0) selectedDot[0].classList.remove(`${this.navigationItemClass}--selected`);
+        let newSelectedIndex = this.getSelectedDot();
+        if (this.totTranslate === -this.translateContainer - this.containerWidth) {
+          newSelectedIndex = this.navDots.length - 1;
+        }
+        this.navDots[newSelectedIndex].classList.add(`${this.navigationItemClass}--selected`);
+      }
+      if (this.totTranslate === 0 && (this.totTranslate === -this.translateContainer - this.containerWidth || this.items.length <= this.visibItemsNb)) {
+        this.element.classList.add(this.hideControlsClass);
+      } else {
+        this.element.classList.remove(this.hideControlsClass);
+      }
+    }
+    emitCarouselUpdateEvent() {
+      this.cloneList = [];
+      const clones = this.element.querySelectorAll(`.${this.cloneClass}`);
+      clones.forEach(element => {
+        element.classList.remove(this.cloneClass);
+        this.cloneList.push(element);
+      });
+      this.emitCarouselEvents('carousel-updated', this.cloneList);
+    }
+    carouselCreateNavigation() {
+      if (this.element.querySelectorAll(`.${this.navClass}`).length > 0) return;
+      const navigation = document.createElement('ol');
+      let navChildren = '';
+      let navClasses = '';
+      if (this.navigationPagination) {
+        navClasses = `${this.navigationClass} ${this.paginationClass} ${this.navClass}`;
+      } else {
+        navClasses = `${this.navigationClass} ${this.navClass}`;
+      }
+      if (this.items.length <= this.visibItemsNb) {
+        navClasses += ` ${this.hideClass}`;
+      }
+      navigation.setAttribute('class', navClasses);
+      const dotsNr = Math.ceil(this.items.length / this.visibItemsNb);
+      const selectedDot = this.getSelectedDot();
+      const indexClass = this.navigationPagination ? '' : this.srClass;
+      for (let i = 0; i < dotsNr; i += 1) {
+        const className = i === selectedDot ? `class="${this.navigationItemClass} ${this.navigationItemClass}--selected ${this.navItemClass}"` : `class="${this.navigationItemClass} ${this.navItemClass}"`;
+        navChildren = `${navChildren}<li ${className}><button><span class="${indexClass}">${i + 1}</span></button></li>`;
+      }
+      navigation.innerHTML = navChildren;
+      this.element.appendChild(navigation);
+    }
+    carouselInitNavigationEvents() {
+      this.navigation = this.element.querySelector(`.${this.navClass}`);
+      this.navDots = this.element.querySelectorAll(`.${this.navItemClass}`);
+      this.navIdEvent = this.carouselNavigationClick.bind(this);
+      this.navigation.addEventListener('click', this.navIdEvent);
+    }
+    carouselRemoveNavigation() {
+      if (this.navigation) this.element.removeChild(this.navigation);
+      if (this.navIdEvent) this.navigation.removeEventListener('click', this.navIdEvent);
+    }
+    resetDotsNavigation() {
+      if (!this.nav) return;
+      this.carouselRemoveNavigation();
+      this.carouselCreateNavigation();
+      this.carouselInitNavigationEvents();
+    }
+    carouselNavigationClick(event) {
+      const dot = event.target.closest(`.${this.navItemClass}`);
+      if (!dot) return;
+      if (this.animating) return;
+      this.animating = true;
+      const index = Array.from(this.navDots).indexOf(dot);
+      this.selectedDotIndex = index;
+      this.selectedItem = index * this.visibItemsNb;
+      this.animateList(false, 'click');
+    }
+    getSelectedDot() {
+      return Math.ceil(this.selectedItem / this.visibItemsNb);
+    }
+    initCarouselCounter() {
+      if (this.counterTor.length > 0) this.counterTor[0].textContent = this.itemsNb;
+      this.setCounterItem();
+    }
+    setCounterItem() {
+      if (this.counter.length === 0) return;
+      let totalItems = this.selectedItem + this.visibItemsNb;
+      if (totalItems > this.items.length) totalItems = this.items.length;
+      this.counter[0].textContent = totalItems;
+    }
+    centerItems() {
+      if (!this.justifyContent) return;
+      this.list.classList.toggle(this.centerClass, this.items.length < this.visibItemsNb);
+    }
+    emitCarouselActiveItemsEvent() {
+      this.emitCarouselEvents('carousel-active-items', {
+        firstSelectedItem: this.selectedItem,
+        visibleItemsNb: this.visibItemsNb
+      });
+    }
+    emitCarouselEvents(eventName, eventDetail) {
+      const event = new CustomEvent(eventName, {
+        detail: eventDetail
+      });
+      this.element.dispatchEvent(event);
+    }
+    resetVisibilityOverflowItems(j) {
+      const itemWidth = this.containerWidth / this.items.length;
+      const delta = (window.innerWidth - itemWidth * this.visibItemsNb) / 2;
+      const overflowItems = Math.ceil(delta / itemWidth);
+      for (let i = 0; i < overflowItems; i += 1) {
+        const indexPrev = j - 1 - i;
+        if (indexPrev >= 0) this.items[indexPrev].removeAttribute('tabindex');
+        const indexNext = j + this.visibItemsNb + i;
+        if (indexNext < this.items.length) this.items[indexNext].removeAttribute('tabindex');
+      }
+    }
+  }
+
+  /* eslint-disable max-len */
   class Dialog {
     constructor(element) {
-      this.dialog = element;
-      this.dialogWrapper = element.querySelector('.nsw-dialog__wrapper');
-      this.openBtn = document.querySelectorAll('.js-open-dialog-'.concat(element.getAttribute('id')));
-      this.closeBtn = element.querySelectorAll('.js-close-dialog');
-      // eslint-disable-next-line max-len
-      this.focusableEls = element.querySelectorAll('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])');
+      this.element = element;
+      this.elementWrapper = this.element.querySelector('.nsw-dialog__wrapper');
+      this.openBtn = document.querySelectorAll(`.js-open-dialog-${this.element.getAttribute('id')}`);
+      this.closeBtn = this.element.querySelectorAll('.js-close-dialog');
+      this.focusableEls = this.element.querySelectorAll('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])');
       this.body = document.body;
-      this.openEvent = e => this.openDialog(e);
-      this.closeEvent = e => this.closeDialog(e);
-      this.clickEvent = e => this.clickDialog(e);
-      this.trapEvent = e => this.trapFocus(e);
+      this.openEvent = this.openDialog.bind(this);
+      this.closeEvent = this.closeDialog.bind(this);
+      this.clickEvent = this.clickDialog.bind(this);
+      this.trapEvent = this.trapFocus.bind(this);
     }
     init() {
       this.controls();
     }
     controls() {
+      if (!this.elementWrapper) return;
       this.openBtn.forEach(btn => {
         btn.addEventListener('click', this.openEvent, false);
       });
       this.closeBtn.forEach(btn => {
         btn.addEventListener('click', this.closeEvent, false);
       });
-      if (this.dialog.classList.contains('js-dialog-dismiss')) {
-        this.dialog.addEventListener('click', this.clickEvent, false);
+      if (this.element.classList.contains('js-dialog-dismiss')) {
+        this.element.addEventListener('click', this.clickEvent, false);
       }
-      this.focusableEls[this.focusableEls.length - 1].addEventListener('blur', this.trapEvent, false);
+      if (this.focusableEls.length > 0) {
+        this.focusableEls[this.focusableEls.length - 1].addEventListener('blur', this.trapEvent, false);
+      }
     }
     openDialog() {
-      this.dialog.setAttribute('aria-expanded', 'true');
-      this.dialog.classList.add('active');
+      this.element.setAttribute('aria-expanded', 'true');
+      this.element.classList.add('active');
       this.body.classList.add('dialog-active');
-      this.focusableEls[0].focus();
+      if (this.focusableEls.length > 0) {
+        this.focusableEls[0].focus();
+      }
     }
     closeDialog() {
-      this.dialog.setAttribute('aria-expanded', 'false');
-      this.dialog.classList.remove('active');
+      this.element.setAttribute('aria-expanded', 'false');
+      this.element.classList.remove('active');
       this.body.classList.remove('dialog-active');
     }
-    clickDialog(e) {
-      if (!this.dialogWrapper.contains(e.target)) {
+    clickDialog(event) {
+      if (!this.elementWrapper.contains(event.target)) {
         this.closeDialog();
       }
     }
-    trapFocus(e) {
-      e.preventDefault();
-      this.focusableEls[0].focus();
+    trapFocus(event) {
+      event.preventDefault();
+      if (this.focusableEls.length > 0) {
+        this.focusableEls[0].focus();
+      }
     }
   }
 
   class ExternalLink {
     constructor(element) {
-      this.link = element;
+      this.element = element;
       this.uID = uniqueId('external');
-      this.linkIcon = this.link.querySelector('.nsw-material-icons');
-      this.linkIconTitle = this.linkIcon.getAttribute('title');
+      this.linkIcon = this.element.querySelector('.nsw-material-icons');
+      this.linkIconTitle = this.linkIcon ? this.linkIcon.getAttribute('title') : false;
       this.linkElement = false;
     }
     init() {
-      this.link.classList.add('nsw-link', 'nsw-link--icon');
-      this.constructor.setAttributes(this.link, {
+      if (this.element.tagName !== 'A') return;
+      this.element.classList.add('nsw-link', 'nsw-link--icon');
+      this.constructor.setAttributes(this.element, {
         target: '_blank',
         rel: 'noopener'
       });
-      this.constructor.setAttributes(this.linkIcon, {
-        focusable: 'false',
-        'aria-hidden': 'true'
-      });
-      this.createElement(this.linkIconTitle);
+      if (this.linkIcon) {
+        this.constructor.setAttributes(this.linkIcon, {
+          focusable: 'false',
+          'aria-hidden': 'true'
+        });
+      }
+      if (this.linkIconTitle) this.createElement(this.linkIconTitle);
     }
     createElement(title) {
       if (title) {
@@ -429,8 +1730,8 @@
         this.linkElement.id = this.uID;
         this.linkElement.classList.add('sr-only');
         this.linkElement.innerText = title;
-        this.link.insertAdjacentElement('afterend', this.linkElement);
-        this.constructor.setAttributes(this.link, {
+        this.element.insertAdjacentElement('afterend', this.linkElement);
+        this.constructor.setAttributes(this.element, {
           'aria-describedby': this.uID
         });
       }
@@ -444,18 +1745,27 @@
   class FileUpload {
     constructor(element) {
       this.element = element;
-      this.input = this.element.querySelector('.nsw-file-upload__input');
-      this.label = this.element.querySelector('.nsw-file-upload__label');
-      this.multipleUpload = this.input.hasAttribute('multiple');
+      this.input = this.element.querySelector('input.nsw-file-upload__input');
+      this.label = this.element.querySelector('label.nsw-file-upload__label');
+      this.multipleUpload = this.input && this.input.hasAttribute('multiple');
       this.replaceFiles = this.element.hasAttribute('data-replace-files');
-      this.filesList = false;
+      this.filesList = null;
     }
     init() {
       if (!this.input) return;
-      this.input.addEventListener('change', () => {
-        if (this.input.value === '') return;
-        this.updateFileList();
-      });
+      if (!this.label) {
+        const label = document.createElement('label');
+        label.htmlFor = this.input.id;
+        label.classList.add('nsw-file-upload__label', 'nsw-button', 'nsw-button--dark-outline-solid');
+        label.textContent = 'Select file';
+        this.element.insertAdjacentElement('beforeend', label);
+        this.label = this.element.querySelector('label.nsw-file-upload__label');
+      }
+      this.input.addEventListener('change', this.handleInputChange.bind(this));
+    }
+    handleInputChange() {
+      if (this.input.value === '') return;
+      this.updateFileList();
     }
     createFileList() {
       const ul = document.createElement('ul');
@@ -467,11 +1777,11 @@
       const li = document.createElement('li');
       li.classList.add('nsw-file-upload__item');
       const html = `
-    <span class="nsw-file-upload__item-filename"></span>
-    <button type="button" class="nsw-icon-button">
+      <span class="nsw-file-upload__item-filename"></span>
+      <button type="button" class="nsw-icon-button">
         <span class="sr-only">Remove file</span>
         <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">cancel</span>
-    </button>`;
+      </button>`;
       li.insertAdjacentHTML('afterbegin', html);
       li.querySelector('.nsw-file-upload__item-filename').textContent = this.constructor.truncateString(file.name, 50);
       return li.outerHTML;
@@ -481,34 +1791,32 @@
         this.createFileList();
       }
       this.filesList.classList.add('active');
-      let string = '';
+      let fileListHTML = '';
       for (let i = 0; i < this.input.files.length; i += 1) {
         const file = this.input.files[i];
-        string = this.createFileItem(file) + string;
+        fileListHTML = this.createFileItem(file) + fileListHTML;
       }
       if (this.replaceFiles) {
-        this.filesList.innerHTML = string;
+        this.filesList.innerHTML = fileListHTML;
       } else {
-        this.filesList.insertAdjacentHTML('beforeend', string);
+        this.filesList.insertAdjacentHTML('beforeend', fileListHTML);
       }
       this.removeFile();
     }
     removeFile() {
-      this.filesList.addEventListener('click', event => {
-        if (!event.target.closest('.nsw-icon-button')) return;
-        event.preventDefault();
-        const item = event.target.closest('.nsw-file-upload__item');
-        item.remove();
-        if (event.currentTarget.children.length === 0) {
-          this.filesList.classList.remove('active');
-        }
-      });
+      this.filesList.addEventListener('click', this.handleFileRemove.bind(this));
+    }
+    handleFileRemove(event) {
+      if (!event.target.closest('.nsw-icon-button')) return;
+      event.preventDefault();
+      const item = event.target.closest('.nsw-file-upload__item');
+      item.remove();
+      if (this.filesList.children.length === 0) {
+        this.filesList.classList.remove('active');
+      }
     }
     static truncateString(str, num) {
-      if (str.length <= num) {
-        return str;
-      }
-      return `${str.slice(0, num)}...`;
+      return str.length <= num ? str : `${str.slice(0, num)}...`;
     }
   }
 
@@ -540,11 +1848,11 @@
       this.controlsButtonText = this.controlsButton && this.controlsButton.querySelector('span:not(.nsw-material-icons)');
       this.controlsButtonTextContent = this.controlsButton && this.controlsButtonText.innerText;
       this.wrapper = this.element.querySelector(`.${this.prefix}${this.wrapperClass}`);
-      this.closeButton = this.wrapper.querySelector(`.${this.prefix}${this.closeClass} button`);
-      this.submitButton = this.wrapper.querySelector(`.${this.prefix}${this.submitClass} button`);
-      this.resetButton = this.wrapper.querySelector(`.${this.prefix}${this.resetClass} button`);
-      this.items = this.wrapper.querySelectorAll(`.${this.prefix}${this.itemClass}`);
-      this.accordionButtons = this.wrapper.querySelectorAll(`.${this.prefix}${this.itemClass}-button`);
+      this.closeButton = this.wrapper && this.wrapper.querySelector(`.${this.prefix}${this.closeClass} button`);
+      this.submitButton = this.wrapper && this.wrapper.querySelector(`.${this.prefix}${this.submitClass} button`);
+      this.resetButton = this.wrapper && this.wrapper.querySelector(`.${this.prefix}${this.resetClass} button`);
+      this.items = this.wrapper && this.wrapper.querySelectorAll(`.${this.prefix}${this.itemClass}`);
+      this.accordionButtons = this.wrapper && this.wrapper.querySelectorAll(`.${this.prefix}${this.itemClass}-button`);
       this.showMoreContent = this.element.querySelectorAll(`.${this.prefix}${this.allClass}`);
       this.showMoreButtons = this.element.querySelectorAll(`.${this.prefix}${this.moreClass}`);
       this.focusableElements = 'a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])';
@@ -556,20 +1864,22 @@
     }
     init() {
       this.element.classList.add('ready');
-      this.accordionButtons.forEach(button => {
-        const buttonElem = button;
-        const uID = uniqueId('collapsed');
-        buttonElem.setAttribute('type', 'button');
-        buttonElem.setAttribute('aria-expanded', 'false');
-        buttonElem.setAttribute('aria-controls', uID);
-        const label = buttonElem.querySelector(`.${this.prefix}${this.itemClass}-name`);
-        buttonElem.setAttribute('data-label', label.innerText);
-        const contentElem = buttonElem.nextElementSibling;
-        contentElem.id = buttonElem.getAttribute('aria-controls');
-        contentElem.hidden = true;
-        this.content.push(contentElem);
-        this.buttons.push(buttonElem);
-      });
+      if (this.accordionButtons) {
+        this.accordionButtons.forEach(button => {
+          const buttonElem = button;
+          const uID = uniqueId('collapsed');
+          buttonElem.setAttribute('type', 'button');
+          buttonElem.setAttribute('aria-expanded', 'false');
+          buttonElem.setAttribute('aria-controls', uID);
+          const label = buttonElem.querySelector(`.${this.prefix}${this.itemClass}-name`);
+          buttonElem.setAttribute('data-label', label.innerText);
+          const contentElem = buttonElem.nextElementSibling;
+          contentElem.id = buttonElem.getAttribute('aria-controls');
+          contentElem.hidden = true;
+          this.content.push(contentElem);
+          this.buttons.push(buttonElem);
+        });
+      }
       this.updateDom();
       this.initEvents();
     }
@@ -713,14 +2023,16 @@
     }
     getOptions() {
       this.options = [];
-      this.items.forEach(element => {
-        const content = element.querySelector(`.${this.prefix}${this.itemClass}-content`);
-        const textInputs = content.querySelectorAll('input[type="text"]');
-        const singleSelects = content.querySelectorAll('select:not([multiple]):not(.nsw-display-none)');
-        const multiSelects = content.querySelectorAll('select[multiple]:not(.nsw-display-none)');
-        const checkboxes = content.querySelectorAll('input[type="checkbox"]');
-        this.options.push(...textInputs, ...singleSelects, ...checkboxes, ...multiSelects);
-      });
+      if (this.items) {
+        this.items.forEach(element => {
+          const content = element.querySelector(`.${this.prefix}${this.itemClass}-content`);
+          const textInputs = content.querySelectorAll('input[type="text"]');
+          const singleSelects = content.querySelectorAll('select:not([multiple]):not(.nsw-display-none)');
+          const multiSelects = content.querySelectorAll('select[multiple]:not(.nsw-display-none)');
+          const checkboxes = content.querySelectorAll('input[type="checkbox"]');
+          this.options.push(...textInputs, ...singleSelects, ...checkboxes, ...multiSelects);
+        });
+      }
     }
     getSelected() {
       this.selected = [];
@@ -818,18 +2130,45 @@
 
   class GlobalAlert {
     constructor(element) {
-      this.messageElement = element;
-      this.closeButton = element.querySelector('.js-close-alert');
-      this.closeMessageEvent = e => this.closeMessage(e);
+      this.element = element;
+      this.closeButton = this.element.querySelector('button.js-close-alert');
+      this.cookieName = this.element.getAttribute('data-cookie-name') || false;
     }
     init() {
-      this.controls();
+      if (this.cookieName && this.constructor.getCookie(this.cookieName)) {
+        this.element.hidden = true;
+        return;
+      }
+      if (this.closeButton) {
+        this.controls();
+      }
     }
     controls() {
-      this.closeButton.addEventListener('click', this.closeMessageEvent, false);
+      this.closeButton.addEventListener('click', () => {
+        this.closeMessage();
+      });
     }
     closeMessage() {
-      this.messageElement.hidden = true;
+      this.element.hidden = true;
+      if (this.cookieName) {
+        this.constructor.setCookie(this.cookieName, 'dismissed', 7);
+      }
+    }
+    static setCookie(name, value, days) {
+      const date = new Date();
+      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+      const expires = `expires=${date.toUTCString()}`;
+      document.cookie = `${name}=${value};${expires};path=/`;
+    }
+    static getCookie(name) {
+      const nameEQ = `${name}=`;
+      const ca = document.cookie.split(';');
+      for (let i = 0; i < ca.length; i += 1) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+      }
+      return null;
     }
   }
 
@@ -866,7 +2205,9 @@
         document.addEventListener('click', this.handleOutsideClick.bind(this), false);
         document.addEventListener('keydown', this.escapeClose.bind(this), false);
       }
-      this.openNavButton.addEventListener('click', this.mobileToggleMainNav.bind(this), false);
+      if (this.openNavButton) {
+        this.openNavButton.addEventListener('click', this.mobileToggleMainNav.bind(this), false);
+      }
       this.closeNavButtons.forEach(element => {
         element.addEventListener('click', this.mobileToggleMainNav.bind(this), false);
       });
@@ -1083,7 +2424,7 @@
         linkParent
       } = this.whichSubNavLatest();
       const focusWithin = linkParent.contains(e.target);
-      const isButton = e.target.getAttribute('role');
+      const isButton = e.target.closest('a').getAttribute('role') === 'button';
       if (!focusWithin && isButton) {
         this.toggleSubNavDesktop();
       }
@@ -2393,29 +3734,29 @@
   /* eslint-disable max-len */
   class Popover {
     constructor(element) {
-      this.popover = element;
-      this.popoverId = this.popover.getAttribute('aria-controls');
-      this.popoverPosition = this.popover.dataset.popoverPosition || 'bottom';
-      this.popoverClassList = this.popover.dataset.popoverClass;
-      this.popoverGap = this.popover.dataset.popoverGap || 5;
-      this.popoverAnchor = this.popover.querySelector('[data-anchor]') || this.popover;
-      this.popoverElement = document.querySelector(`#${this.popoverId}`);
+      this.element = element;
+      this.popoverId = this.element.getAttribute('aria-controls');
+      this.popoverPosition = this.element.dataset.popoverPosition || 'bottom';
+      this.popoverGap = this.element.dataset.popoverGap || 5;
+      this.popoverAnchor = this.element.querySelector('[data-anchor]') || this.element;
+      this.popoverElement = this.popoverId && document.querySelector(`#${this.popoverId}`);
       this.popoverVisibleClass = 'active';
       this.popoverContent = false;
       this.popoverIsOpen = false;
-      this.firstFocusable = false;
-      this.lastFocusable = false;
+      this.firstFocusable = null;
+      this.lastFocusable = null;
     }
     init() {
-      this.constructor.setAttributes(this.popover, {
+      if (!this.popoverElement) return;
+      this.constructor.setAttributes(this.element, {
         tabindex: '0',
         'aria-haspopup': 'dialog'
       });
       this.initEvents();
     }
     initEvents() {
-      this.popover.addEventListener('click', this.togglePopover.bind(this));
-      this.popover.addEventListener('keyup', event => {
+      this.element.addEventListener('click', this.togglePopover.bind(this));
+      this.element.addEventListener('keyup', event => {
         if (event.code && event.code.toLowerCase() === 'enter' || event.key && event.key.toLowerCase() === 'enter') {
           this.togglePopover();
         }
@@ -2432,12 +3773,25 @@
           this.checkPopoverFocus();
         }
       });
-      window.addEventListener('resize', () => {
+      this.debouncedTogglePopover = this.constructor.debounce(() => {
         if (this.popoverIsOpen) this.togglePopover();
-      });
-      window.addEventListener('scroll', () => {
-        if (this.popoverIsOpen) this.togglePopover();
-      });
+      }, 300);
+      window.addEventListener('resize', this.debouncedTogglePopover);
+      window.addEventListener('scroll', this.debouncedTogglePopover);
+    }
+    static debounce(func, wait) {
+      let timeout;
+      return function executedFunction() {
+        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
     }
     togglePopover() {
       if (this.popoverElement.classList.contains('active')) {
@@ -2459,7 +3813,7 @@
       this.popoverElement.focus({
         preventScroll: true
       });
-      this.popover.addEventListener('transitionend', () => {
+      this.element.addEventListener('transitionend', () => {
         this.focusPopover();
       }, {
         once: true
@@ -2471,26 +3825,28 @@
       this.popoverElement.classList.remove('active');
       this.popoverIsOpen = false;
     }
-    updatePopover(popover, placement) {
+    async updatePopover(popover, placement) {
       let anchor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.popoverAnchor;
-      computePosition(anchor, popover, {
-        placement,
-        middleware: [offset(parseInt(this.popoverGap, 10)), flip({
-          fallbackAxisSideDirection: 'start',
-          crossAxis: false
-        }), shift({
-          limiter: limitShift()
-        })]
-      }).then(_ref => {
-        let {
+      try {
+        const {
           x,
           y
-        } = _ref;
+        } = await computePosition(anchor, popover, {
+          placement,
+          middleware: [offset(parseInt(this.popoverGap, 10)), flip({
+            fallbackAxisSideDirection: 'start',
+            crossAxis: false
+          }), shift({
+            limiter: limitShift()
+          })]
+        });
         Object.assign(popover.style, {
           left: `${x}px`,
           top: `${y}px`
         });
-      });
+      } catch (error) {
+        console.error('Error updating popover position:', error);
+      }
     }
     checkPopoverClick(target) {
       if (!this.popoverIsOpen) return;
@@ -2498,7 +3854,7 @@
     }
     checkPopoverFocus() {
       if (!this.popoverIsOpen) return;
-      this.constructor.moveFocus(this.popover);
+      this.constructor.moveFocus(this.element);
       this.togglePopover();
     }
     focusPopover() {
@@ -2564,9 +3920,9 @@
     constructor(element) {
       this.element = element;
       this.select = this.element.querySelector('select');
-      this.optGroups = this.select.getElementsByTagName('optgroup');
-      this.options = this.select.getElementsByTagName('option');
-      this.selectId = this.select.getAttribute('id');
+      this.optGroups = this.select && this.select.getElementsByTagName('optgroup');
+      this.options = this.select && this.select.getElementsByTagName('option');
+      this.selectId = this.select && this.select.getAttribute('id');
       this.trigger = false;
       this.dropdown = false;
       this.customOptions = false;
@@ -2602,6 +3958,7 @@
       this.checkboxInputClass = 'form__checkbox-input';
     }
     init() {
+      if (!this.select) return;
       this.element.insertAdjacentHTML('beforeend', this.initButtonSelect() + this.initListSelect());
       this.dropdown = this.element.querySelector(`.js-${this.dropdownClass}`);
       this.trigger = this.element.querySelector(`.js-${this.buttonClass}`);
@@ -2882,17 +4239,18 @@
 
   class SiteSearch {
     constructor(element) {
-      this.triggerButton = element;
+      this.element = element;
       this.originalButton = document.querySelector('.js-open-search');
-      this.targetElement = document.getElementById(this.triggerButton.getAttribute('aria-controls'));
-      this.searchInput = this.targetElement.querySelector('.js-search-input');
-      this.pressed = this.triggerButton.getAttribute('aria-expanded') === 'true';
+      this.targetElement = document.getElementById(this.element.getAttribute('aria-controls'));
+      this.searchInput = this.targetElement.querySelector('input.js-search-input');
+      this.pressed = this.element.getAttribute('aria-expanded') === 'true';
     }
     init() {
+      if (!this.originalButton) return;
       this.controls();
     }
     controls() {
-      this.triggerButton.addEventListener('click', this.showHide.bind(this), false);
+      this.element.addEventListener('click', this.showHide.bind(this), false);
     }
     showHide() {
       if (this.pressed) {
@@ -2909,22 +4267,23 @@
 
   class Tabs {
     constructor(element, showTab) {
+      this.element = element;
       this.tablistClass = '.nsw-tabs__list';
       this.tablistItemClass = 'li';
       this.tablistLinkClass = 'a';
-      this.tab = element;
       this.showTab = showTab;
-      this.tabList = element.querySelector(this.tablistClass);
-      this.tabItems = this.tabList.querySelectorAll(this.tablistItemClass);
+      this.tabList = this.element.querySelector(this.tablistClass);
+      this.tabItems = this.tabList && this.tabList.querySelectorAll(this.tablistItemClass);
       this.allowedKeys = [35, 36, 37, 39, 40];
       this.tabLinks = [];
       this.tabPanel = [];
       this.selectedTab = null;
-      this.clickTabEvent = e => this.clickTab(e);
-      this.arrowKeysEvent = e => this.arrowKeys(e);
+      this.clickTabEvent = event => this.clickTab(event);
+      this.arrowKeysEvent = event => this.arrowKeys(event);
       this.owns = [];
     }
     init() {
+      if (!this.tabList) return;
       this.setUpDom();
       this.controls();
       this.setInitalTab();
@@ -2932,13 +4291,13 @@
     setUpDom() {
       const tabListWrapper = document.createElement('div');
       tabListWrapper.classList.add('nsw-tabs__list-wrapper');
-      this.tab.prepend(tabListWrapper);
+      this.element.prepend(tabListWrapper);
       tabListWrapper.prepend(this.tabList);
       this.tabList.setAttribute('role', 'tablist');
       this.tabItems.forEach(item => {
         const itemElem = item;
         const itemLink = item.querySelector(this.tablistLinkClass);
-        const panel = this.tab.querySelector(itemLink.hash);
+        const panel = this.element.querySelector(itemLink.hash);
         const uID = uniqueId('tab');
         this.owns.push(uID);
         itemElem.setAttribute('role', 'presentation');
@@ -3096,7 +4455,7 @@
     constructor(element) {
       this.toggletip = element;
       this.toggletipId = this.toggletip.getAttribute('aria-controls');
-      this.toggletipElement = document.querySelector(`#${this.toggletipId}`);
+      this.toggletipElement = this.toggletipId && document.querySelector(`#${this.toggletipId}`);
       this.toggletipContent = false;
       this.toggletipAnchor = this.toggletip.querySelector('[data-anchor]') || this.toggletip;
       this.toggletipText = this.toggletip.innerText;
@@ -3109,6 +4468,7 @@
       this.lastFocusable = false;
     }
     init() {
+      if (!this.toggletipElement) return;
       this.constructor.setAttributes(this.toggletip, {
         tabindex: '0',
         'aria-haspopup': 'dialog'
@@ -3318,6 +4678,7 @@
     }
     init() {
       this.tooltipContent = this.tooltip.getAttribute('title');
+      if (!this.tooltipContent) return;
       this.constructor.setAttributes(this.tooltip, {
         'data-tooltip-content': this.tooltipContent,
         'aria-describedby': this.uID,
@@ -3439,61 +4800,71 @@
   }
 
   class UtilityList extends Toggletip {
-    constructor(element, toggletip) {
-      super(toggletip);
-      this.utility = element;
+    constructor(element) {
+      let toggletip = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : element.querySelector('.js-share');
+      super(toggletip === null ? element : toggletip);
+      this.element = element;
       this.share = toggletip;
-      this.print = this.utility.querySelectorAll('.js-print-page');
-      this.download = this.utility.querySelectorAll('.js-download-page');
-      this.copy = this.utility.querySelectorAll('.js-copy-clipboard');
-      this.shareItems = this.share.querySelectorAll('a');
+      this.print = this.element.querySelectorAll('.js-print-page');
+      this.download = this.element.querySelectorAll('.js-download-page');
+      this.copy = this.element.querySelectorAll('.js-copy-clipboard');
+      this.shareItems = this.share && this.share.querySelectorAll('a');
       this.urlLocation = window.location.href;
       this.copyElement = false;
     }
     init() {
-      super.init();
-      this.shareItems.forEach(share => {
-        const shareLocation = share.getAttribute('data-url');
-        if (!shareLocation) {
-          share.setAttribute('data-url', window.location.href);
-        }
-      });
-      this.share.addEventListener('click', event => {
-        event.preventDefault();
-        const button = event.target.closest('a');
-        const social = button.getAttribute('data-social');
-        const url = this.getSocialUrl(button, social);
-        if (social === 'mail') {
-          window.location.href = url;
-        } else {
-          window.open(url, `${social}-share-dialog`, 'width=626,height=436');
-        }
-      });
-      this.print.forEach(element => {
-        element.setAttribute('tabindex', '0');
-        element.addEventListener('click', () => {
-          window.print();
+      if (this.share) {
+        super.init();
+        this.shareItems.forEach(share => {
+          const shareLocation = share.getAttribute('data-url');
+          if (!shareLocation) {
+            share.setAttribute('data-url', window.location.href);
+          }
         });
-        element.addEventListener('keyup', event => {
-          if (event.code && event.code.toLowerCase() === 'enter' || event.key && event.key.toLowerCase() === 'enter') {
+        this.share.addEventListener('click', event => {
+          const button = event.target.closest('a');
+          if (!button) return;
+          event.preventDefault();
+          const social = button.getAttribute('data-social');
+          const url = this.getSocialUrl(button, social);
+          if (social === 'mail') {
+            window.location.href = url;
+          } else {
+            window.open(url, `${social}-share-dialog`, 'width=626,height=436');
+          }
+        });
+      }
+      if (this.print) {
+        this.print.forEach(element => {
+          element.setAttribute('tabindex', '0');
+          element.addEventListener('click', () => {
             window.print();
-          }
+          });
+          element.addEventListener('keyup', event => {
+            if (event.code && event.code.toLowerCase() === 'enter' || event.key && event.key.toLowerCase() === 'enter') {
+              window.print();
+            }
+          });
         });
-      });
-      this.download.forEach(element => {
-        element.setAttribute('tabindex', '0');
-      });
-      this.copy.forEach(element => {
-        element.setAttribute('tabindex', '0');
-        element.addEventListener('click', () => {
-          this.copyToClipboard(element);
+      }
+      if (this.download) {
+        this.download.forEach(element => {
+          element.setAttribute('tabindex', '0');
         });
-        element.addEventListener('keyup', event => {
-          if (event.code && event.code.toLowerCase() === 'enter' || event.key && event.key.toLowerCase() === 'enter') {
+      }
+      if (this.copy) {
+        this.copy.forEach(element => {
+          element.setAttribute('tabindex', '0');
+          element.addEventListener('click', () => {
             this.copyToClipboard(element);
-          }
+          });
+          element.addEventListener('keyup', event => {
+            if (event.code && event.code.toLowerCase() === 'enter' || event.key && event.key.toLowerCase() === 'enter') {
+              this.copyToClipboard(element);
+            }
+          });
         });
-      });
+      }
     }
     getSocialUrl(button, social) {
       const params = this.getSocialParams(social);
@@ -3594,16 +4965,18 @@
   }
   function initSite() {
     const accordions = document.querySelectorAll('.js-accordion');
-    const backTop = document.querySelectorAll('.js-back-to-top');
-    const closeSearchButton = document.querySelectorAll('.js-close-search');
+    const backTop = document.querySelectorAll('button.js-back-to-top');
+    const carousel = document.querySelectorAll('.js-carousel');
+    const closeSearchButton = document.querySelectorAll('button.js-close-search');
+    const datePicker = document.querySelectorAll('.js-date-input');
     const dialogs = document.querySelectorAll('.js-dialog');
     const fileUpload = document.querySelectorAll('.js-file-upload');
     const filters = document.querySelectorAll('.js-filters');
     const globalAlert = document.querySelectorAll('.js-global-alert');
-    const link = document.querySelectorAll('.js-link');
+    const link = document.querySelectorAll('a.js-link');
     const multiSelect = document.querySelectorAll('.js-multi-select');
     const navigation = document.getElementById('main-nav');
-    const openSearchButton = document.querySelectorAll('.js-open-search');
+    const openSearchButton = document.querySelectorAll('button.js-open-search');
     const popover = document.querySelectorAll('.js-popover');
     const tabs = document.querySelectorAll('.js-tabs');
     const toggletip = document.querySelectorAll('.js-toggletip');
@@ -3619,9 +4992,19 @@
         new BackTop(element).init();
       });
     }
+    if (carousel) {
+      carousel.forEach(element => {
+        new Carousel(element).init();
+      });
+    }
     if (closeSearchButton) {
       closeSearchButton.forEach(element => {
         new SiteSearch(element).init();
+      });
+    }
+    if (datePicker) {
+      datePicker.forEach(element => {
+        new DatePicker(element).init();
       });
     }
     if (dialogs) {
@@ -3684,14 +5067,15 @@
     }
     if (utilityList) {
       utilityList.forEach(element => {
-        const shareItem = element.querySelector('.js-share');
-        new UtilityList(element, shareItem).init();
+        new UtilityList(element).init();
       });
     }
   }
 
   exports.Accordion = Accordion;
   exports.BackTop = BackTop;
+  exports.Carousel = Carousel;
+  exports.DatePicker = DatePicker;
   exports.Dialog = Dialog;
   exports.ExternalLink = ExternalLink;
   exports.FileUpload = FileUpload;

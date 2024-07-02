@@ -13,6 +13,7 @@ nswdesignsystem-css:
   output: ckanext-nswdesignsystem/%(version)s-nswdesignsystem.css
   contents:
     - vendor/nswdesignsystem.css
+    # - css/custom.css
     - nswdesignsystem-style.css
 
 

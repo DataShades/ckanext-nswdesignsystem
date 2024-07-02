@@ -18,7 +18,15 @@
   },
   "homepage": "https://github.com/DataShades/ckanext-nswdesignsystem#readme",
   "dependencies": {
+    "gulp": "^5.0.0",
+    "gulp-if": "^3.0.0",
+    "gulp-postcss": "^10.0.0",
+    "gulp-sass": "^5.1.0",
+    "gulp-sourcemaps": "^3.0.0",
+    "gulp-touch-cmd": "^0.0.1",
     "highlight.js": "github:highlightjs/highlight.js#11.8.0",
-    "nsw-design-system": "^3.13.0"
+    "nsw-design-system": "^3.17.1",
+    "postcss-combine-media-query": "^1.0.1",
+    "sass": "^1.77.6"
   }
 }
