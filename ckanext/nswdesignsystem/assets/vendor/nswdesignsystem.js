@@ -33,7 +33,7 @@
   function unsafeStringify(arr, offset = 0) {
     // Note: Be careful editing this code!  It's been tuned for performance
     // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
-    return (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
+    return byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]];
   }
 
   const randomUUID = typeof crypto !== 'undefined' && crypto.randomUUID && crypto.randomUUID.bind(crypto);
@@ -113,10 +113,9 @@
     return transitions[found[0]];
   };
 
-  function createButtons(_ref) {
-    let {
-      textContent
-    } = _ref;
+  function createButtons({
+    textContent
+  }) {
     const fragment = document.createDocumentFragment();
     const button = document.createElement('button');
     const uID = uniqueId('accordion');
@@ -320,15 +319,10 @@
         this.createButtonContent();
       }
     }
-    debounce(fn) {
-      var _this = this;
-      let wait = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 250;
+    debounce(fn, wait = 250) {
       let timeout;
-      return function () {
-        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-          args[_key] = arguments[_key];
-        }
-        const context = _this;
+      return (...args) => {
+        const context = this;
         if (!window.requestAnimationFrame) {
           clearTimeout(timeout);
           timeout = setTimeout(() => fn.apply(context, args), wait);
@@ -342,15 +336,2286 @@
         }
       };
     }
-    static createElement(tag) {
-      let classes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-      let attributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    static createElement(tag, classes = [], attributes = {}) {
       const element = document.createElement(tag);
       if (classes.length > 0) {
         element.classList.add(...classes);
       }
-      Object.entries(attributes).forEach(_ref => {
-        let [key, value] = _ref;
+      Object.entries(attributes).forEach(([key, value]) => {
+        element.setAttribute(key, value);
+      });
+      return element;
+    }
+  }
+
+  function getSign(x) {
+    if (!Math.sign) {
+      return (x > 0) - (x < 0) || +x;
+    }
+    return Math.sign(x);
+  }
+  class SwipeContent {
+    constructor(element) {
+      this.element = element;
+      this.delta = [false, false];
+      this.dragging = false;
+      this.intervalId = false;
+      this.changedTouches = false;
+    }
+    init() {
+      this.element.addEventListener('mousedown', this.handleEvent.bind(this));
+      this.element.addEventListener('touchstart', this.handleEvent.bind(this), {
+        passive: true
+      });
+    }
+    initDragging() {
+      this.element.addEventListener('mousemove', this.handleEvent.bind(this));
+      this.element.addEventListener('touchmove', this.handleEvent.bind(this), {
+        passive: true
+      });
+      this.element.addEventListener('mouseup', this.handleEvent.bind(this));
+      this.element.addEventListener('mouseleave', this.handleEvent.bind(this));
+      this.element.addEventListener('touchend', this.handleEvent.bind(this));
+    }
+    cancelDragging() {
+      if (this.intervalId) {
+        if (!window.requestAnimationFrame) {
+          clearInterval(this.intervalId);
+        } else {
+          window.cancelAnimationFrame(this.intervalId);
+        }
+        this.intervalId = false;
+      }
+      this.element.removeEventListener('mousemove', this.handleEvent.bind(this));
+      this.element.removeEventListener('touchmove', this.handleEvent.bind(this));
+      this.element.removeEventListener('mouseup', this.handleEvent.bind(this));
+      this.element.removeEventListener('mouseleave', this.handleEvent.bind(this));
+      this.element.removeEventListener('touchend', this.handleEvent.bind(this));
+    }
+    handleEvent(event) {
+      switch (event.type) {
+        case 'mousedown':
+        case 'touchstart':
+          this.startDrag(event);
+          break;
+        case 'mousemove':
+        case 'touchmove':
+          this.drag(event);
+          break;
+        case 'mouseup':
+        case 'mouseleave':
+        case 'touchend':
+          this.endDrag(event);
+          break;
+        default:
+          console.log(`${event.type}.`);
+      }
+    }
+    startDrag(event) {
+      this.dragging = true;
+      this.initDragging();
+      this.delta = [parseInt(this.unify(event).clientX, 10), parseInt(this.unify(event).clientY, 10)];
+      this.emitSwipeEvents('dragStart', this.delta, event.target);
+    }
+    endDrag(event) {
+      this.cancelDragging();
+      const dx = parseInt(this.unify(event).clientX, 10);
+      const dy = parseInt(this.unify(event).clientY, 10);
+      if (this.delta && (this.delta[0] || this.delta[0] === 0)) {
+        const s = getSign(dx - this.delta[0]);
+        if (Math.abs(dx - this.delta[0]) > 30) {
+          if (s < 0) {
+            this.emitSwipeEvents('swipeLeft', [dx, dy]);
+          } else {
+            this.emitSwipeEvents('swipeRight', [dx, dy]);
+          }
+        }
+        this.delta[0] = false;
+      }
+      if (this.delta && (this.delta[1] || this.delta[1] === 0)) {
+        const y = getSign(dy - this.delta[1]);
+        if (Math.abs(dy - this.delta[1]) > 30) {
+          if (y < 0) {
+            this.emitSwipeEvents('swipeUp', [dx, dy]);
+          } else {
+            this.emitSwipeEvents('swipeDown', [dx, dy]);
+          }
+        }
+        this.delta[1] = false;
+      }
+      this.emitSwipeEvents('dragEnd', [dx, dy]);
+      this.dragging = false;
+    }
+    drag(event) {
+      if (!this.dragging) return;
+      if (!window.requestAnimationFrame) {
+        this.intervalId = setTimeout(() => {
+          this.emitDrag(event);
+        }, 250);
+      } else {
+        this.intervalId = window.requestAnimationFrame(() => {
+          this.emitDrag(event);
+        });
+      }
+    }
+    unify(event) {
+      this.changedTouches = event.changedTouches;
+      return this.changedTouches ? this.changedTouches[0] : event;
+    }
+    emitDrag(event) {
+      this.emitSwipeEvents('dragging', [parseInt(this.unify(event).clientX, 10), parseInt(this.unify(event).clientY, 10)]);
+    }
+    emitSwipeEvents(eventName, detail, el) {
+      let trigger = false;
+      if (el) trigger = el;
+      const event = new CustomEvent(eventName, {
+        detail: {
+          x: detail[0],
+          y: detail[1],
+          origin: trigger
+        }
+      });
+      this.element.dispatchEvent(event);
+    }
+  }
+
+  /* eslint-disable max-len */
+  class Carousel extends SwipeContent {
+    constructor(element) {
+      super(element);
+      this.element = element;
+      this.containerClass = 'nsw-carousel-container';
+      this.controlClass = 'js-carousel__control';
+      this.wrapperClass = 'js-carousel__wrapper';
+      this.counterClass = 'js-carousel__counter';
+      this.counterTorClass = 'js-carousel__counter-tot';
+      this.navClass = 'js-carousel__navigation';
+      this.navItemClass = 'js-carousel__nav-item';
+      this.navigationItemClass = this.element.getAttribute('data-navigation-item-class') ? this.element.getAttribute('data-navigation-item-class') : 'nsw-carousel__nav-item';
+      this.navigationClass = this.element.getAttribute('data-navigation-class') ? this.element.getAttribute('data-navigation-class') : 'nsw-carousel__navigation';
+      this.paginationClass = this.element.getAttribute('data-pagination-class') ? this.element.getAttribute('data-pagination-class') : 'nsw-carousel__navigation--pagination';
+      this.draggingClass = 'nsw-carousel--is-dragging';
+      this.loadedClass = 'nsw-carousel--loaded';
+      this.animateClass = 'nsw-carousel__list--animating';
+      this.cloneClass = 'js-clone';
+      this.srClass = 'sr-only';
+      this.srLiveAreaClass = 'js-carousel__aria-live';
+      this.hideControlsClass = 'nsw-carousel--hide-controls';
+      this.hideClass = 'nsw-display-none';
+      this.centerClass = 'nsw-justify-content-center';
+      this.listWrapper = this.element.querySelector(`.${this.wrapperClass}`);
+      this.list = this.listWrapper ? this.listWrapper.querySelector('ol') : false;
+      this.items = this.list ? this.list.getElementsByTagName('li') : false;
+      this.controls = this.element.querySelectorAll(`.${this.controlClass}`);
+      this.counter = this.element.querySelectorAll(`.${this.counterClass}`);
+      this.counterTor = this.element.querySelectorAll(`.${this.counterTorClass}`);
+      this.ariaLabel = this.element.getAttribute('data-description') ? this.element.getAttribute('data-description') : 'Card carousel';
+      this.dragEnabled = !!(this.element.getAttribute('data-drag') && this.element.getAttribute('data-drag') === 'on');
+      this.loop = !!(this.element.getAttribute('data-loop') && this.element.getAttribute('data-loop') === 'on');
+      this.nav = !(this.element.getAttribute('data-navigation') && this.element.getAttribute('data-navigation') === 'off');
+      this.navigationPagination = !!(this.element.getAttribute('data-navigation-pagination') && this.element.getAttribute('data-navigation-pagination') === 'on');
+      this.justifyContent = !!(this.element.getAttribute('data-justify-content') && this.element.getAttribute('data-justify-content') === 'on');
+      this.initItems = [];
+      this.itemsNb = this.items.length;
+      this.visibItemsNb = 1;
+      this.itemsWidth = 1;
+      this.itemOriginalWidth = false;
+      this.selectedItem = 0;
+      this.translateContainer = 0;
+      this.containerWidth = 0;
+      this.animating = false;
+      this.dragStart = false;
+      this.resizeId = false;
+      this.cloneList = [];
+      this.itemAutoSize = false;
+      this.totTranslate = 0;
+      if (this.nav) this.loop = false;
+      this.flexSupported = CSS.supports('align-items', 'stretch');
+      this.transitionSupported = CSS.supports('transition', 'transform');
+      this.cssPropertiesSupported = 'CSS' in window && CSS.supports('color', 'var(--color-var)');
+    }
+    init() {
+      if (!this.items) return;
+      this.initCarouselLayout();
+      this.setItemsWidth(true);
+      this.insertBefore(this.visibItemsNb);
+      this.updateCarouselClones();
+      this.resetItemsTabIndex();
+      this.initAriaLive();
+      this.initCarouselEvents();
+      this.initCarouselCounter();
+    }
+    initCarouselLayout() {
+      this.element.classList.add(this.loadedClass);
+      this.element.setAttribute('aria-roledescription', 'carousel');
+      this.element.setAttribute('aria-label', this.ariaLabel);
+      const itemsArray = Array.from(this.items);
+      itemsArray.forEach((element, index) => {
+        element.setAttribute('aria-roledescription', 'slide');
+        element.setAttribute('aria-label', `${index + 1} of ${itemsArray.length}`);
+        element.setAttribute('data-index', index);
+      });
+      this.carouselCreateContainer();
+      const itemStyle = this.items && window.getComputedStyle(this.items[0]);
+      const containerStyle = this.listWrapper && window.getComputedStyle(this.listWrapper);
+      let itemWidth = itemStyle ? parseFloat(itemStyle.getPropertyValue('width')) : 0;
+      const itemMargin = itemStyle ? parseFloat(itemStyle.getPropertyValue('margin-right')) : 0;
+      const containerPadding = containerStyle ? parseFloat(containerStyle.getPropertyValue('padding-left')) : 0;
+      let containerWidth = containerStyle ? parseFloat(containerStyle.getPropertyValue('width')) : 0;
+      if (!this.itemAutoSize) {
+        this.itemAutoSize = itemWidth;
+      }
+      containerWidth = this.getCarouselWidth(containerWidth);
+      if (!this.itemOriginalWidth) {
+        this.itemOriginalWidth = itemWidth;
+      } else {
+        itemWidth = this.itemOriginalWidth;
+      }
+      if (this.itemAutoSize) {
+        this.itemOriginalWidth = parseInt(this.itemAutoSize, 10);
+        itemWidth = this.itemOriginalWidth;
+      }
+      if (containerWidth < itemWidth) {
+        this.itemOriginalWidth = containerWidth;
+        itemWidth = this.itemOriginalWidth;
+      }
+      this.visibItemsNb = parseInt((containerWidth - 2 * containerPadding + itemMargin) / (itemWidth + itemMargin), 10);
+      this.itemsWidth = parseFloat(((containerWidth - 2 * containerPadding + itemMargin) / this.visibItemsNb - itemMargin).toFixed(1));
+      this.containerWidth = (this.itemsWidth + itemMargin) * this.items.length;
+      this.translateContainer = 0 - (this.itemsWidth + itemMargin) * this.visibItemsNb;
+      if (!this.flexSupported) this.list.style.width = `${(this.itemsWidth + itemMargin) * this.visibItemsNb * 3}px`;
+      this.totTranslate = 0 - this.selectedItem * (this.itemsWidth + itemMargin);
+      if (this.items.length <= this.visibItemsNb) this.totTranslate = 0;
+      this.centerItems();
+    }
+    carouselCreateContainer() {
+      if (!this.element.parentElement.classList.contains(this.containerClass)) {
+        const el = document.createElement('div');
+        el.classList.add(this.containerClass);
+        this.element.parentNode.insertBefore(el, this.element);
+        el.appendChild(this.element);
+      }
+    }
+    setItemsWidth(bool) {
+      for (let i = 0; i < this.items.length; i += 1) {
+        this.items[i].style.width = `${this.itemsWidth}px`;
+        if (bool) this.initItems.push(this.items[i]);
+      }
+    }
+    updateCarouselClones() {
+      if (!this.loop) return;
+      if (this.items.length < this.visibItemsNb * 3) {
+        this.insertAfter(this.visibItemsNb * 3 - this.items.length, this.items.length - this.visibItemsNb * 2);
+      } else if (this.items.length > this.visibItemsNb * 3) {
+        this.removeClones(this.visibItemsNb * 3, this.items.length - this.visibItemsNb * 3);
+      }
+      this.setTranslate(`translateX(${this.translateContainer}px)`);
+    }
+    initCarouselEvents() {
+      if (this.nav) {
+        this.carouselCreateNavigation();
+        this.carouselInitNavigationEvents();
+      }
+      if (this.controls.length > 0) {
+        this.controls[0].addEventListener('click', event => {
+          event.preventDefault();
+          this.showPrevItems();
+          this.updateAriaLive();
+        });
+        this.controls[1].addEventListener('click', event => {
+          event.preventDefault();
+          this.showNextItems();
+          this.updateAriaLive();
+        });
+        this.resetCarouselControls();
+        this.emitCarouselActiveItemsEvent();
+      }
+      if (this.dragEnabled && window.requestAnimationFrame) {
+        super.init();
+        this.element.addEventListener('dragStart', event => {
+          if (event.detail.origin && event.detail.origin.closest(`.${this.controlClass}`)) return;
+          if (event.detail.origin && event.detail.origin.closest(`.${this.navClass}`)) return;
+          if (event.detail.origin && !event.detail.origin.closest(`.${this.wrapperClass}`)) return;
+          this.element.classList.add(this.draggingClass);
+          this.dragStart = event.detail.x;
+          this.animateDragEnd();
+        });
+        this.element.addEventListener('dragging', event => {
+          if (!this.dragStart) return;
+          if (this.animating || Math.abs(event.detail.x - this.dragStart) < 10) return;
+          let translate = event.detail.x - this.dragStart + this.translateContainer;
+          if (!this.loop) {
+            translate = event.detail.x - this.dragStart + this.totTranslate;
+          }
+          this.setTranslate(`translateX(${translate}px)`);
+        });
+      }
+      window.addEventListener('resize', () => {
+        clearTimeout(this.resizeId);
+        this.resizeId = setTimeout(() => {
+          this.resetCarouselResize();
+          this.resetDotsNavigation();
+          this.resetCarouselControls();
+          this.setCounterItem();
+          this.centerItems();
+          this.emitCarouselActiveItemsEvent();
+        }, 250);
+      });
+      this.element.addEventListener('keydown', event => {
+        if (event.key && event.key.toLowerCase() === 'arrowright') {
+          this.showNextItems();
+        } else if (event.key && event.key.toLowerCase() === 'arrowleft') {
+          this.showPrevItems();
+        } else if (event.key && event.key.toLowerCase() === 'home') {
+          this.showPrevItems();
+        } else if (event.key && event.key.toLowerCase() === 'end') {
+          this.showNextItems();
+        } else if (event.key && event.key.toLowerCase() === 'enter') {
+          event.preventDefault();
+          event.target.click();
+        }
+      });
+      const itemLinks = this.element.querySelectorAll('.nsw-carousel__item a');
+      if (itemLinks.length > 0) {
+        itemLinks.forEach((link, index) => {
+          link.addEventListener('focus', () => {
+            const slider = link.closest('.js-carousel__wrapper');
+            const carousel = slider.querySelector('.nsw-carousel__list');
+            if (carousel) {
+              link.focus({
+                preventScroll: true
+              });
+            }
+          });
+          link.addEventListener('focusout', () => {
+            const item = link.closest('.nsw-carousel__item');
+            const dataIndex = Number(item.getAttribute('data-index')) + 1;
+            if (dataIndex % this.visibItemsNb === 0 && dataIndex !== this.items.length) {
+              itemLinks[index + 1].focus({
+                preventScroll: true
+              });
+              this.showNextItems();
+            }
+          });
+        });
+      }
+    }
+    showPrevItems() {
+      if (this.animating) return;
+      this.animating = true;
+      this.selectedItem = this.getIndex(this.selectedItem - this.visibItemsNb);
+      this.animateList('0', 'prev');
+    }
+    showNextItems() {
+      if (this.animating) return;
+      this.animating = true;
+      this.selectedItem = this.getIndex(this.selectedItem + this.visibItemsNb);
+      this.animateList(`${this.translateContainer * 2}px`, 'next');
+    }
+    animateDragEnd() {
+      const cb = event => {
+        this.element.removeEventListener('dragEnd', cb);
+        this.element.classList.remove(this.draggingClass);
+        if (event.detail.x - this.dragStart < -40) {
+          this.animating = false;
+          this.showNextItems();
+        } else if (event.detail.x - this.dragStart > 40) {
+          this.animating = false;
+          this.showPrevItems();
+        } else if (event.detail.x - this.dragStart === 0) {
+          return;
+        } else {
+          this.animating = true;
+          this.animateList(`${this.translateContainer}px`, false);
+        }
+        this.dragStart = false;
+      };
+      this.element.addEventListener('dragEnd', cb);
+    }
+    animateList(translate, direction) {
+      let trans = translate;
+      this.list.classList.add(this.animateClass);
+      const initTranslate = this.totTranslate;
+      if (!this.loop) {
+        trans = this.noLoopTranslateValue(direction);
+      }
+      setTimeout(() => {
+        this.setTranslate(`translateX(${trans})`);
+      });
+      if (this.transitionSupported) {
+        const cb = event => {
+          if (event.propertyName && event.propertyName !== 'transform') return;
+          if (this.list) {
+            this.list.classList.remove(this.animateClass);
+            this.list.removeEventListener('transitionend', cb);
+          }
+          this.animateListCb(direction);
+        };
+        this.list.addEventListener('transitionend', cb);
+      } else {
+        this.animateListCb(direction);
+      }
+      if (!this.loop && initTranslate === this.totTranslate) {
+        this.list.dispatchEvent(new CustomEvent('transitionend'));
+      }
+      this.resetCarouselControls();
+      this.setCounterItem();
+      this.emitCarouselActiveItemsEvent();
+    }
+    noLoopTranslateValue(direction) {
+      let translate = this.totTranslate;
+      if (direction === 'next') {
+        translate = this.totTranslate + this.translateContainer;
+      } else if (direction === 'prev') {
+        translate = this.totTranslate - this.translateContainer;
+      } else if (direction === 'click') {
+        translate = this.selectedDotIndex * this.translateContainer;
+      }
+      if (translate > 0) {
+        translate = 0;
+        this.selectedItem = 0;
+      }
+      if (translate < -this.translateContainer - this.containerWidth) {
+        translate = -this.translateContainer - this.containerWidth;
+        this.selectedItem = this.items.length - this.visibItemsNb;
+      }
+      if (this.visibItemsNb > this.items.length) translate = 0;
+      this.totTranslate = translate;
+      return `${translate}px`;
+    }
+    animateListCb(direction) {
+      if (direction) this.updateClones(direction);
+      this.animating = false;
+      this.resetItemsTabIndex();
+    }
+    updateClones(direction) {
+      if (!this.loop) return;
+      const index = direction === 'next' ? 0 : this.items.length - this.visibItemsNb;
+      this.removeClones(index, false);
+      if (direction === 'next') {
+        this.insertAfter(this.visibItemsNb, 0);
+      } else {
+        this.insertBefore(this.visibItemsNb);
+      }
+      this.setTranslate(`translateX(${this.translateContainer}px)`);
+    }
+    insertBefore(nb, delta) {
+      if (!this.loop) return;
+      const clones = document.createDocumentFragment();
+      let start = 0;
+      if (delta) start = delta;
+      for (let i = start; i < nb; i += 1) {
+        const index = this.getIndex(this.selectedItem - i - 1);
+        const clone = this.initItems[index].cloneNode(true);
+        clone.classList.add(this.cloneClass);
+        clones.insertBefore(clone, clones.firstChild);
+      }
+      this.list.insertBefore(clones, this.list.firstChild);
+      this.emitCarouselUpdateEvent();
+    }
+    insertAfter(nb, init) {
+      if (!this.loop) return;
+      const clones = document.createDocumentFragment();
+      for (let i = init; i < nb + init; i += 1) {
+        const index = this.getIndex(this.selectedItem + this.visibItemsNb + i);
+        const clone = this.initItems[index].cloneNode(true);
+        clone.classList.add(this.cloneClass);
+        clones.appendChild(clone);
+      }
+      this.list.appendChild(clones);
+      this.emitCarouselUpdateEvent();
+    }
+    removeClones(index, bool) {
+      let newBool = bool;
+      if (!this.loop) return;
+      if (!bool) {
+        newBool = this.visibItemsNb;
+      }
+      for (let i = 0; i < newBool; i += 1) {
+        if (this.items[index]) this.list.removeChild(this.items[index]);
+      }
+    }
+    resetCarouselResize() {
+      const visibleItems = this.visibItemsNb;
+      this.resetItemAutoSize();
+      this.initCarouselLayout();
+      this.setItemsWidth(false);
+      this.resetItemsWidth();
+      if (this.loop) {
+        if (visibleItems > this.visibItemsNb) {
+          this.removeClones(0, visibleItems - this.visibItemsNb);
+        } else if (visibleItems < this.visibItemsNb) {
+          this.insertBefore(this.visibItemsNb, visibleItems);
+        }
+        this.updateCarouselClones();
+      } else {
+        const translate = this.noLoopTranslateValue();
+        this.setTranslate(`translateX(${translate})`);
+      }
+      this.resetItemsTabIndex();
+    }
+    resetItemAutoSize() {
+      if (!this.cssPropertiesSupported) return;
+      this.items[0].removeAttribute('style');
+      this.itemAutoSize = getComputedStyle(this.items[0]).getPropertyValue('width');
+    }
+    resetItemsWidth() {
+      this.initItems.forEach(element => {
+        const el = element;
+        el.style.width = `${this.itemsWidth}px`;
+      });
+    }
+    resetItemsTabIndex() {
+      const carouselActive = this.items.length > this.visibItemsNb;
+      let j = this.items.length;
+      for (let i = 0; i < this.items.length; i += 1) {
+        if (this.loop) {
+          if (i < this.visibItemsNb || i >= 2 * this.visibItemsNb) {
+            this.items[i].setAttribute('tabindex', '-1');
+            this.items[i].setAttribute('aria-hidden', 'true');
+            this.items[i].removeAttribute('aria-current');
+          } else {
+            if (i < j) j = i;
+            this.items[i].removeAttribute('tabindex');
+            this.items[i].removeAttribute('aria-hidden');
+            this.items[i].setAttribute('aria-current', 'true');
+          }
+        } else if ((i < this.selectedItem || i >= this.selectedItem + this.visibItemsNb) && carouselActive) {
+          this.items[i].setAttribute('tabindex', '-1');
+          this.items[i].setAttribute('aria-hidden', 'true');
+          this.items[i].removeAttribute('aria-current');
+        } else {
+          if (i < j) j = i;
+          this.items[i].removeAttribute('tabindex');
+          this.items[i].removeAttribute('aria-hidden');
+          this.items[i].setAttribute('aria-current', 'true');
+        }
+      }
+      this.resetVisibilityOverflowItems(j);
+    }
+    initAriaLive() {
+      const srLiveArea = document.createElement('div');
+      srLiveArea.setAttribute('class', `${this.srClass} ${this.srLiveAreaClass}`);
+      srLiveArea.setAttribute('aria-live', 'polite');
+      srLiveArea.setAttribute('aria-atomic', 'true');
+      this.element.appendChild(srLiveArea);
+      this.ariaLive = srLiveArea;
+    }
+    updateAriaLive() {
+      this.ariaLive.innerHTML = `Item ${this.selectedItem + 1} selected. ${this.visibItemsNb} items of ${this.initItems.length} visible`;
+    }
+    getIndex(index) {
+      let i = index;
+      if (i < 0) i = this.getPositiveValue(i, this.itemsNb);
+      if (i >= this.itemsNb) i %= this.itemsNb;
+      return i;
+    }
+    getPositiveValue(value, add) {
+      let val = value;
+      val += add;
+      if (val > 0) return val;
+      return this.getPositiveValue(val, add);
+    }
+    setTranslate(translate) {
+      this.list.style.transform = translate;
+      this.list.style.msTransform = translate;
+    }
+    getCarouselWidth(computedWidth) {
+      let comWidth = computedWidth;
+      const closestHidden = this.listWrapper.closest(`.${this.srClass}`);
+      if (closestHidden) {
+        closestHidden.classList.remove(this.srClass);
+        comWidth = this.listWrapper.offsetWidth;
+        closestHidden.classList.add(this.srClass);
+      } else if (Number.isNaN(comWidth)) {
+        comWidth = this.getHiddenParentWidth(this.element);
+      }
+      return comWidth;
+    }
+    getHiddenParentWidth(element) {
+      const parent = element.parentElement;
+      if (parent.tagName.toLowerCase() === 'html') return 0;
+      const style = window.getComputedStyle(parent);
+      if (style.display === 'none' || style.visibility === 'hidden') {
+        parent.setAttribute('style', 'display: block!important; visibility: visible!important;');
+        const computedWidth = this.listWrapper.offsetWidth;
+        parent.style.display = '';
+        parent.style.visibility = '';
+        return computedWidth;
+      }
+      return this.getHiddenParentWidth(parent);
+    }
+    resetCarouselControls() {
+      if (this.loop) return;
+      if (this.controls.length > 0) {
+        if (this.totTranslate === 0) {
+          this.controls[0].setAttribute('disabled', true);
+        } else {
+          this.controls[0].removeAttribute('disabled');
+        }
+        if (this.totTranslate === -this.translateContainer - this.containerWidth || this.items.length <= this.visibItemsNb) {
+          this.controls[1].setAttribute('disabled', true);
+        } else {
+          this.controls[1].removeAttribute('disabled');
+        }
+      }
+      if (this.nav) {
+        const selectedDot = this.navigation.querySelectorAll(`.${this.navigationItemClass}--selected`);
+        if (selectedDot.length > 0) selectedDot[0].classList.remove(`${this.navigationItemClass}--selected`);
+        let newSelectedIndex = this.getSelectedDot();
+        if (this.totTranslate === -this.translateContainer - this.containerWidth) {
+          newSelectedIndex = this.navDots.length - 1;
+        }
+        this.navDots[newSelectedIndex].classList.add(`${this.navigationItemClass}--selected`);
+      }
+      if (this.totTranslate === 0 && (this.totTranslate === -this.translateContainer - this.containerWidth || this.items.length <= this.visibItemsNb)) {
+        this.element.classList.add(this.hideControlsClass);
+      } else {
+        this.element.classList.remove(this.hideControlsClass);
+      }
+    }
+    emitCarouselUpdateEvent() {
+      this.cloneList = [];
+      const clones = this.element.querySelectorAll(`.${this.cloneClass}`);
+      clones.forEach(element => {
+        element.classList.remove(this.cloneClass);
+        this.cloneList.push(element);
+      });
+      this.emitCarouselEvents('carousel-updated', this.cloneList);
+    }
+    carouselCreateNavigation() {
+      if (this.element.querySelectorAll(`.${this.navClass}`).length > 0) return;
+      const navigation = document.createElement('ol');
+      let navChildren = '';
+      let navClasses = '';
+      if (this.navigationPagination) {
+        navClasses = `${this.navigationClass} ${this.paginationClass} ${this.navClass}`;
+      } else {
+        navClasses = `${this.navigationClass} ${this.navClass}`;
+      }
+      if (this.items.length <= this.visibItemsNb) {
+        navClasses += ` ${this.hideClass}`;
+      }
+      navigation.setAttribute('class', navClasses);
+      const dotsNr = Math.ceil(this.items.length / this.visibItemsNb);
+      const selectedDot = this.getSelectedDot();
+      const indexClass = this.navigationPagination ? '' : this.srClass;
+      for (let i = 0; i < dotsNr; i += 1) {
+        const className = i === selectedDot ? `class="${this.navigationItemClass} ${this.navigationItemClass}--selected ${this.navItemClass}"` : `class="${this.navigationItemClass} ${this.navItemClass}"`;
+        navChildren = `${navChildren}<li ${className}><button><span class="${indexClass}">${i + 1}</span></button></li>`;
+      }
+      navigation.innerHTML = navChildren;
+      this.element.appendChild(navigation);
+    }
+    carouselInitNavigationEvents() {
+      this.navigation = this.element.querySelector(`.${this.navClass}`);
+      this.navDots = this.element.querySelectorAll(`.${this.navItemClass}`);
+      this.navIdEvent = this.carouselNavigationClick.bind(this);
+      this.navigation.addEventListener('click', this.navIdEvent);
+    }
+    carouselRemoveNavigation() {
+      if (this.navigation) this.element.removeChild(this.navigation);
+      if (this.navIdEvent) this.navigation.removeEventListener('click', this.navIdEvent);
+    }
+    resetDotsNavigation() {
+      if (!this.nav) return;
+      this.carouselRemoveNavigation();
+      this.carouselCreateNavigation();
+      this.carouselInitNavigationEvents();
+    }
+    carouselNavigationClick(event) {
+      const dot = event.target.closest(`.${this.navItemClass}`);
+      if (!dot) return;
+      if (this.animating) return;
+      this.animating = true;
+      const index = Array.from(this.navDots).indexOf(dot);
+      this.selectedDotIndex = index;
+      this.selectedItem = index * this.visibItemsNb;
+      this.animateList(false, 'click');
+    }
+    getSelectedDot() {
+      return Math.ceil(this.selectedItem / this.visibItemsNb);
+    }
+    initCarouselCounter() {
+      if (this.counterTor.length > 0) this.counterTor[0].textContent = this.itemsNb;
+      this.setCounterItem();
+    }
+    setCounterItem() {
+      if (this.counter.length === 0) return;
+      let totalItems = this.selectedItem + this.visibItemsNb;
+      if (totalItems > this.items.length) totalItems = this.items.length;
+      this.counter[0].textContent = totalItems;
+    }
+    centerItems() {
+      if (!this.justifyContent) return;
+      this.list.classList.toggle(this.centerClass, this.items.length < this.visibItemsNb);
+    }
+    emitCarouselActiveItemsEvent() {
+      this.emitCarouselEvents('carousel-active-items', {
+        firstSelectedItem: this.selectedItem,
+        visibleItemsNb: this.visibItemsNb
+      });
+    }
+    emitCarouselEvents(eventName, eventDetail) {
+      const event = new CustomEvent(eventName, {
+        detail: eventDetail
+      });
+      this.element.dispatchEvent(event);
+    }
+    resetVisibilityOverflowItems(j) {
+      const itemWidth = this.containerWidth / this.items.length;
+      const delta = (window.innerWidth - itemWidth * this.visibItemsNb) / 2;
+      const overflowItems = Math.ceil(delta / itemWidth);
+      for (let i = 0; i < overflowItems; i += 1) {
+        const indexPrev = j - 1 - i;
+        if (indexPrev >= 0) this.items[indexPrev].removeAttribute('tabindex');
+        const indexNext = j + this.visibItemsNb + i;
+        if (indexNext < this.items.length) this.items[indexNext].removeAttribute('tabindex');
+      }
+    }
+  }
+
+  /*!
+  * CookieConsent 3.1.0
+  * https://github.com/orestbida/cookieconsent
+  * Author Orest Bida
+  * Released under the MIT License
+  */
+  const e = 'opt-in',
+    t = 'opt-out',
+    o = 'show--consent',
+    n = 'show--preferences',
+    a = 'disable--interaction',
+    s = 'data-category',
+    c = 'div',
+    r = 'button',
+    i = 'aria-hidden',
+    l = 'btn-group',
+    d = 'click',
+    f = 'data-role',
+    _ = 'consentModal',
+    u = 'preferencesModal';
+  class p {
+    constructor() {
+      this.t = {
+        mode: e,
+        revision: 0,
+        autoShow: !0,
+        lazyHtmlGeneration: !0,
+        autoClearCookies: !0,
+        manageScriptTags: !0,
+        hideFromBots: !0,
+        cookie: {
+          name: 'cc_cookie',
+          expiresAfterDays: 182,
+          domain: '',
+          path: '/',
+          secure: !0,
+          sameSite: 'Lax'
+        }
+      }, this.o = {
+        i: {},
+        l: '',
+        _: {},
+        u: {},
+        p: {},
+        m: [],
+        v: !1,
+        h: null,
+        C: null,
+        S: null,
+        M: '',
+        D: !0,
+        T: !1,
+        k: !1,
+        A: !1,
+        N: !1,
+        H: [],
+        V: !1,
+        I: !0,
+        L: [],
+        j: !1,
+        F: '',
+        P: !1,
+        O: [],
+        R: [],
+        B: [],
+        $: [],
+        G: !1,
+        J: !1,
+        U: !1,
+        q: [],
+        K: [],
+        W: [],
+        X: {},
+        Y: {},
+        Z: {},
+        ee: {},
+        te: {},
+        oe: []
+      }, this.ne = {
+        ae: {},
+        se: {}
+      }, this.ce = {}, this.re = {
+        ie: 'cc:onFirstConsent',
+        le: 'cc:onConsent',
+        de: 'cc:onChange',
+        fe: 'cc:onModalShow',
+        _e: 'cc:onModalHide',
+        ue: 'cc:onModalReady'
+      };
+    }
+  }
+  const g = new p(),
+    m = (e, t) => e.indexOf(t),
+    b = (e, t) => -1 !== m(e, t),
+    v = e => Array.isArray(e),
+    y = e => 'string' == typeof e,
+    h = e => !!e && 'object' == typeof e && !v(e),
+    C = e => 'function' == typeof e,
+    w = e => Object.keys(e),
+    S = e => Array.from(new Set(e)),
+    x = () => document.activeElement,
+    M = e => e.preventDefault(),
+    D = (e, t) => e.querySelectorAll(t),
+    k = e => {
+      const t = document.createElement(e);
+      return e === r && (t.type = e), t;
+    },
+    E = (e, t, o) => e.setAttribute(t, o),
+    A = (e, t, o) => {
+      e.removeAttribute(o ? 'data-' + t : t);
+    },
+    N = (e, t, o) => e.getAttribute(o ? 'data-' + t : t),
+    H = (e, t) => e.appendChild(t),
+    V = (e, t) => e.classList.add(t),
+    I = (e, t) => V(e, 'cm__' + t),
+    L = (e, t) => V(e, 'pm__' + t),
+    j = (e, t) => e.classList.remove(t),
+    F = e => {
+      if ('object' != typeof e) return e;
+      if (e instanceof Date) return new Date(e.getTime());
+      let t = Array.isArray(e) ? [] : {};
+      for (let o in e) {
+        let n = e[o];
+        t[o] = F(n);
+      }
+      return t;
+    },
+    P = () => {
+      const e = {},
+        {
+          O: t,
+          X: o,
+          Y: n
+        } = g.o;
+      for (const a of t) e[a] = $(n[a], w(o[a]));
+      return e;
+    },
+    O = (e, t) => dispatchEvent(new CustomEvent(e, {
+      detail: t
+    })),
+    R = (e, t, o, n) => {
+      e.addEventListener(t, o), n && g.o.m.push({
+        pe: e,
+        ge: t,
+        me: o
+      });
+    },
+    B = () => {
+      const e = g.t.cookie.expiresAfterDays;
+      return C(e) ? e(g.o.F) : e;
+    },
+    $ = (e, t) => {
+      const o = e || [],
+        n = t || [];
+      return o.filter(e => !b(n, e)).concat(n.filter(e => !b(o, e)));
+    },
+    G = e => {
+      g.o.R = S(e), g.o.F = (() => {
+        let e = 'custom';
+        const {
+            R: t,
+            O: o,
+            B: n
+          } = g.o,
+          a = t.length;
+        return a === o.length ? e = 'all' : a === n.length && (e = 'necessary'), e;
+      })();
+    },
+    J = (e, t, o, n) => {
+      const a = 'accept-',
+        {
+          show: s,
+          showPreferences: c,
+          hide: r,
+          hidePreferences: i,
+          acceptCategory: l
+        } = t,
+        f = e || document,
+        _ = e => D(f, `[data-cc="${e}"]`),
+        u = (e, t) => {
+          M(e), l(t), i(), r();
+        },
+        p = _('show-preferencesModal'),
+        m = _('show-consentModal'),
+        b = _(a + 'all'),
+        v = _(a + 'necessary'),
+        y = _(a + 'custom'),
+        h = g.t.lazyHtmlGeneration;
+      for (const e of p) E(e, 'aria-haspopup', 'dialog'), R(e, d, e => {
+        M(e), c();
+      }), h && (R(e, 'mouseenter', e => {
+        M(e), g.o.N || o(t, n);
+      }, !0), R(e, 'focus', () => {
+        g.o.N || o(t, n);
+      }));
+      for (let e of m) E(e, 'aria-haspopup', 'dialog'), R(e, d, e => {
+        M(e), s(!0);
+      }, !0);
+      for (let e of b) R(e, d, e => {
+        u(e, 'all');
+      }, !0);
+      for (let e of y) R(e, d, e => {
+        u(e);
+      }, !0);
+      for (let e of v) R(e, d, e => {
+        u(e, []);
+      }, !0);
+    },
+    U = (e, t) => {
+      e && (t && (e.tabIndex = -1), e.focus(), t && e.removeAttribute('tabindex'));
+    },
+    z = (e, t) => {
+      const o = n => {
+        n.target.removeEventListener('transitionend', o), 'opacity' === n.propertyName && '1' === getComputedStyle(e).opacity && U((e => 1 === e ? g.ne.be : g.ne.ve)(t));
+      };
+      R(e, 'transitionend', o);
+    };
+  let q;
+  const K = e => {
+      clearTimeout(q), e ? V(g.ne.ye, a) : q = setTimeout(() => {
+        j(g.ne.ye, a);
+      }, 500);
+    },
+    Q = ['M 19.5 4.5 L 4.5 19.5 M 4.5 4.501 L 19.5 19.5', 'M 3.572 13.406 L 8.281 18.115 L 20.428 5.885', 'M 21.999 6.94 L 11.639 17.18 L 2.001 6.82 '],
+    W = (e = 0, t = 1.5) => `<svg viewBox="0 0 24 24" stroke-width="${t}"><path d="${Q[e]}"/></svg>`,
+    X = e => {
+      const t = g.ne,
+        o = g.o;
+      (e => {
+        const n = e === t.he,
+          a = o.i.disablePageInteraction ? t.ye : n ? t.Ce : t.ye;
+        R(a, 'keydown', t => {
+          if ('Tab' !== t.key || !(n ? o.k && !o.A : o.A)) return;
+          const a = x(),
+            s = n ? o.q : o.K;
+          0 !== s.length && (t.shiftKey ? a !== s[0] && e.contains(a) || (M(t), U(s[1])) : a !== s[1] && e.contains(a) || (M(t), U(s[0])));
+        }, !0);
+      })(e);
+    },
+    Y = ['[href]', r, 'input', 'details', '[tabindex]'].map(e => e + ':not([tabindex="-1"])').join(','),
+    Z = e => {
+      const {
+          o: t,
+          ne: o
+        } = g,
+        n = (e, t) => {
+          const o = D(e, Y);
+          t[0] = o[0], t[1] = o[o.length - 1];
+        };
+      1 === e && t.T && n(o.he, t.q), 2 === e && t.N && n(o.we, t.K);
+    },
+    ee = (e, t, o) => {
+      const {
+          de: n,
+          le: a,
+          ie: s,
+          _e: c,
+          ue: r,
+          fe: i
+        } = g.ce,
+        l = g.re;
+      if (t) {
+        const n = {
+          modalName: t
+        };
+        return e === l.fe ? C(i) && i(n) : e === l._e ? C(c) && c(n) : (n.modal = o, C(r) && r(n)), O(e, n);
+      }
+      const d = {
+        cookie: g.o.p
+      };
+      e === l.ie ? C(s) && s(F(d)) : e === l.le ? C(a) && a(F(d)) : (d.changedCategories = g.o.L, d.changedServices = g.o.ee, C(n) && n(F(d))), O(e, F(d));
+    },
+    te = (e, t) => {
+      try {
+        return e();
+      } catch (e) {
+        return !t && console.warn('CookieConsent:', e), !1;
+      }
+    },
+    oe = e => {
+      const {
+        Y: t,
+        ee: o,
+        O: n,
+        X: a,
+        oe: c,
+        p: r,
+        L: i
+      } = g.o;
+      for (const e of n) {
+        const n = o[e] || t[e] || [];
+        for (const o of n) {
+          const n = a[e][o];
+          if (!n) continue;
+          const {
+            onAccept: s,
+            onReject: c
+          } = n;
+          !n.Se && b(t[e], o) ? (n.Se = !0, C(s) && s()) : n.Se && !b(t[e], o) && (n.Se = !1, C(c) && c());
+        }
+      }
+      if (!g.t.manageScriptTags) return;
+      const l = c,
+        d = e || r.categories || [],
+        f = (e, n) => {
+          if (n >= e.length) return;
+          const a = c[n];
+          if (a.xe) return f(e, n + 1);
+          const r = a.Me,
+            l = a.De,
+            _ = a.Te,
+            u = b(d, l),
+            p = !!_ && b(t[l], _);
+          if (!_ && !a.ke && u || !_ && a.ke && !u && b(i, l) || _ && !a.ke && p || _ && a.ke && !p && b(o[l] || [], _)) {
+            a.xe = !0;
+            const t = N(r, 'type', !0);
+            A(r, 'type', !!t), A(r, s);
+            let o = N(r, 'src', !0);
+            o && A(r, 'src', !0);
+            const c = k('script');
+            c.textContent = r.innerHTML;
+            for (const {
+              nodeName: e
+            } of r.attributes) E(c, e, r[e] || N(r, e));
+            t && (c.type = t), o ? c.src = o : o = r.src;
+            const i = !!o && (!t || ['text/javascript', 'module'].includes(t));
+            if (i && (c.onload = c.onerror = () => {
+              f(e, ++n);
+            }), r.replaceWith(c), i) return;
+          }
+          f(e, ++n);
+        };
+      f(l, 0);
+    },
+    ne = 'bottom',
+    ae = 'left',
+    se = 'center',
+    ce = 'right',
+    re = 'inline',
+    ie = 'wide',
+    le = 'pm--',
+    de = ['middle', 'top', ne],
+    fe = [ae, se, ce],
+    _e = {
+      box: {
+        Ee: [ie, re],
+        Ae: de,
+        Ne: fe,
+        He: ne,
+        Ve: ce
+      },
+      cloud: {
+        Ee: [re],
+        Ae: de,
+        Ne: fe,
+        He: ne,
+        Ve: se
+      },
+      bar: {
+        Ee: [re],
+        Ae: de.slice(1),
+        Ne: [],
+        He: ne,
+        Ve: ''
+      }
+    },
+    ue = {
+      box: {
+        Ee: [],
+        Ae: [],
+        Ne: [],
+        He: '',
+        Ve: ''
+      },
+      bar: {
+        Ee: [ie],
+        Ae: [],
+        Ne: [ae, ce],
+        He: '',
+        Ve: ae
+      }
+    },
+    pe = e => {
+      const t = g.o.i.guiOptions,
+        o = t && t.consentModal,
+        n = t && t.preferencesModal;
+      0 === e && ge(g.ne.he, _e, o, 'cm--', 'box', 'cm'), 1 === e && ge(g.ne.we, ue, n, le, 'box', 'pm');
+    },
+    ge = (e, t, o, n, a, s) => {
+      e.className = s;
+      const c = o && o.layout,
+        r = o && o.position,
+        i = o && o.flipButtons,
+        l = !o || !1 !== o.equalWeightButtons,
+        d = c && c.split(' ') || [],
+        f = d[0],
+        _ = d[1],
+        u = f in t ? f : a,
+        p = t[u],
+        m = b(p.Ee, _) && _,
+        v = r && r.split(' ') || [],
+        y = v[0],
+        h = n === le ? v[0] : v[1],
+        C = b(p.Ae, y) ? y : p.He,
+        w = b(p.Ne, h) ? h : p.Ve,
+        S = t => {
+          t && V(e, n + t);
+        };
+      S(u), S(m), S(C), S(w), i && S('flip');
+      const x = s + '__btn--secondary';
+      if ('cm' === s) {
+        const {
+          Ie: e,
+          Le: t
+        } = g.ne;
+        e && (l ? j(e, x) : V(e, x)), t && (l ? j(t, x) : V(t, x));
+      } else {
+        const {
+          je: e
+        } = g.ne;
+        e && (l ? j(e, x) : V(e, x));
+      }
+    },
+    me = (e, t) => {
+      const o = g.o,
+        n = g.ne,
+        {
+          hide: a,
+          hidePreferences: s,
+          acceptCategory: _
+        } = e,
+        p = e => {
+          _(e), s(), a();
+        },
+        m = o.u && o.u.preferencesModal;
+      if (!m) return;
+      const b = m.title,
+        v = m.closeIconLabel,
+        C = m.acceptAllBtn,
+        S = m.acceptNecessaryBtn,
+        x = m.savePreferencesBtn,
+        M = m.sections || [],
+        D = C || S || x;
+      if (n.Fe) n.Pe = k(c), L(n.Pe, 'body');else {
+        n.Fe = k(c), V(n.Fe, 'pm-wrapper');
+        const e = k('div');
+        V(e, 'pm-overlay'), H(n.Fe, e), R(e, d, s), n.we = k(c), V(n.we, 'pm'), E(n.we, 'role', 'dialog'), E(n.we, i, !0), E(n.we, 'aria-modal', !0), E(n.we, 'aria-labelledby', 'pm__title'), R(n.ye, 'keydown', e => {
+          27 === e.keyCode && s();
+        }, !0), n.Oe = k(c), L(n.Oe, 'header'), n.Re = k('h2'), L(n.Re, 'title'), n.Re.id = 'pm__title', n.Be = k(r), L(n.Be, 'close-btn'), E(n.Be, 'aria-label', m.closeIconLabel || ''), R(n.Be, d, s), n.$e = k('span'), n.$e.innerHTML = W(), H(n.Be, n.$e), n.Ge = k(c), L(n.Ge, 'body'), n.Je = k(c), L(n.Je, 'footer');
+        var T = k(c);
+        V(T, 'btns');
+        var A = k(c),
+          N = k(c);
+        L(A, l), L(N, l), H(n.Je, A), H(n.Je, N), H(n.Oe, n.Re), H(n.Oe, n.Be), n.ve = k(c), E(n.ve, 'tabIndex', -1), H(n.we, n.ve), H(n.we, n.Oe), H(n.we, n.Ge), D && H(n.we, n.Je), H(n.Fe, n.we);
+      }
+      let I;
+      b && (n.Re.innerHTML = b, v && E(n.Be, 'aria-label', v)), M.forEach((e, t) => {
+        const a = e.title,
+          s = e.description,
+          l = e.linkedCategory,
+          f = l && o.P[l],
+          _ = e.cookieTable,
+          u = _ && _.body,
+          p = _ && _.caption,
+          g = u && u.length > 0,
+          b = !!f,
+          v = b && o.X[l],
+          C = h(v) && w(v) || [],
+          S = b && (!!s || !!g || w(v).length > 0);
+        var x = k(c);
+        if (L(x, 'section'), S || s) {
+          var M = k(c);
+          L(M, 'section-desc-wrapper');
+        }
+        let D = C.length;
+        if (S && D > 0) {
+          const e = k(c);
+          L(e, 'section-services');
+          for (const t of C) {
+            const o = v[t],
+              n = o && o.label || t,
+              a = k(c),
+              s = k(c),
+              r = k(c),
+              i = k(c);
+            L(a, 'service'), L(i, 'service-title'), L(s, 'service-header'), L(r, 'service-icon');
+            const d = be(n, t, f, !0, l);
+            i.innerHTML = n, H(s, r), H(s, i), H(a, s), H(a, d), H(e, a);
+          }
+          H(M, e);
+        }
+        if (a) {
+          var T = k(c),
+            A = k(b ? r : c);
+          if (L(T, 'section-title-wrapper'), L(A, 'section-title'), A.innerHTML = a, H(T, A), b) {
+            const e = k('span');
+            e.innerHTML = W(2, 3.5), L(e, 'section-arrow'), H(T, e), x.className += '--toggle';
+            const t = be(a, l, f);
+            let o = m.serviceCounterLabel;
+            if (D > 0 && y(o)) {
+              let e = k('span');
+              L(e, 'badge'), L(e, 'service-counter'), E(e, i, !0), E(e, 'data-servicecounter', D), o && (o = o.split('|'), o = o.length > 1 && D > 1 ? o[1] : o[0], E(e, 'data-counterlabel', o)), e.innerHTML = D + (o ? ' ' + o : ''), H(A, e);
+            }
+            if (S) {
+              L(x, 'section--expandable');
+              var N = l + '-desc';
+              E(A, 'aria-expanded', !1), E(A, 'aria-controls', N);
+            }
+            H(T, t);
+          } else E(A, 'role', 'heading'), E(A, 'aria-level', '3');
+          H(x, T);
+        }
+        if (s) {
+          var F = k('p');
+          L(F, 'section-desc'), F.innerHTML = s, H(M, F);
+        }
+        if (S && (E(M, i, 'true'), M.id = N, ((e, t, o) => {
+          R(A, d, () => {
+            t.classList.contains('is-expanded') ? (j(t, 'is-expanded'), E(o, 'aria-expanded', 'false'), E(e, i, 'true')) : (V(t, 'is-expanded'), E(o, 'aria-expanded', 'true'), E(e, i, 'false'));
+          });
+        })(M, x, A), g)) {
+          const e = k('table'),
+            o = k('thead'),
+            a = k('tbody');
+          if (p) {
+            const t = k('caption');
+            L(t, 'table-caption'), t.innerHTML = p, e.appendChild(t);
+          }
+          L(e, 'section-table'), L(o, 'table-head'), L(a, 'table-body');
+          const s = _.headers,
+            r = w(s),
+            i = n.Ue.createDocumentFragment(),
+            l = k('tr');
+          for (const e of r) {
+            const o = s[e],
+              n = k('th');
+            n.id = 'cc__row-' + o + t, E(n, 'scope', 'col'), L(n, 'table-th'), n.innerHTML = o, H(i, n);
+          }
+          H(l, i), H(o, l);
+          const d = n.Ue.createDocumentFragment();
+          for (const e of u) {
+            const o = k('tr');
+            L(o, 'table-tr');
+            for (const n of r) {
+              const a = s[n],
+                r = e[n],
+                i = k('td'),
+                l = k(c);
+              L(i, 'table-td'), E(i, 'data-column', a), E(i, 'headers', 'cc__row-' + a + t), l.insertAdjacentHTML('beforeend', r), H(i, l), H(o, i);
+            }
+            H(d, o);
+          }
+          H(a, d), H(e, o), H(e, a), H(M, e);
+        }
+        (S || s) && H(x, M);
+        const P = n.Pe || n.Ge;
+        b ? (I || (I = k(c), L(I, 'section-toggles')), I.appendChild(x)) : I = null, H(P, I || x);
+      }), C && (n.ze || (n.ze = k(r), L(n.ze, 'btn'), E(n.ze, f, 'all'), H(A, n.ze), R(n.ze, d, () => p('all'))), n.ze.innerHTML = C), S && (n.je || (n.je = k(r), L(n.je, 'btn'), E(n.je, f, 'necessary'), H(A, n.je), R(n.je, d, () => p([]))), n.je.innerHTML = S), x && (n.qe || (n.qe = k(r), L(n.qe, 'btn'), L(n.qe, 'btn--secondary'), E(n.qe, f, 'save'), H(N, n.qe), R(n.qe, d, () => p())), n.qe.innerHTML = x), n.Pe && (n.we.replaceChild(n.Pe, n.Ge), n.Ge = n.Pe), pe(1), o.N || (o.N = !0, ee(g.re.ue, u, n.we), t(e), H(n.Ce, n.Fe), X(n.we), setTimeout(() => V(n.Fe, 'cc--anim'), 100)), Z(2);
+    };
+  function be(e, t, o, n, a) {
+    const c = g.o,
+      r = g.ne,
+      l = k('label'),
+      f = k('input'),
+      _ = k('span'),
+      u = k('span'),
+      p = k('span'),
+      m = k('span'),
+      v = k('span');
+    if (m.innerHTML = W(1, 3), v.innerHTML = W(0, 3), f.type = 'checkbox', V(l, 'section__toggle-wrapper'), V(f, 'section__toggle'), V(m, 'toggle__icon-on'), V(v, 'toggle__icon-off'), V(_, 'toggle__icon'), V(u, 'toggle__icon-circle'), V(p, 'toggle__label'), E(_, i, 'true'), n ? (V(l, 'toggle-service'), E(f, s, a), r.se[a][t] = f) : r.ae[t] = f, n ? (e => {
+      R(f, 'change', () => {
+        const t = r.se[e],
+          o = r.ae[e];
+        c.Z[e] = [];
+        for (let o in t) {
+          const n = t[o];
+          n.checked && c.Z[e].push(n.value);
+        }
+        o.checked = c.Z[e].length > 0;
+      });
+    })(a) : (e => {
+      R(f, d, () => {
+        const t = r.se[e],
+          o = f.checked;
+        c.Z[e] = [];
+        for (let n in t) t[n].checked = o, o && c.Z[e].push(n);
+      });
+    })(t), f.value = t, p.textContent = e.replace(/<.*>.*<\/.*>/gm, ''), H(u, v), H(u, m), H(_, u), c.D) (o.readOnly || o.enabled) && (f.checked = !0);else if (n) {
+      const e = c.Y[a];
+      f.checked = o.readOnly || b(e, t);
+    } else b(c.R, t) && (f.checked = !0);
+    return o.readOnly && (f.disabled = !0), H(l, f), H(l, _), H(l, p), l;
+  }
+  const ve = () => {
+      const e = k('span');
+      return g.ne.Ke || (g.ne.Ke = e), e;
+    },
+    ye = (e, t) => {
+      const o = g.o,
+        n = g.ne,
+        {
+          hide: a,
+          showPreferences: s,
+          acceptCategory: u
+        } = e,
+        p = o.u && o.u.consentModal;
+      if (!p) return;
+      const m = p.acceptAllBtn,
+        b = p.acceptNecessaryBtn,
+        v = p.showPreferencesBtn,
+        y = p.closeIconLabel,
+        h = p.footer,
+        C = p.label,
+        w = p.title,
+        S = e => {
+          a(), u(e);
+        };
+      if (!n.Qe) {
+        n.Qe = k(c), n.he = k(c), n.We = k(c), n.Xe = k(c), n.Ye = k(c), V(n.Qe, 'cm-wrapper'), V(n.he, 'cm'), I(n.We, 'body'), I(n.Xe, 'texts'), I(n.Ye, 'btns'), E(n.he, 'role', 'dialog'), E(n.he, 'aria-modal', 'true'), E(n.he, i, 'false'), E(n.he, 'aria-describedby', 'cm__desc'), C ? E(n.he, 'aria-label', C) : w && E(n.he, 'aria-labelledby', 'cm__title');
+        const e = 'box',
+          t = o.i.guiOptions,
+          a = t && t.consentModal,
+          s = (a && a.layout || e).split(' ')[0] === e;
+        w && y && s && (n.Le || (n.Le = k(r), n.Le.innerHTML = W(), I(n.Le, 'btn'), I(n.Le, 'btn--close'), R(n.Le, d, () => {
+          S([]);
+        }), H(n.We, n.Le)), E(n.Le, 'aria-label', y)), H(n.We, n.Xe), (m || b || v) && H(n.We, n.Ye), n.be = k(c), E(n.be, 'tabIndex', -1), H(n.he, n.be), H(n.he, n.We), H(n.Qe, n.he);
+      }
+      w && (n.Ze || (n.Ze = k('h2'), n.Ze.className = n.Ze.id = 'cm__title', H(n.Xe, n.Ze)), n.Ze.innerHTML = w);
+      let x = p.description;
+      if (x && (o.V && (x = x.replace('{{revisionMessage}}', o.I ? '' : p.revisionMessage || '')), n.et || (n.et = k('p'), n.et.className = n.et.id = 'cm__desc', H(n.Xe, n.et)), n.et.innerHTML = x), m && (n.tt || (n.tt = k(r), H(n.tt, ve()), I(n.tt, 'btn'), E(n.tt, f, 'all'), R(n.tt, d, () => {
+        S('all');
+      })), n.tt.firstElementChild.innerHTML = m), b && (n.Ie || (n.Ie = k(r), H(n.Ie, ve()), I(n.Ie, 'btn'), E(n.Ie, f, 'necessary'), R(n.Ie, d, () => {
+        S([]);
+      })), n.Ie.firstElementChild.innerHTML = b), v && (n.ot || (n.ot = k(r), H(n.ot, ve()), I(n.ot, 'btn'), I(n.ot, 'btn--secondary'), E(n.ot, f, 'show'), R(n.ot, 'mouseenter', () => {
+        o.N || me(e, t);
+      }), R(n.ot, d, s)), n.ot.firstElementChild.innerHTML = v), n.nt || (n.nt = k(c), I(n.nt, l), m && H(n.nt, n.tt), b && H(n.nt, n.Ie), (m || b) && H(n.We, n.nt), H(n.Ye, n.nt)), n.ot && !n.st && (n.st = k(c), n.Ie && n.tt ? (I(n.st, l), H(n.st, n.ot), H(n.Ye, n.st)) : (H(n.nt, n.ot), I(n.nt, l + '--uneven'))), h) {
+        if (!n.ct) {
+          let e = k(c),
+            t = k(c);
+          n.ct = k(c), I(e, 'footer'), I(t, 'links'), I(n.ct, 'link-group'), H(t, n.ct), H(e, t), H(n.he, e);
+        }
+        n.ct.innerHTML = h;
+      }
+      pe(0), o.T || (o.T = !0, ee(g.re.ue, _, n.he), t(e), H(n.Ce, n.Qe), X(n.he), setTimeout(() => V(n.Qe, 'cc--anim'), 100)), Z(1), J(n.We, e, me, t);
+    },
+    he = e => {
+      if (!y(e)) return null;
+      if (e in g.o._) return e;
+      let t = e.slice(0, 2);
+      return t in g.o._ ? t : null;
+    },
+    Ce = () => g.o.l || g.o.i.language.default,
+    we = e => {
+      e && (g.o.l = e);
+    },
+    Se = async e => {
+      const t = g.o;
+      let o = he(e) ? e : Ce(),
+        n = t._[o];
+      if (y(n) ? n = await (async e => {
+        try {
+          const t = await fetch(e);
+          return await t.json();
+        } catch (e) {
+          return console.error(e), !1;
+        }
+      })(n) : C(n) && (n = await n()), !n) throw `Could not load translation for the '${o}' language`;
+      return t.u = n, we(o), !0;
+    },
+    xe = () => {
+      let e = g.o.i.language.rtl,
+        t = g.ne.Ce;
+      e && t && (v(e) || (e = [e]), b(e, g.o.l) ? V(t, 'cc--rtl') : j(t, 'cc--rtl'));
+    },
+    Me = () => {
+      const e = g.ne;
+      if (e.Ce) return;
+      e.Ce = k(c), e.Ce.id = 'cc-main', e.Ce.setAttribute('data-nosnippet', ''), xe();
+      let t = g.o.i.root;
+      t && y(t) && (t = document.querySelector(t)), (t || e.Ue.body).appendChild(e.Ce);
+    },
+    De = e => te(() => localStorage.removeItem(e)),
+    Te = (e, t) => {
+      if (t instanceof RegExp) return e.filter(e => t.test(e));
+      {
+        const o = m(e, t);
+        return o > -1 ? [e[o]] : [];
+      }
+    },
+    ke = e => {
+      const {
+          hostname: t,
+          protocol: o
+        } = location,
+        {
+          name: n,
+          path: a,
+          domain: s,
+          sameSite: c,
+          useLocalStorage: r,
+          secure: i
+        } = g.t.cookie,
+        l = e ? (() => {
+          const e = g.o.S,
+            t = e ? new Date() - e : 0;
+          return 864e5 * B() - t;
+        })() : 864e5 * B(),
+        d = new Date();
+      d.setTime(d.getTime() + l), g.o.p.expirationTime = d.getTime();
+      const f = JSON.stringify(g.o.p);
+      let _ = n + '=' + encodeURIComponent(f) + (0 !== l ? '; expires=' + d.toUTCString() : '') + '; Path=' + a + '; SameSite=' + c;
+      b(t, '.') && (_ += '; Domain=' + s), i && 'https:' === o && (_ += '; Secure'), r ? ((e, t) => {
+        te(() => localStorage.setItem(e, t));
+      })(n, f) : document.cookie = _, g.o.p;
+    },
+    Ee = (e, t, o) => {
+      if (0 === e.length) return;
+      const n = o || g.t.cookie.domain,
+        a = t || g.t.cookie.path,
+        s = 'www.' === n.slice(0, 4),
+        c = s && n.substring(4),
+        r = (e, t) => {
+          t && '.' !== t.slice(0, 1) && (t = '.' + t), document.cookie = e + '=; path=' + a + (t ? '; domain=' + t : '') + '; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        };
+      for (const t of e) r(t, o), o || r(t, n), s && r(t, c);
+    },
+    Ae = e => {
+      const t = e || g.t.cookie.name,
+        o = g.t.cookie.useLocalStorage;
+      return ((e, t) => {
+        let o;
+        return o = te(() => JSON.parse(t ? e : decodeURIComponent(e)), !0) || {}, o;
+      })(o ? (n = t, te(() => localStorage.getItem(n)) || '') : Ne(t, !0), o);
+      var n;
+    },
+    Ne = (e, t) => {
+      const o = document.cookie.match('(^|;)\\s*' + e + '\\s*=\\s*([^;]+)');
+      return o ? t ? o.pop() : e : '';
+    },
+    He = e => {
+      const t = document.cookie.split(/;\s*/),
+        o = [];
+      for (const n of t) {
+        let t = n.split('=')[0];
+        e ? te(() => {
+          e.test(t) && o.push(t);
+        }) : o.push(t);
+      }
+      return o;
+    },
+    Ve = (o, n = []) => {
+      ((e, t) => {
+        const {
+          O: o,
+          R: n,
+          B: a,
+          N: s,
+          Z: c,
+          $: r,
+          X: i
+        } = g.o;
+        let l = [];
+        if (e) {
+          v(e) ? l.push(...e) : y(e) && (l = 'all' === e ? o : [e]);
+          for (const e of o) c[e] = b(l, e) ? w(i[e]) : [];
+        } else l = [...n, ...r], s && (l = (() => {
+          const e = g.ne.ae;
+          if (!e) return [];
+          let t = [];
+          for (let o in e) e[o].checked && t.push(o);
+          return t;
+        })());
+        l = l.filter(e => !b(o, e) || !b(t, e)), l.push(...a), G(l);
+      })(o, n), (() => {
+        const e = g.o,
+          {
+            Z: t,
+            B: o,
+            Y: n,
+            X: a,
+            O: s
+          } = e,
+          c = s;
+        e.te = F(n);
+        for (const s of c) {
+          const c = a[s],
+            r = w(c),
+            i = t[s] && t[s].length > 0,
+            l = b(o, s);
+          if (0 !== r.length) {
+            if (n[s] = [], l) n[s].push(...r);else if (i) {
+              const e = t[s];
+              n[s].push(...e);
+            } else n[s] = e.Z[s];
+            n[s] = S(n[s]);
+          }
+        }
+      })(), (() => {
+        const o = g.o;
+        o.L = g.t.mode === t && o.D ? $(o.$, o.R) : $(o.R, o.p.categories);
+        let n = o.L.length > 0,
+          a = !1;
+        for (const e of o.O) o.ee[e] = $(o.Y[e], o.te[e]), o.ee[e].length > 0 && (a = !0);
+        const s = g.ne.ae;
+        for (const e in s) s[e].checked = b(o.R, e);
+        for (const e of o.O) {
+          const t = g.ne.se[e],
+            n = o.Y[e];
+          for (const e in t) t[e].checked = b(n, e);
+        }
+        o.C || (o.C = new Date()), o.M || (o.M = ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, e => (e ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> e / 4).toString(16))), o.p = {
+          categories: F(o.R),
+          revision: g.t.revision,
+          data: o.h,
+          consentTimestamp: o.C.toISOString(),
+          consentId: o.M,
+          services: F(o.Y),
+          languageCode: g.o.l
+        }, o.S && (o.p.lastConsentTimestamp = o.S.toISOString());
+        let c = !1;
+        const r = n || a;
+        (o.D || r) && (o.D && (o.D = !1, c = !0), o.S = o.S ? new Date() : o.C, o.p.lastConsentTimestamp = o.S.toISOString(), ke(), g.t.autoClearCookies && (c || r) && (e => {
+          const t = g.o,
+            o = He(),
+            n = (e => {
+              const t = g.o;
+              return (e ? t.O : t.L).filter(e => {
+                const o = t.P[e];
+                return !!o && !o.readOnly && !!o.autoClear;
+              });
+            })(e);
+          for (const e in t.ee) for (const n of t.ee[e]) {
+            const a = t.X[e][n].cookies;
+            if (!b(t.Y[e], n) && a) for (const e of a) {
+              const t = Te(o, e.name);
+              Ee(t, e.path, e.domain);
+            }
+          }
+          for (const a of n) {
+            const n = t.P[a].autoClear,
+              s = n && n.cookies || [],
+              c = b(t.L, a),
+              r = !b(t.R, a),
+              i = c && r;
+            if (e ? r : i) {
+              n.reloadPage && i && (t.j = !0);
+              for (const e of s) {
+                const t = Te(o, e.name);
+                Ee(t, e.path, e.domain);
+              }
+            }
+          }
+        })(c), oe()), c && (ee(g.re.ie), ee(g.re.le), g.t.mode === e) || (r && ee(g.re.de), o.j && (o.j = !1, location.reload()));
+      })();
+    },
+    Ie = e => {
+      const t = g.o.D ? [] : g.o.R;
+      return b(t, e);
+    },
+    je = (e, t) => {
+      const o = g.o.D ? [] : g.o.Y[t] || [];
+      return b(o, e);
+    },
+    Oe = e => {
+      const {
+        ne: t,
+        o: n
+      } = g;
+      if (!n.k) {
+        if (!n.T) {
+          if (!e) return;
+          ye(Ge, Me);
+        }
+        n.k = !0, n.J = x(), n.v && K(!0), z(t.he, 1), V(t.ye, o), E(t.he, i, 'false'), setTimeout(() => {
+          U(g.ne.be);
+        }, 100), ee(g.re.fe, _);
+      }
+    },
+    Re = () => {
+      const {
+        ne: e,
+        o: t,
+        re: n
+      } = g;
+      t.k && (t.k = !1, t.v && K(), U(e.Ke, !0), j(e.ye, o), E(e.he, i, 'true'), U(t.J), t.J = null, ee(n._e, _));
+    },
+    Be = () => {
+      const e = g.o;
+      e.A || (e.N || me(Ge, Me), e.A = !0, e.k ? e.U = x() : e.J = x(), z(g.ne.we, 2), V(g.ne.ye, n), E(g.ne.we, i, 'false'), setTimeout(() => {
+        U(g.ne.ve);
+      }, 100), ee(g.re.fe, u));
+    },
+    $e = () => {
+      const e = g.o;
+      e.A && (e.A = !1, (() => {
+        const e = We(),
+          t = g.o.P,
+          o = g.ne.ae,
+          n = g.ne.se,
+          a = e => b(g.o.$, e);
+        for (const s in o) {
+          const c = !!t[s].readOnly;
+          o[s].checked = c || (e ? Ie(s) : a(s));
+          for (const t in n[s]) n[s][t].checked = c || (e ? je(t, s) : a(s));
+        }
+      })(), U(g.ne.$e, !0), j(g.ne.ye, n), E(g.ne.we, i, 'true'), e.k ? (U(e.U), e.U = null) : (U(e.J), e.J = null), ee(g.re._e, u));
+    };
+  var Ge = {
+    show: Oe,
+    hide: Re,
+    showPreferences: Be,
+    hidePreferences: $e,
+    acceptCategory: Ve
+  };
+  const Ue = () => {
+      const {
+          F: e,
+          Y: t
+        } = g.o,
+        {
+          accepted: o,
+          rejected: n
+        } = (() => {
+          const {
+            D: e,
+            R: t,
+            O: o
+          } = g.o;
+          return {
+            accepted: t,
+            rejected: e ? [] : o.filter(e => !b(t, e))
+          };
+        })();
+      return F({
+        acceptType: e,
+        acceptedCategories: o,
+        rejectedCategories: n,
+        acceptedServices: t,
+        rejectedServices: P()
+      });
+    },
+    We = () => !g.o.D,
+    Xe = async e => {
+      const {
+          o: o,
+          t: n,
+          re: a
+        } = g,
+        c = window;
+      if (!c._ccRun) {
+        if (c._ccRun = !0, (e => {
+          const {
+              ne: o,
+              t: n,
+              o: a
+            } = g,
+            c = n,
+            r = a,
+            {
+              cookie: i
+            } = c,
+            l = g.ce,
+            d = e.cookie,
+            f = e.categories,
+            _ = w(f) || [],
+            u = navigator,
+            p = document;
+          o.Ue = p, o.ye = p.documentElement, i.domain = location.hostname, r.i = e, r.P = f, r.O = _, r._ = e.language.translations, r.v = !!e.disablePageInteraction, l.ie = e.onFirstConsent, l.le = e.onConsent, l.de = e.onChange, l._e = e.onModalHide, l.fe = e.onModalShow, l.ue = e.onModalReady;
+          const {
+            mode: m,
+            autoShow: v,
+            lazyHtmlGeneration: y,
+            autoClearCookies: C,
+            revision: S,
+            manageScriptTags: x,
+            hideFromBots: M
+          } = e;
+          m === t && (c.mode = m), 'boolean' == typeof C && (c.autoClearCookies = C), 'boolean' == typeof x && (c.manageScriptTags = x), 'number' == typeof S && S >= 0 && (c.revision = S, r.V = !0), 'boolean' == typeof v && (c.autoShow = v), 'boolean' == typeof y && (c.lazyHtmlGeneration = y), !1 === M && (c.hideFromBots = !1), !0 === c.hideFromBots && u && (r.G = u.userAgent && /bot|crawl|spider|slurp|teoma/i.test(u.userAgent) || u.webdriver), h(d) && (c.cookie = {
+            ...i,
+            ...d
+          }), c.autoClearCookies, r.V, c.manageScriptTags, (e => {
+            const {
+              P: t,
+              X: o,
+              Y: n,
+              Z: a,
+              B: s
+            } = g.o;
+            for (let c of e) {
+              const e = t[c],
+                r = e.services || {},
+                i = h(r) && w(r) || [];
+              o[c] = {}, n[c] = [], a[c] = [], e.readOnly && (s.push(c), n[c] = i), g.ne.se[c] = {};
+              for (let e of i) {
+                const t = r[e];
+                t.Se = !1, o[c][e] = t;
+              }
+            }
+          })(_), (() => {
+            if (!g.t.manageScriptTags) return;
+            const e = g.o,
+              t = D(document, 'script[' + s + ']');
+            for (const o of t) {
+              let t = N(o, s),
+                n = o.dataset.service || '',
+                a = !1;
+              if (t && '!' === t.charAt(0) && (t = t.slice(1), a = !0), '!' === n.charAt(0) && (n = n.slice(1), a = !0), b(e.O, t) && (e.oe.push({
+                Me: o,
+                xe: !1,
+                ke: a,
+                De: t,
+                Te: n
+              }), n)) {
+                const o = e.X[t];
+                o[n] || (o[n] = {
+                  Se: !1
+                });
+              }
+            }
+          })(), we((() => {
+            const e = g.o.i.language.autoDetect;
+            if (e) {
+              const t = {
+                  browser: navigator.language,
+                  document: document.documentElement.lang
+                },
+                o = he(t[e]);
+              if (o) return o;
+            }
+            return Ce();
+          })());
+        })(e), o.G) return;
+        (() => {
+          const e = g.o,
+            o = g.t,
+            n = Ae(),
+            {
+              categories: a,
+              services: s,
+              consentId: c,
+              consentTimestamp: r,
+              lastConsentTimestamp: i,
+              data: l,
+              revision: d
+            } = n,
+            f = v(a);
+          e.p = n, e.M = c;
+          const _ = !!c && y(c);
+          e.C = r, e.C && (e.C = new Date(r)), e.S = i, e.S && (e.S = new Date(i)), e.h = void 0 !== l ? l : null, e.V && _ && d !== o.revision && (e.I = !1), e.D = !(_ && e.I && e.C && e.S && f), o.cookie.useLocalStorage && !e.D && (e.D = new Date().getTime() > (n.expirationTime || 0), e.D && De(o.cookie.name)), e.D, (() => {
+            const e = g.o;
+            for (const o of e.O) {
+              const n = e.P[o];
+              if (n.readOnly || n.enabled) {
+                e.$.push(o);
+                const n = e.X[o] || {};
+                for (let a in n) e.Z[o].push(a), e.i.mode === t && e.Y[o].push(a);
+              }
+            }
+          })(), e.D ? o.mode === t && (e.R = [...e.$]) : (e.Y = {
+            ...e.Y,
+            ...s
+          }, e.Z = {
+            ...e.Y
+          }, G([...e.B, ...a]));
+        })();
+        const i = We();
+        if (!(await Se())) return !1;
+        if (J(null, r = Ge, me, Me), g.o.D && ye(r, Me), g.t.lazyHtmlGeneration || me(r, Me), n.autoShow && !i && Oe(!0), i) return oe(), ee(a.le);
+        n.mode === t && oe(o.$);
+      }
+      var r;
+    };
+
+  /* eslint-disable max-len */
+  class CookieConsent {
+    constructor(config = null) {
+      this.isInit = false;
+      if (!window.NSW || !window.NSW.CookieConsent) {
+        console.error('NSW CookieConsent is not available.');
+        return;
+      }
+      if (!config) {
+        console.error('Cookie consent configuration not provided');
+        return;
+      }
+      CookieConsent.cleanupDefaultCookieUI();
+      this.config = CookieConsent.mapToVanillaCookieConsentConfig(config);
+      this.consentBannerElement = null;
+      this.preferencesDialogElement = null;
+      this.consentBannerConfirmationMessage = '';
+      this.consentSelectionMade = false;
+      this.createConsentBanner();
+      this.createPreferencesDialog();
+      this.init();
+    }
+    static cleanupDefaultCookieUI() {
+      // Remove unwanted stylesheet
+      const unwantedStylesheet = Array.from(document.querySelectorAll('link')).find(link => link.href.includes('cookieconsent.css'));
+      if (unwantedStylesheet) {
+        unwantedStylesheet.remove();
+      }
+
+      // Monitor for and remove the default cookie consent element
+      const observer = new MutationObserver(() => {
+        const defaultCookieConsentElement = document.getElementById('cc-main');
+        if (defaultCookieConsentElement) {
+          defaultCookieConsentElement.remove();
+          observer.disconnect(); // Stop observing
+        }
+      });
+      observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+      });
+
+      // Remove if it already exists in the DOM
+      const existingElement = document.getElementById('cc-main');
+      if (existingElement) {
+        existingElement.remove();
+      }
+    }
+    static mapToVanillaCookieConsentConfig(config) {
+      return {
+        ...config,
+        autoShow: false,
+        language: {
+          default: 'en',
+          translations: {
+            en: {
+              consentModal: config.consentBanner,
+              preferencesModal: config.preferencesDialog
+            }
+          }
+        }
+      };
+    }
+    createPreferencesDialog() {
+      const {
+        language: {
+          translations: {
+            en
+          }
+        },
+        categories = {}
+      } = this.config;
+      const {
+        preferencesModal
+      } = en;
+      const cookiesListHtml = `
+    <ul class="nsw-cookie-dialog__list">
+    ${preferencesModal.sections.map((section, index) => `
+          <li class="nsw-cookie-dialog__list-item">
+            <input 
+              class="nsw-form__checkbox-input" 
+              value="${section.linkedCategory}" 
+              type="checkbox" 
+              name="form-checkbox-multi-${index + 1}" 
+              id="cookie-settings-${index + 1}"
+              ${categories[section.linkedCategory].readOnly ? 'disabled' : ''}
+            >
+            <label 
+              class="nsw-form__checkbox-label" 
+              for="cookie-settings-${index + 1}"
+            >
+              ${section.title}
+            </label>
+            <div class="nsw-cookie-dialog__cookie-details">
+              <p>${section.description}</p>
+            </div>
+          </li>
+          `).join('')}
+  </ul>
+  `;
+
+      // Create the dialog dynamically
+      const preferencesDialogHtml = `
+      <div class="nsw-cookie-dialog nsw-dialog nsw-dialog--single-action js-dialog js-dialog-dismiss" id="cookie-consent-preferences" role="dialog" aria-labelledby="cookie-consent-dialog">
+        <div class="nsw-dialog__wrapper">
+          <div class="nsw-dialog__container">
+            <div class="nsw-dialog__top">
+              <div class="nsw-dialog__title">
+                <h2 id="cookie-dialog-title">${preferencesModal.title ? preferencesModal.title : 'Cookie preferences'}</h2>
+              </div>
+              <div class="nsw-dialog__close">
+                <button class="nsw-icon-button js-close-dialog">
+                  <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">close</span>
+                  <span class="sr-only">${preferencesModal.closeIconLabel ? preferencesModal.closeIconLabel : 'Close dialog'}</span>
+                </button>
+              </div>
+            </div>
+            <div class="nsw-dialog__content">
+              <div class="nsw-tabs js-cookie-consent-tabs">
+                <ul class="nsw-tabs__list">
+                  <li><a href="#cookie-settings" class="js-tabs-fixed">${preferencesModal.tab1 ? preferencesModal.tab1.tabTitle : 'Cookie preferences'}</a></li>
+                  ${preferencesModal.tab2 ? `<li><a href="#cookie-use" class="js-tabs-fixed">${preferencesModal.tab2.tabTitle ? preferencesModal.tab2.tabTitle : 'How we use cookies'}</a></li>` : ''}
+                  <li><a href="#cookie-information" class="js-tabs-fixed">What are cookies?</a></li>
+                </ul>
+                <section id="cookie-settings" class="nsw-tabs__content nsw-tabs__content--side-flush">
+                  <div class="nsw-cookie-dialog__content-wrapper">
+                    ${preferencesModal.tab1.content ? preferencesModal.tab1.content : ''}
+                    ${cookiesListHtml}
+                  </div>
+                </section>
+                ${preferencesModal.tab2 ? `
+                    <section id="cookie-use" class="nsw-tabs__content nsw-tabs__content--side-flush">
+                      <div class="nsw-cookie-dialog__content-wrapper">
+                        ${preferencesModal.tab2.content}
+                      </div>
+                    </section>
+                  ` : ''}
+                <section id="cookie-information" class="nsw-tabs__content nsw-tabs__content--side-flush">
+                  <div class="nsw-cookie-dialog__content-wrapper">
+                    <p>Cookies are small files stored on your phone, tablet, or computer when you visit a website. They help us understand how you use our website and improve your experience.</p>
+                    
+                    <p>Some cookies collect information about how you interact with our website, such as the pages you visit and links you click. Others may store personal information, depending on their purpose and configuration.</p>
+
+                    <p>Personal information that may be collected by cookies includes:</p>
+                    <ul>
+                      <li>Email address</li>
+                      <li>Username</li>
+                      <li>IP address</li>
+                      <li>Geographic location</li>
+                      <li>Session screen recordings</li>
+                    </ul>
+
+                    <p>We use cookies to:</p>
+                    <ul>
+                      <li>Make our website work efficiently and securely</li>
+                      <li>Remember your preferences, such as which pop-ups you’ve seen</li>
+                      <li>Understand how you use our website (analytics cookies)</li>
+                      <li>Enable social sharing, such as LinkedIn</li>
+                      <li>Continuously improve our website for you</li>
+                    </ul>
+
+                    <p>Privacy and compliance:</p>
+                    <p>If cookies collect personal information, we are required to comply with Information Privacy Principle (IPP) 3, ensuring openness in data collection. This means you should be informed when your personal information is collected.</p>
+
+                    <p>We provide this information through:</p>
+                    <ul>
+                      <li>A Privacy Collection Notice (PCN) within the "How we use cookies" tab</li>
+                      <li>A link to our Privacy Policy and/or Cookie Policy</li>
+                    </ul>
+
+                    <p>As tracking technologies evolve, we periodically review our cookie practices to maintain privacy compliance and control over tracking technologies.</p>
+
+                    <p>For more information on cookies, including how to manage or delete them, visit <a href="https://www.allaboutcookies.org">www.allaboutcookies.org</a>.</p>
+
+                    <p>For privacy advice, please contact your agency’s privacy or information governance team. Additional guidance is available at <a href="mailto:digitalnswprivacy@customerservice.nsw.gov.au">digitalnswprivacy@customerservice.nsw.gov.au</a>.</p>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+          <div class="nsw-cookie-dialog__bottom">
+            <div class="nsw-cookie-dialog__cta-group">
+              ${preferencesModal.acceptAllBtn ? `<button class="nsw-button nsw-button--dark-outline-solid js-close-dialog" data-role="accept-all">${preferencesModal.acceptAllBtn ? preferencesModal.acceptAllBtn : 'Accept all cookies'}</button>` : ''}
+              ${preferencesModal.acceptNecessaryBtn ? `<button class="nsw-button nsw-button--dark-outline-solid js-close-dialog" data-role="reject-all">${preferencesModal.acceptNecessaryBtn ? preferencesModal.acceptNecessaryBtn : 'Reject all cookies'}</button>` : ''}
+            </div>
+            <div class="nsw-cookie-dialog__cta-group">
+              <button class="nsw-button nsw-button--dark js-close-dialog" data-role="accept-selection">${preferencesModal.savePreferencesBtn ? preferencesModal.savePreferencesBtn : 'Accept current selection'}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+      // Append to the body
+      const dialogContainer = document.querySelector('.js-open-dialog-cookie-consent-preferences');
+
+      // Initialise dialog
+      if (dialogContainer) {
+        // Dynamically create the dialog HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = preferencesDialogHtml;
+        this.preferencesDialogElement = tempDiv.firstElementChild;
+
+        // Append the dialog directly to the body
+        document.body.appendChild(this.preferencesDialogElement);
+
+        // Initialise the NSW Design System Dialog
+        this.dialogInstance = new window.NSW.Dialog(this.preferencesDialogElement);
+        this.dialogInstance.init();
+      } else {
+        console.warn('Dialog trigger element not found');
+      }
+
+      // Initialise tabs
+      if (window.NSW && window.NSW.Tabs) {
+        const tabs = document.querySelector('.js-cookie-consent-tabs');
+        new window.NSW.Tabs(tabs).init();
+      } else {
+        console.warn('NSW Tabs library not found');
+      }
+    }
+    createConsentBanner() {
+      const {
+        language: {
+          translations: {
+            en
+          }
+        }
+      } = this.config;
+      const {
+        consentModal
+      } = en;
+      const bannerOffset = consentModal.bannerOffset ? consentModal.bannerOffset : '0';
+      this.consentBannerConfirmationMessage = consentModal.confirmationMessage || '';
+      const consentBannerHtml = `
+      <div class="nsw-cookie-banner" role="alert" tabindex="-1" aria-labelledby="cookie-banner-title" aria-live="assertive" style="bottom: ${bannerOffset};">
+        <div class="nsw-cookie-banner__wrapper">
+          <div id="cookie-banner-title" class="nsw-cookie-banner__title">${consentModal.title || 'Cookie use on our website'}</div>
+          <span class="nsw-cookie-banner__description">
+            <div class="nsw-cookie-banner__content">
+              ${consentModal.description ? `<p>${consentModal.description}</p>` : ''}
+            </div>
+            <div class="nsw-cookie-banner__buttons-container">
+              ${consentModal.acceptAllBtn || consentModal.acceptNecessaryBtn ? '<div class="nsw-cookie-banner__cta-group">' : ''}
+                ${consentModal.acceptAllBtn ? `<button class="nsw-button nsw-button--dark js-close-dialog ${!consentModal.confirmationMessage ? 'js-dismiss-cookie-banner' : ''}" data-role="accept-all">${consentModal.acceptAllBtn}</button>` : ''}
+                ${consentModal.acceptNecessaryBtn ? `<button class="nsw-button nsw-button--dark ${!consentModal.confirmationMessage ? 'js-dismiss-cookie-banner' : ''}" data-role="reject-all">${consentModal.acceptNecessaryBtn}</button>` : ''}
+              ${consentModal.acceptAllBtn || consentModal.acceptNecessaryBtn ? '</div>' : ''}
+              <a href="#cookie-consent" class="nsw-button nsw-button--dark-outline js-open-dialog-cookie-consent-preferences" aria-haspopup="dialog">${consentModal.showPreferencesBtn || 'Manage your cookies'}</a>
+            </div>
+          </span>
+          <span class="nsw-cookie-banner__confirmation-message" hidden="true">
+            <div class="nsw-cookie-banner__content">
+              <p>${consentModal.confirmationMessage}</p>
+            </div>
+            <div class="nsw-cookie-banner__buttons-container">
+              <button class="nsw-button nsw-button--dark js-dismiss-cookie-banner">Close this message</button>
+            </div>
+          </span>
+        </div>
+      </div>
+    `;
+
+      // Append the banner to the body
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = consentBannerHtml;
+      this.consentBannerElement = tempDiv.firstElementChild;
+      document.body.appendChild(this.consentBannerElement);
+      this.consentBannerElement.focus();
+    }
+    init() {
+      if (this.preferencesDialogElement) {
+        this.initElements();
+        this.initAPI();
+        this.attachEventListeners();
+
+        // Immediately hide the banner if user has preferences set
+        const preferences = Ue();
+        if (preferences && preferences.acceptedCategories.length > 0) {
+          this.consentBannerElement.setAttribute('hidden', 'true');
+        }
+      } else {
+        console.error('Banner element not created');
+      }
+    }
+    initElements() {
+      this.cookieInputContainer = document.querySelector('.nsw-cookie-dialog__list');
+      this.allCookieInputs = this.cookieInputContainer ? this.cookieInputContainer.querySelectorAll('input[type="checkbox"]') : [];
+      this.acceptSelectionButton = document.querySelector('[data-role="accept-selection"]');
+      this.acceptAllButton = document.querySelector('[data-role="accept-all"]');
+      this.rejectAllButton = document.querySelector('[data-role="reject-all"]');
+    }
+    initAPI() {
+      if (!this.isInit) {
+        Xe(this.config).then(() => {
+          this.isInit = true;
+          this.loadUserPreferences();
+        });
+      }
+    }
+    attachEventListeners() {
+      // Delegate events from the document to handle all relevant elements dynamically
+      document.addEventListener('click', event => {
+        const {
+          target
+        } = event;
+        if (target.matches('[data-role="accept-all"]')) {
+          this.handleConsentAction('accept-all');
+        } else if (target.matches('[data-role="reject-all"]')) {
+          this.handleConsentAction('reject-all');
+        } else if (target.matches('[data-role="accept-selection"]')) {
+          this.handleConsentAction('accept-selection');
+        }
+
+        // If target is dismissable
+        if (target.matches('.js-dismiss-cookie-banner')) {
+          this.hideConsentBanner();
+        }
+
+        // Manual trigger of cookie consent banner
+        if (target.matches('.js-open-banner-cookie-consent')) {
+          event.preventDefault();
+          this.showConsentBanner();
+        }
+
+        // Manual trigger of cookie consent preferences dialog
+        if (target.matches('.js-open-dialog-cookie-consent-preferences')) {
+          event.preventDefault();
+        }
+      });
+    }
+    loadUserPreferences() {
+      const preferences = Ue() || {
+        acceptedCategories: []
+      };
+      const inputs = Array.from(this.allCookieInputs);
+      for (let i = 0; i < inputs.length; i += 1) {
+        const checkbox = inputs[i];
+        const category = checkbox.value;
+        let isChecked;
+        if (preferences.acceptedCategories.length > 0) {
+          isChecked = preferences.acceptedCategories.includes(category);
+        } else {
+          isChecked = Boolean(this.config.categories[category] && this.config.categories[category].readOnly // Ensure read-only categories are checked by default
+          );
+        }
+        checkbox.checked = isChecked;
+      }
+    }
+    handleConsentAction(action) {
+      const updatePreferencesDialog = () => {
+        const preferences = Ue();
+        if (preferences && this.allCookieInputs) {
+          this.allCookieInputs.forEach(checkboxElement => {
+            const checkbox = checkboxElement; // Local reference
+            checkbox.checked = preferences.acceptedCategories.includes(checkbox.value);
+          });
+        }
+      };
+      switch (action) {
+        case 'accept-all':
+          {
+            console.log('User accepted all cookies');
+            Ve('all');
+            updatePreferencesDialog();
+            break;
+          }
+        case 'reject-all':
+          {
+            console.log('User rejected all cookies');
+            Ve([]);
+            updatePreferencesDialog();
+            break;
+          }
+        case 'accept-selection':
+          {
+            console.log('User accepted selected cookies');
+            const checked = [];
+            const unchecked = [];
+            this.allCookieInputs.forEach(checkboxElement => {
+              if (checkboxElement.checked) {
+                checked.push(checkboxElement.value);
+              } else {
+                unchecked.push(checkboxElement.value);
+              }
+            });
+            Ve(checked, unchecked);
+            updatePreferencesDialog();
+            break;
+          }
+        default:
+          {
+            console.warn(`Unhandled action: ${action}`);
+          }
+      }
+      this.consentSelectionMade = true;
+      this.showConfirmationMessage();
+
+      // Hide banner if present or confirmation is present
+      if (!this.consentBannerConfirmationMessage) {
+        this.hideConsentBanner();
+      }
+    }
+    showConfirmationMessage() {
+      // Select the confirmation message element
+      const confirmationMessage = this.consentBannerElement.querySelector('.nsw-cookie-banner__confirmation-message');
+
+      // Select the description element
+      const description = this.consentBannerElement.querySelector('.nsw-cookie-banner__description');
+      if (confirmationMessage) {
+        // Change the hidden attribute to false for the confirmation message
+        confirmationMessage.removeAttribute('hidden');
+      }
+      if (description) {
+        // Change the hidden attribute to true for the description
+        description.setAttribute('hidden', 'true');
+      }
+    }
+    showConsentBanner() {
+      if (this.consentBannerElement) {
+        const description = this.consentBannerElement.querySelector('.nsw-cookie-banner__description');
+        const confirmationMessage = this.consentBannerElement.querySelector('.nsw-cookie-banner__confirmation-message');
+        if (this.consentBannerConfirmationMessage && confirmationMessage) {
+          // Hide the confirmation message if it's present
+          confirmationMessage.setAttribute('hidden', 'true');
+        }
+        if (description) {
+          // Show the main description
+          description.removeAttribute('hidden');
+        }
+        this.consentBannerElement.removeAttribute('hidden');
+      } else {
+        console.warn('Consent banner element not found.');
+      }
+    }
+    hideConsentBanner() {
+      if (this.consentBannerElement) {
+        this.consentBannerElement.setAttribute('hidden', 'true');
+      }
+    }
+  }
+
+  /* eslint-disable max-len */
+  class Breadcrumbs {
+    constructor(element) {
+      this.element = element;
+      this.allBreadcrumbs = this.element.querySelector('.nsw-breadcrumbs ol');
+      this.secondBreadcrumb = this.element.querySelector('.js-breadcrumbs li:nth-child(2)');
+      this.condition = false;
+    }
+    init() {
+      if (this.allBreadcrumbs.children.length > 3) {
+        this.createToggle();
+      }
+    }
+    createToggle() {
+      const toggle = this.constructor.createElement('li', ['nsw-breadcrumbs__show-more-toggle']);
+      toggle.innerHTML = '<button aria-label="Show more breadcrumbs" class="nsw-breadcrumbs__toggle-button" type="button">…</button>';
+      toggle.addEventListener('click', () => {
+        this.allBreadcrumbs.classList.toggle('nsw-breadcrumbs__show-all');
+      });
+      this.allBreadcrumbs.insertBefore(toggle, this.secondBreadcrumb);
+    }
+    static createElement(tag, classes = [], attributes = {}) {
+      const element = document.createElement(tag);
+      if (classes.length > 0) {
+        element.classList.add(...classes);
+      }
+      Object.entries(attributes).forEach(([key, value]) => {
         element.setAttribute(key, value);
       });
       return element;
@@ -915,734 +3180,6 @@
     }
   }
 
-  function getSign(x) {
-    if (!Math.sign) {
-      return (x > 0) - (x < 0) || +x;
-    }
-    return Math.sign(x);
-  }
-  class SwipeContent {
-    constructor(element) {
-      this.element = element;
-      this.delta = [false, false];
-      this.dragging = false;
-      this.intervalId = false;
-      this.changedTouches = false;
-    }
-    init() {
-      this.element.addEventListener('mousedown', this.handleEvent.bind(this));
-      this.element.addEventListener('touchstart', this.handleEvent.bind(this), {
-        passive: true
-      });
-    }
-    initDragging() {
-      this.element.addEventListener('mousemove', this.handleEvent.bind(this));
-      this.element.addEventListener('touchmove', this.handleEvent.bind(this), {
-        passive: true
-      });
-      this.element.addEventListener('mouseup', this.handleEvent.bind(this));
-      this.element.addEventListener('mouseleave', this.handleEvent.bind(this));
-      this.element.addEventListener('touchend', this.handleEvent.bind(this));
-    }
-    cancelDragging() {
-      if (this.intervalId) {
-        if (!window.requestAnimationFrame) {
-          clearInterval(this.intervalId);
-        } else {
-          window.cancelAnimationFrame(this.intervalId);
-        }
-        this.intervalId = false;
-      }
-      this.element.removeEventListener('mousemove', this.handleEvent.bind(this));
-      this.element.removeEventListener('touchmove', this.handleEvent.bind(this));
-      this.element.removeEventListener('mouseup', this.handleEvent.bind(this));
-      this.element.removeEventListener('mouseleave', this.handleEvent.bind(this));
-      this.element.removeEventListener('touchend', this.handleEvent.bind(this));
-    }
-    handleEvent(event) {
-      switch (event.type) {
-        case 'mousedown':
-        case 'touchstart':
-          this.startDrag(event);
-          break;
-        case 'mousemove':
-        case 'touchmove':
-          this.drag(event);
-          break;
-        case 'mouseup':
-        case 'mouseleave':
-        case 'touchend':
-          this.endDrag(event);
-          break;
-        default:
-          console.log(`${event.type}.`);
-      }
-    }
-    startDrag(event) {
-      this.dragging = true;
-      this.initDragging();
-      this.delta = [parseInt(this.unify(event).clientX, 10), parseInt(this.unify(event).clientY, 10)];
-      this.emitSwipeEvents('dragStart', this.delta, event.target);
-    }
-    endDrag(event) {
-      this.cancelDragging();
-      const dx = parseInt(this.unify(event).clientX, 10);
-      const dy = parseInt(this.unify(event).clientY, 10);
-      if (this.delta && (this.delta[0] || this.delta[0] === 0)) {
-        const s = getSign(dx - this.delta[0]);
-        if (Math.abs(dx - this.delta[0]) > 30) {
-          if (s < 0) {
-            this.emitSwipeEvents('swipeLeft', [dx, dy]);
-          } else {
-            this.emitSwipeEvents('swipeRight', [dx, dy]);
-          }
-        }
-        this.delta[0] = false;
-      }
-      if (this.delta && (this.delta[1] || this.delta[1] === 0)) {
-        const y = getSign(dy - this.delta[1]);
-        if (Math.abs(dy - this.delta[1]) > 30) {
-          if (y < 0) {
-            this.emitSwipeEvents('swipeUp', [dx, dy]);
-          } else {
-            this.emitSwipeEvents('swipeDown', [dx, dy]);
-          }
-        }
-        this.delta[1] = false;
-      }
-      this.emitSwipeEvents('dragEnd', [dx, dy]);
-      this.dragging = false;
-    }
-    drag(event) {
-      if (!this.dragging) return;
-      if (!window.requestAnimationFrame) {
-        this.intervalId = setTimeout(() => {
-          this.emitDrag(event);
-        }, 250);
-      } else {
-        this.intervalId = window.requestAnimationFrame(() => {
-          this.emitDrag(event);
-        });
-      }
-    }
-    unify(event) {
-      this.changedTouches = event.changedTouches;
-      return this.changedTouches ? this.changedTouches[0] : event;
-    }
-    emitDrag(event) {
-      this.emitSwipeEvents('dragging', [parseInt(this.unify(event).clientX, 10), parseInt(this.unify(event).clientY, 10)]);
-    }
-    emitSwipeEvents(eventName, detail, el) {
-      let trigger = false;
-      if (el) trigger = el;
-      const event = new CustomEvent(eventName, {
-        detail: {
-          x: detail[0],
-          y: detail[1],
-          origin: trigger
-        }
-      });
-      this.element.dispatchEvent(event);
-    }
-  }
-
-  /* eslint-disable max-len */
-  class Carousel extends SwipeContent {
-    constructor(element) {
-      super(element);
-      this.element = element;
-      this.containerClass = 'nsw-carousel-container';
-      this.controlClass = 'js-carousel__control';
-      this.wrapperClass = 'js-carousel__wrapper';
-      this.counterClass = 'js-carousel__counter';
-      this.counterTorClass = 'js-carousel__counter-tot';
-      this.navClass = 'js-carousel__navigation';
-      this.navItemClass = 'js-carousel__nav-item';
-      this.navigationItemClass = this.element.getAttribute('data-navigation-item-class') ? this.element.getAttribute('data-navigation-item-class') : 'nsw-carousel__nav-item';
-      this.navigationClass = this.element.getAttribute('data-navigation-class') ? this.element.getAttribute('data-navigation-class') : 'nsw-carousel__navigation';
-      this.paginationClass = this.element.getAttribute('data-pagination-class') ? this.element.getAttribute('data-pagination-class') : 'nsw-carousel__navigation--pagination';
-      this.draggingClass = 'nsw-carousel--is-dragging';
-      this.loadedClass = 'nsw-carousel--loaded';
-      this.animateClass = 'nsw-carousel__list--animating';
-      this.cloneClass = 'js-clone';
-      this.srClass = 'sr-only';
-      this.srLiveAreaClass = 'js-carousel__aria-live';
-      this.hideControlsClass = 'nsw-carousel--hide-controls';
-      this.hideClass = 'nsw-display-none';
-      this.centerClass = 'nsw-justify-content-center';
-      this.listWrapper = this.element.querySelector(`.${this.wrapperClass}`);
-      this.list = this.listWrapper ? this.listWrapper.querySelector('ol') : false;
-      this.items = this.list ? this.list.getElementsByTagName('li') : false;
-      this.controls = this.element.querySelectorAll(`.${this.controlClass}`);
-      this.counter = this.element.querySelectorAll(`.${this.counterClass}`);
-      this.counterTor = this.element.querySelectorAll(`.${this.counterTorClass}`);
-      this.ariaLabel = this.element.getAttribute('data-description') ? this.element.getAttribute('data-description') : 'Card carousel';
-      this.dragEnabled = !!(this.element.getAttribute('data-drag') && this.element.getAttribute('data-drag') === 'on');
-      this.loop = !!(this.element.getAttribute('data-loop') && this.element.getAttribute('data-loop') === 'on');
-      this.nav = !(this.element.getAttribute('data-navigation') && this.element.getAttribute('data-navigation') === 'off');
-      this.navigationPagination = !!(this.element.getAttribute('data-navigation-pagination') && this.element.getAttribute('data-navigation-pagination') === 'on');
-      this.justifyContent = !!(this.element.getAttribute('data-justify-content') && this.element.getAttribute('data-justify-content') === 'on');
-      this.initItems = [];
-      this.itemsNb = this.items.length;
-      this.visibItemsNb = 1;
-      this.itemsWidth = 1;
-      this.itemOriginalWidth = false;
-      this.selectedItem = 0;
-      this.translateContainer = 0;
-      this.containerWidth = 0;
-      this.animating = false;
-      this.dragStart = false;
-      this.resizeId = false;
-      this.cloneList = [];
-      this.itemAutoSize = false;
-      this.totTranslate = 0;
-      if (this.nav) this.loop = false;
-      this.flexSupported = CSS.supports('align-items', 'stretch');
-      this.transitionSupported = CSS.supports('transition', 'transform');
-      this.cssPropertiesSupported = 'CSS' in window && CSS.supports('color', 'var(--color-var)');
-    }
-    init() {
-      if (!this.items) return;
-      this.initCarouselLayout();
-      this.setItemsWidth(true);
-      this.insertBefore(this.visibItemsNb);
-      this.updateCarouselClones();
-      this.resetItemsTabIndex();
-      this.initAriaLive();
-      this.initCarouselEvents();
-      this.initCarouselCounter();
-    }
-    initCarouselLayout() {
-      this.element.classList.add(this.loadedClass);
-      this.element.setAttribute('aria-roledescription', 'carousel');
-      this.element.setAttribute('aria-label', this.ariaLabel);
-      const itemsArray = Array.from(this.items);
-      itemsArray.forEach((element, index) => {
-        element.setAttribute('role', 'group');
-        element.setAttribute('aria-roledescription', 'slide');
-        element.setAttribute('aria-label', `${index + 1} of ${itemsArray.length}`);
-        element.setAttribute('data-index', index);
-      });
-      this.carouselCreateContainer();
-      const itemStyle = this.items && window.getComputedStyle(this.items[0]);
-      const containerStyle = this.listWrapper && window.getComputedStyle(this.listWrapper);
-      let itemWidth = itemStyle ? parseFloat(itemStyle.getPropertyValue('width')) : 0;
-      const itemMargin = itemStyle ? parseFloat(itemStyle.getPropertyValue('margin-right')) : 0;
-      const containerPadding = containerStyle ? parseFloat(containerStyle.getPropertyValue('padding-left')) : 0;
-      let containerWidth = containerStyle ? parseFloat(containerStyle.getPropertyValue('width')) : 0;
-      if (!this.itemAutoSize) {
-        this.itemAutoSize = itemWidth;
-      }
-      containerWidth = this.getCarouselWidth(containerWidth);
-      if (!this.itemOriginalWidth) {
-        this.itemOriginalWidth = itemWidth;
-      } else {
-        itemWidth = this.itemOriginalWidth;
-      }
-      if (this.itemAutoSize) {
-        this.itemOriginalWidth = parseInt(this.itemAutoSize, 10);
-        itemWidth = this.itemOriginalWidth;
-      }
-      if (containerWidth < itemWidth) {
-        this.itemOriginalWidth = containerWidth;
-        itemWidth = this.itemOriginalWidth;
-      }
-      this.visibItemsNb = parseInt((containerWidth - 2 * containerPadding + itemMargin) / (itemWidth + itemMargin), 10);
-      this.itemsWidth = parseFloat(((containerWidth - 2 * containerPadding + itemMargin) / this.visibItemsNb - itemMargin).toFixed(1));
-      this.containerWidth = (this.itemsWidth + itemMargin) * this.items.length;
-      this.translateContainer = 0 - (this.itemsWidth + itemMargin) * this.visibItemsNb;
-      if (!this.flexSupported) this.list.style.width = `${(this.itemsWidth + itemMargin) * this.visibItemsNb * 3}px`;
-      this.totTranslate = 0 - this.selectedItem * (this.itemsWidth + itemMargin);
-      if (this.items.length <= this.visibItemsNb) this.totTranslate = 0;
-      this.centerItems();
-    }
-    carouselCreateContainer() {
-      if (!this.element.parentElement.classList.contains(this.containerClass)) {
-        const el = document.createElement('div');
-        el.classList.add(this.containerClass);
-        this.element.parentNode.insertBefore(el, this.element);
-        el.appendChild(this.element);
-      }
-    }
-    setItemsWidth(bool) {
-      for (let i = 0; i < this.items.length; i += 1) {
-        this.items[i].style.width = `${this.itemsWidth}px`;
-        if (bool) this.initItems.push(this.items[i]);
-      }
-    }
-    updateCarouselClones() {
-      if (!this.loop) return;
-      if (this.items.length < this.visibItemsNb * 3) {
-        this.insertAfter(this.visibItemsNb * 3 - this.items.length, this.items.length - this.visibItemsNb * 2);
-      } else if (this.items.length > this.visibItemsNb * 3) {
-        this.removeClones(this.visibItemsNb * 3, this.items.length - this.visibItemsNb * 3);
-      }
-      this.setTranslate(`translateX(${this.translateContainer}px)`);
-    }
-    initCarouselEvents() {
-      if (this.nav) {
-        this.carouselCreateNavigation();
-        this.carouselInitNavigationEvents();
-      }
-      if (this.controls.length > 0) {
-        this.controls[0].addEventListener('click', event => {
-          event.preventDefault();
-          this.showPrevItems();
-          this.updateAriaLive();
-        });
-        this.controls[1].addEventListener('click', event => {
-          event.preventDefault();
-          this.showNextItems();
-          this.updateAriaLive();
-        });
-        this.resetCarouselControls();
-        this.emitCarouselActiveItemsEvent();
-      }
-      if (this.dragEnabled && window.requestAnimationFrame) {
-        super.init();
-        this.element.addEventListener('dragStart', event => {
-          if (event.detail.origin && event.detail.origin.closest(`.${this.controlClass}`)) return;
-          if (event.detail.origin && event.detail.origin.closest(`.${this.navClass}`)) return;
-          if (event.detail.origin && !event.detail.origin.closest(`.${this.wrapperClass}`)) return;
-          this.element.classList.add(this.draggingClass);
-          this.dragStart = event.detail.x;
-          this.animateDragEnd();
-        });
-        this.element.addEventListener('dragging', event => {
-          if (!this.dragStart) return;
-          if (this.animating || Math.abs(event.detail.x - this.dragStart) < 10) return;
-          let translate = event.detail.x - this.dragStart + this.translateContainer;
-          if (!this.loop) {
-            translate = event.detail.x - this.dragStart + this.totTranslate;
-          }
-          this.setTranslate(`translateX(${translate}px)`);
-        });
-      }
-      window.addEventListener('resize', () => {
-        clearTimeout(this.resizeId);
-        this.resizeId = setTimeout(() => {
-          this.resetCarouselResize();
-          this.resetDotsNavigation();
-          this.resetCarouselControls();
-          this.setCounterItem();
-          this.centerItems();
-          this.emitCarouselActiveItemsEvent();
-        }, 250);
-      });
-      this.element.addEventListener('keydown', event => {
-        if (event.key && event.key.toLowerCase() === 'arrowright') {
-          this.showNextItems();
-        } else if (event.key && event.key.toLowerCase() === 'arrowleft') {
-          this.showPrevItems();
-        } else if (event.key && event.key.toLowerCase() === 'home') {
-          this.showPrevItems();
-        } else if (event.key && event.key.toLowerCase() === 'end') {
-          this.showNextItems();
-        } else if (event.key && event.key.toLowerCase() === 'enter') {
-          event.preventDefault();
-          event.target.click();
-        }
-      });
-      const itemLinks = this.element.querySelectorAll('.nsw-carousel__item a');
-      if (itemLinks.length > 0) {
-        itemLinks.forEach((link, index) => {
-          link.addEventListener('focus', () => {
-            const slider = link.closest('.js-carousel__wrapper');
-            const carousel = slider.querySelector('.nsw-carousel__list');
-            if (carousel) {
-              link.focus({
-                preventScroll: true
-              });
-            }
-          });
-          link.addEventListener('focusout', () => {
-            const item = link.closest('.nsw-carousel__item');
-            const dataIndex = Number(item.getAttribute('data-index')) + 1;
-            if (dataIndex % this.visibItemsNb === 0 && dataIndex !== this.items.length) {
-              itemLinks[index + 1].focus({
-                preventScroll: true
-              });
-              this.showNextItems();
-            }
-          });
-        });
-      }
-    }
-    showPrevItems() {
-      if (this.animating) return;
-      this.animating = true;
-      this.selectedItem = this.getIndex(this.selectedItem - this.visibItemsNb);
-      this.animateList('0', 'prev');
-    }
-    showNextItems() {
-      if (this.animating) return;
-      this.animating = true;
-      this.selectedItem = this.getIndex(this.selectedItem + this.visibItemsNb);
-      this.animateList(`${this.translateContainer * 2}px`, 'next');
-    }
-    animateDragEnd() {
-      const cb = event => {
-        this.element.removeEventListener('dragEnd', cb);
-        this.element.classList.remove(this.draggingClass);
-        if (event.detail.x - this.dragStart < -40) {
-          this.animating = false;
-          this.showNextItems();
-        } else if (event.detail.x - this.dragStart > 40) {
-          this.animating = false;
-          this.showPrevItems();
-        } else if (event.detail.x - this.dragStart === 0) {
-          return;
-        } else {
-          this.animating = true;
-          this.animateList(`${this.translateContainer}px`, false);
-        }
-        this.dragStart = false;
-      };
-      this.element.addEventListener('dragEnd', cb);
-    }
-    animateList(translate, direction) {
-      let trans = translate;
-      this.list.classList.add(this.animateClass);
-      const initTranslate = this.totTranslate;
-      if (!this.loop) {
-        trans = this.noLoopTranslateValue(direction);
-      }
-      setTimeout(() => {
-        this.setTranslate(`translateX(${trans})`);
-      });
-      if (this.transitionSupported) {
-        const cb = event => {
-          if (event.propertyName && event.propertyName !== 'transform') return;
-          if (this.list) {
-            this.list.classList.remove(this.animateClass);
-            this.list.removeEventListener('transitionend', cb);
-          }
-          this.animateListCb(direction);
-        };
-        this.list.addEventListener('transitionend', cb);
-      } else {
-        this.animateListCb(direction);
-      }
-      if (!this.loop && initTranslate === this.totTranslate) {
-        this.list.dispatchEvent(new CustomEvent('transitionend'));
-      }
-      this.resetCarouselControls();
-      this.setCounterItem();
-      this.emitCarouselActiveItemsEvent();
-    }
-    noLoopTranslateValue(direction) {
-      let translate = this.totTranslate;
-      if (direction === 'next') {
-        translate = this.totTranslate + this.translateContainer;
-      } else if (direction === 'prev') {
-        translate = this.totTranslate - this.translateContainer;
-      } else if (direction === 'click') {
-        translate = this.selectedDotIndex * this.translateContainer;
-      }
-      if (translate > 0) {
-        translate = 0;
-        this.selectedItem = 0;
-      }
-      if (translate < -this.translateContainer - this.containerWidth) {
-        translate = -this.translateContainer - this.containerWidth;
-        this.selectedItem = this.items.length - this.visibItemsNb;
-      }
-      if (this.visibItemsNb > this.items.length) translate = 0;
-      this.totTranslate = translate;
-      return `${translate}px`;
-    }
-    animateListCb(direction) {
-      if (direction) this.updateClones(direction);
-      this.animating = false;
-      this.resetItemsTabIndex();
-    }
-    updateClones(direction) {
-      if (!this.loop) return;
-      const index = direction === 'next' ? 0 : this.items.length - this.visibItemsNb;
-      this.removeClones(index, false);
-      if (direction === 'next') {
-        this.insertAfter(this.visibItemsNb, 0);
-      } else {
-        this.insertBefore(this.visibItemsNb);
-      }
-      this.setTranslate(`translateX(${this.translateContainer}px)`);
-    }
-    insertBefore(nb, delta) {
-      if (!this.loop) return;
-      const clones = document.createDocumentFragment();
-      let start = 0;
-      if (delta) start = delta;
-      for (let i = start; i < nb; i += 1) {
-        const index = this.getIndex(this.selectedItem - i - 1);
-        const clone = this.initItems[index].cloneNode(true);
-        clone.classList.add(this.cloneClass);
-        clones.insertBefore(clone, clones.firstChild);
-      }
-      this.list.insertBefore(clones, this.list.firstChild);
-      this.emitCarouselUpdateEvent();
-    }
-    insertAfter(nb, init) {
-      if (!this.loop) return;
-      const clones = document.createDocumentFragment();
-      for (let i = init; i < nb + init; i += 1) {
-        const index = this.getIndex(this.selectedItem + this.visibItemsNb + i);
-        const clone = this.initItems[index].cloneNode(true);
-        clone.classList.add(this.cloneClass);
-        clones.appendChild(clone);
-      }
-      this.list.appendChild(clones);
-      this.emitCarouselUpdateEvent();
-    }
-    removeClones(index, bool) {
-      let newBool = bool;
-      if (!this.loop) return;
-      if (!bool) {
-        newBool = this.visibItemsNb;
-      }
-      for (let i = 0; i < newBool; i += 1) {
-        if (this.items[index]) this.list.removeChild(this.items[index]);
-      }
-    }
-    resetCarouselResize() {
-      const visibleItems = this.visibItemsNb;
-      this.resetItemAutoSize();
-      this.initCarouselLayout();
-      this.setItemsWidth(false);
-      this.resetItemsWidth();
-      if (this.loop) {
-        if (visibleItems > this.visibItemsNb) {
-          this.removeClones(0, visibleItems - this.visibItemsNb);
-        } else if (visibleItems < this.visibItemsNb) {
-          this.insertBefore(this.visibItemsNb, visibleItems);
-        }
-        this.updateCarouselClones();
-      } else {
-        const translate = this.noLoopTranslateValue();
-        this.setTranslate(`translateX(${translate})`);
-      }
-      this.resetItemsTabIndex();
-    }
-    resetItemAutoSize() {
-      if (!this.cssPropertiesSupported) return;
-      this.items[0].removeAttribute('style');
-      this.itemAutoSize = getComputedStyle(this.items[0]).getPropertyValue('width');
-    }
-    resetItemsWidth() {
-      this.initItems.forEach(element => {
-        const el = element;
-        el.style.width = `${this.itemsWidth}px`;
-      });
-    }
-    resetItemsTabIndex() {
-      const carouselActive = this.items.length > this.visibItemsNb;
-      let j = this.items.length;
-      for (let i = 0; i < this.items.length; i += 1) {
-        if (this.loop) {
-          if (i < this.visibItemsNb || i >= 2 * this.visibItemsNb) {
-            this.items[i].setAttribute('tabindex', '-1');
-            this.items[i].setAttribute('aria-hidden', 'true');
-            this.items[i].removeAttribute('aria-current');
-          } else {
-            if (i < j) j = i;
-            this.items[i].removeAttribute('tabindex');
-            this.items[i].removeAttribute('aria-hidden');
-            this.items[i].setAttribute('aria-current', 'true');
-          }
-        } else if ((i < this.selectedItem || i >= this.selectedItem + this.visibItemsNb) && carouselActive) {
-          this.items[i].setAttribute('tabindex', '-1');
-          this.items[i].setAttribute('aria-hidden', 'true');
-          this.items[i].removeAttribute('aria-current');
-        } else {
-          if (i < j) j = i;
-          this.items[i].removeAttribute('tabindex');
-          this.items[i].removeAttribute('aria-hidden');
-          this.items[i].setAttribute('aria-current', 'true');
-        }
-      }
-      this.resetVisibilityOverflowItems(j);
-    }
-    initAriaLive() {
-      const srLiveArea = document.createElement('div');
-      srLiveArea.setAttribute('class', `${this.srClass} ${this.srLiveAreaClass}`);
-      srLiveArea.setAttribute('aria-live', 'polite');
-      srLiveArea.setAttribute('aria-atomic', 'true');
-      this.element.appendChild(srLiveArea);
-      this.ariaLive = srLiveArea;
-    }
-    updateAriaLive() {
-      this.ariaLive.innerHTML = `Item ${this.selectedItem + 1} selected. ${this.visibItemsNb} items of ${this.initItems.length} visible`;
-    }
-    getIndex(index) {
-      let i = index;
-      if (i < 0) i = this.getPositiveValue(i, this.itemsNb);
-      if (i >= this.itemsNb) i %= this.itemsNb;
-      return i;
-    }
-    getPositiveValue(value, add) {
-      let val = value;
-      val += add;
-      if (val > 0) return val;
-      return this.getPositiveValue(val, add);
-    }
-    setTranslate(translate) {
-      this.list.style.transform = translate;
-      this.list.style.msTransform = translate;
-    }
-    getCarouselWidth(computedWidth) {
-      let comWidth = computedWidth;
-      const closestHidden = this.listWrapper.closest(`.${this.srClass}`);
-      if (closestHidden) {
-        closestHidden.classList.remove(this.srClass);
-        comWidth = this.listWrapper.offsetWidth;
-        closestHidden.classList.add(this.srClass);
-      } else if (Number.isNaN(comWidth)) {
-        comWidth = this.getHiddenParentWidth(this.element);
-      }
-      return comWidth;
-    }
-    getHiddenParentWidth(element) {
-      const parent = element.parentElement;
-      if (parent.tagName.toLowerCase() === 'html') return 0;
-      const style = window.getComputedStyle(parent);
-      if (style.display === 'none' || style.visibility === 'hidden') {
-        parent.setAttribute('style', 'display: block!important; visibility: visible!important;');
-        const computedWidth = this.listWrapper.offsetWidth;
-        parent.style.display = '';
-        parent.style.visibility = '';
-        return computedWidth;
-      }
-      return this.getHiddenParentWidth(parent);
-    }
-    resetCarouselControls() {
-      if (this.loop) return;
-      if (this.controls.length > 0) {
-        if (this.totTranslate === 0) {
-          this.controls[0].setAttribute('disabled', true);
-        } else {
-          this.controls[0].removeAttribute('disabled');
-        }
-        if (this.totTranslate === -this.translateContainer - this.containerWidth || this.items.length <= this.visibItemsNb) {
-          this.controls[1].setAttribute('disabled', true);
-        } else {
-          this.controls[1].removeAttribute('disabled');
-        }
-      }
-      if (this.nav) {
-        const selectedDot = this.navigation.querySelectorAll(`.${this.navigationItemClass}--selected`);
-        if (selectedDot.length > 0) selectedDot[0].classList.remove(`${this.navigationItemClass}--selected`);
-        let newSelectedIndex = this.getSelectedDot();
-        if (this.totTranslate === -this.translateContainer - this.containerWidth) {
-          newSelectedIndex = this.navDots.length - 1;
-        }
-        this.navDots[newSelectedIndex].classList.add(`${this.navigationItemClass}--selected`);
-      }
-      if (this.totTranslate === 0 && (this.totTranslate === -this.translateContainer - this.containerWidth || this.items.length <= this.visibItemsNb)) {
-        this.element.classList.add(this.hideControlsClass);
-      } else {
-        this.element.classList.remove(this.hideControlsClass);
-      }
-    }
-    emitCarouselUpdateEvent() {
-      this.cloneList = [];
-      const clones = this.element.querySelectorAll(`.${this.cloneClass}`);
-      clones.forEach(element => {
-        element.classList.remove(this.cloneClass);
-        this.cloneList.push(element);
-      });
-      this.emitCarouselEvents('carousel-updated', this.cloneList);
-    }
-    carouselCreateNavigation() {
-      if (this.element.querySelectorAll(`.${this.navClass}`).length > 0) return;
-      const navigation = document.createElement('ol');
-      let navChildren = '';
-      let navClasses = '';
-      if (this.navigationPagination) {
-        navClasses = `${this.navigationClass} ${this.paginationClass} ${this.navClass}`;
-      } else {
-        navClasses = `${this.navigationClass} ${this.navClass}`;
-      }
-      if (this.items.length <= this.visibItemsNb) {
-        navClasses += ` ${this.hideClass}`;
-      }
-      navigation.setAttribute('class', navClasses);
-      const dotsNr = Math.ceil(this.items.length / this.visibItemsNb);
-      const selectedDot = this.getSelectedDot();
-      const indexClass = this.navigationPagination ? '' : this.srClass;
-      for (let i = 0; i < dotsNr; i += 1) {
-        const className = i === selectedDot ? `class="${this.navigationItemClass} ${this.navigationItemClass}--selected ${this.navItemClass}"` : `class="${this.navigationItemClass} ${this.navItemClass}"`;
-        navChildren = `${navChildren}<li ${className}><button><span class="${indexClass}">${i + 1}</span></button></li>`;
-      }
-      navigation.innerHTML = navChildren;
-      this.element.appendChild(navigation);
-    }
-    carouselInitNavigationEvents() {
-      this.navigation = this.element.querySelector(`.${this.navClass}`);
-      this.navDots = this.element.querySelectorAll(`.${this.navItemClass}`);
-      this.navIdEvent = this.carouselNavigationClick.bind(this);
-      this.navigation.addEventListener('click', this.navIdEvent);
-    }
-    carouselRemoveNavigation() {
-      if (this.navigation) this.element.removeChild(this.navigation);
-      if (this.navIdEvent) this.navigation.removeEventListener('click', this.navIdEvent);
-    }
-    resetDotsNavigation() {
-      if (!this.nav) return;
-      this.carouselRemoveNavigation();
-      this.carouselCreateNavigation();
-      this.carouselInitNavigationEvents();
-    }
-    carouselNavigationClick(event) {
-      const dot = event.target.closest(`.${this.navItemClass}`);
-      if (!dot) return;
-      if (this.animating) return;
-      this.animating = true;
-      const index = Array.from(this.navDots).indexOf(dot);
-      this.selectedDotIndex = index;
-      this.selectedItem = index * this.visibItemsNb;
-      this.animateList(false, 'click');
-    }
-    getSelectedDot() {
-      return Math.ceil(this.selectedItem / this.visibItemsNb);
-    }
-    initCarouselCounter() {
-      if (this.counterTor.length > 0) this.counterTor[0].textContent = this.itemsNb;
-      this.setCounterItem();
-    }
-    setCounterItem() {
-      if (this.counter.length === 0) return;
-      let totalItems = this.selectedItem + this.visibItemsNb;
-      if (totalItems > this.items.length) totalItems = this.items.length;
-      this.counter[0].textContent = totalItems;
-    }
-    centerItems() {
-      if (!this.justifyContent) return;
-      this.list.classList.toggle(this.centerClass, this.items.length < this.visibItemsNb);
-    }
-    emitCarouselActiveItemsEvent() {
-      this.emitCarouselEvents('carousel-active-items', {
-        firstSelectedItem: this.selectedItem,
-        visibleItemsNb: this.visibItemsNb
-      });
-    }
-    emitCarouselEvents(eventName, eventDetail) {
-      const event = new CustomEvent(eventName, {
-        detail: eventDetail
-      });
-      this.element.dispatchEvent(event);
-    }
-    resetVisibilityOverflowItems(j) {
-      const itemWidth = this.containerWidth / this.items.length;
-      const delta = (window.innerWidth - itemWidth * this.visibItemsNb) / 2;
-      const overflowItems = Math.ceil(delta / itemWidth);
-      for (let i = 0; i < overflowItems; i += 1) {
-        const indexPrev = j - 1 - i;
-        if (indexPrev >= 0) this.items[indexPrev].removeAttribute('tabindex');
-        const indexNext = j + this.visibItemsNb + i;
-        if (indexNext < this.items.length) this.items[indexNext].removeAttribute('tabindex');
-      }
-    }
-  }
-
   /* eslint-disable max-len */
   class Dialog {
     constructor(element) {
@@ -1762,9 +3299,9 @@
         this.label = this.element.querySelector('label.nsw-file-upload__label');
       }
       this.input.addEventListener('change', this.handleInputChange.bind(this));
+      this.element.addEventListener('click', this.handleFileRemove.bind(this));
     }
     handleInputChange() {
-      if (this.input.value === '') return;
       this.updateFileList();
     }
     createFileList() {
@@ -1784,32 +3321,74 @@
       </button>`;
       li.insertAdjacentHTML('afterbegin', html);
       li.querySelector('.nsw-file-upload__item-filename').textContent = this.constructor.truncateString(file.name, 50);
+      li.querySelector('.nsw-file-upload__item-filename').dataset.filename = file.name;
       return li.outerHTML;
     }
     updateFileList() {
+      if (this.input.files.length === 0) {
+        // If there are previously stored files, re-sync the input and exit.
+        if (this.currentFiles && this.currentFiles.files && this.currentFiles.files.length > 0) {
+          this.input.files = this.currentFiles.files;
+          return;
+        }
+        // Clear list if otherwise
+        if (this.filesList) {
+          this.filesList.innerHTML = '';
+          this.filesList.classList.remove('active');
+        }
+        return;
+      }
       if (!this.filesList) {
         this.createFileList();
       }
       this.filesList.classList.add('active');
+      const dataTransfer = new DataTransfer();
+      const existingFiles = new Set();
+      if (this.replaceFiles) {
+        this.filesList.innerHTML = '';
+        this.currentFiles = new DataTransfer();
+      }
+
+      // Collect existing files to maintain them in the list (if multiple is allowed)
+      if (this.multipleUpload && this.currentFiles && this.currentFiles.files) {
+        for (let i = 0; i < this.currentFiles.files.length; i += 1) {
+          const file = this.currentFiles.files[i];
+          dataTransfer.items.add(file);
+          existingFiles.add(file.name);
+        }
+      }
       let fileListHTML = '';
+
+      // Add only new files
       for (let i = 0; i < this.input.files.length; i += 1) {
         const file = this.input.files[i];
-        fileListHTML = this.createFileItem(file) + fileListHTML;
+        if (!existingFiles.has(file.name)) {
+          dataTransfer.items.add(file);
+          fileListHTML += this.createFileItem(file);
+        }
       }
-      if (this.replaceFiles) {
-        this.filesList.innerHTML = fileListHTML;
-      } else {
+      this.currentFiles = dataTransfer;
+      if (fileListHTML) {
         this.filesList.insertAdjacentHTML('beforeend', fileListHTML);
       }
-      this.removeFile();
-    }
-    removeFile() {
-      this.filesList.addEventListener('click', this.handleFileRemove.bind(this));
+      this.input.files = this.currentFiles.files;
     }
     handleFileRemove(event) {
       if (!event.target.closest('.nsw-icon-button')) return;
       event.preventDefault();
       const item = event.target.closest('.nsw-file-upload__item');
+      const {
+        filename
+      } = item.querySelector('.nsw-file-upload__item-filename').dataset;
+      const dataTransfer = new DataTransfer();
+      for (let i = 0; i < this.currentFiles.files.length; i += 1) {
+        const file = this.currentFiles.files[i];
+        if (file.name !== filename) {
+          dataTransfer.items.add(file);
+        }
+      }
+      this.currentFiles = dataTransfer;
+      this.input.files = this.currentFiles.files;
       item.remove();
       if (this.filesList.children.length === 0) {
         this.filesList.classList.remove('active');
@@ -1856,6 +3435,8 @@
       this.showMoreContent = this.element.querySelectorAll(`.${this.prefix}${this.allClass}`);
       this.showMoreButtons = this.element.querySelectorAll(`.${this.prefix}${this.moreClass}`);
       this.focusableElements = 'a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])';
+      // Get default selected option
+      this.selectedOption = this.element.querySelector('option[selected]');
       // Accordion arrays
       this.buttons = [];
       this.content = [];
@@ -2003,11 +3584,23 @@
       if (this.options.length > 0) {
         this.options.forEach(input => {
           const option = input;
-          if (option.type === 'text' || option.type === 'select-one') {
+          if (option.type === 'text') {
             option.value = '';
+          } else if (option.type === 'select-one') {
+            if (this.selectedOption) {
+              console.log(Array.from(option.options).indexOf(this.selectedOption));
+              option.selectedIndex = Array.from(option.options).indexOf(this.selectedOption);
+            } else {
+              option.selectedIndex = 0;
+            }
+          } else if (option.type === 'checkbox') {
+            if (option.defaultChecked) {
+              option.checked = true;
+            } else {
+              option.checked = false;
+            }
           } else if (!option.parentElement.classList.contains('js-multi-select__option')) {
             option.value = false;
-            option.checked = false;
           }
         });
       }
@@ -2270,10 +3863,9 @@
       const elemObj = getFocusableElementBySelector(this.navID, ['> div button', '> ul > li > a']);
       trapTabKey(e, elemObj);
     }
-    mobileShowMainNav(_ref) {
-      let {
-        propertyName
-      } = _ref;
+    mobileShowMainNav({
+      propertyName
+    }) {
       if (propertyName !== 'transform') return;
       getFocusableElementBySelector(this.navID, ['> div button', '> ul > li > a']).all[1].focus();
       this.nav.classList.add('active');
@@ -2281,10 +3873,9 @@
       this.nav.removeEventListener(this.transitionEvent, this.mobileShowMainTransitionEndEvent, false);
       this.nav.addEventListener('keydown', this.mobileTrapTabKeyEvent, false);
     }
-    mobileHideMainNav(_ref2) {
-      let {
-        propertyName
-      } = _ref2;
+    mobileHideMainNav({
+      propertyName
+    }) {
       if (propertyName !== 'transform') return;
       this.nav.classList.remove('active');
       this.nav.classList.remove('closing');
@@ -2357,10 +3948,9 @@
       };
       this.openSubNavElements.push(temp);
     }
-    showSubNav(_ref3) {
-      let {
-        propertyName
-      } = _ref3;
+    showSubNav({
+      propertyName
+    }) {
       const {
         submenu
       } = this.whichSubNavLatest();
@@ -2442,30 +4032,152 @@
     }
   }
 
-  function getAlignment(placement) {
-    return placement.split('-')[1];
+  /**
+   * Custom positioning reference element.
+   * @see https://floating-ui.com/docs/virtual-elements
+   */
+
+  const min = Math.min;
+  const max = Math.max;
+  const round = Math.round;
+  const createCoords = v => ({
+    x: v,
+    y: v
+  });
+  const oppositeSideMap = {
+    left: 'right',
+    right: 'left',
+    bottom: 'top',
+    top: 'bottom'
+  };
+  const oppositeAlignmentMap = {
+    start: 'end',
+    end: 'start'
+  };
+  function clamp(start, value, end) {
+    return max(start, min(value, end));
   }
-  function getLengthFromAxis(axis) {
-    return axis === 'y' ? 'height' : 'width';
+  function evaluate(value, param) {
+    return typeof value === 'function' ? value(param) : value;
   }
   function getSide(placement) {
     return placement.split('-')[0];
   }
-  function getMainAxisFromPlacement(placement) {
-    return ['top', 'bottom'].includes(getSide(placement)) ? 'x' : 'y';
+  function getAlignment(placement) {
+    return placement.split('-')[1];
   }
+  function getOppositeAxis(axis) {
+    return axis === 'x' ? 'y' : 'x';
+  }
+  function getAxisLength(axis) {
+    return axis === 'y' ? 'height' : 'width';
+  }
+  function getSideAxis(placement) {
+    return ['top', 'bottom'].includes(getSide(placement)) ? 'y' : 'x';
+  }
+  function getAlignmentAxis(placement) {
+    return getOppositeAxis(getSideAxis(placement));
+  }
+  function getAlignmentSides(placement, rects, rtl) {
+    if (rtl === void 0) {
+      rtl = false;
+    }
+    const alignment = getAlignment(placement);
+    const alignmentAxis = getAlignmentAxis(placement);
+    const length = getAxisLength(alignmentAxis);
+    let mainAlignmentSide = alignmentAxis === 'x' ? alignment === (rtl ? 'end' : 'start') ? 'right' : 'left' : alignment === 'start' ? 'bottom' : 'top';
+    if (rects.reference[length] > rects.floating[length]) {
+      mainAlignmentSide = getOppositePlacement(mainAlignmentSide);
+    }
+    return [mainAlignmentSide, getOppositePlacement(mainAlignmentSide)];
+  }
+  function getExpandedPlacements(placement) {
+    const oppositePlacement = getOppositePlacement(placement);
+    return [getOppositeAlignmentPlacement(placement), oppositePlacement, getOppositeAlignmentPlacement(oppositePlacement)];
+  }
+  function getOppositeAlignmentPlacement(placement) {
+    return placement.replace(/start|end/g, alignment => oppositeAlignmentMap[alignment]);
+  }
+  function getSideList(side, isStart, rtl) {
+    const lr = ['left', 'right'];
+    const rl = ['right', 'left'];
+    const tb = ['top', 'bottom'];
+    const bt = ['bottom', 'top'];
+    switch (side) {
+      case 'top':
+      case 'bottom':
+        if (rtl) return isStart ? rl : lr;
+        return isStart ? lr : rl;
+      case 'left':
+      case 'right':
+        return isStart ? tb : bt;
+      default:
+        return [];
+    }
+  }
+  function getOppositeAxisPlacements(placement, flipAlignment, direction, rtl) {
+    const alignment = getAlignment(placement);
+    let list = getSideList(getSide(placement), direction === 'start', rtl);
+    if (alignment) {
+      list = list.map(side => side + "-" + alignment);
+      if (flipAlignment) {
+        list = list.concat(list.map(getOppositeAlignmentPlacement));
+      }
+    }
+    return list;
+  }
+  function getOppositePlacement(placement) {
+    return placement.replace(/left|right|bottom|top/g, side => oppositeSideMap[side]);
+  }
+  function expandPaddingObject(padding) {
+    return {
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      ...padding
+    };
+  }
+  function getPaddingObject(padding) {
+    return typeof padding !== 'number' ? expandPaddingObject(padding) : {
+      top: padding,
+      right: padding,
+      bottom: padding,
+      left: padding
+    };
+  }
+  function rectToClientRect(rect) {
+    const {
+      x,
+      y,
+      width,
+      height
+    } = rect;
+    return {
+      width,
+      height,
+      top: y,
+      left: x,
+      right: x + width,
+      bottom: y + height,
+      x,
+      y
+    };
+  }
+
   function computeCoordsFromPlacement(_ref, placement, rtl) {
     let {
       reference,
       floating
     } = _ref;
+    const sideAxis = getSideAxis(placement);
+    const alignmentAxis = getAlignmentAxis(placement);
+    const alignLength = getAxisLength(alignmentAxis);
+    const side = getSide(placement);
+    const isVertical = sideAxis === 'y';
     const commonX = reference.x + reference.width / 2 - floating.width / 2;
     const commonY = reference.y + reference.height / 2 - floating.height / 2;
-    const mainAxis = getMainAxisFromPlacement(placement);
-    const length = getLengthFromAxis(mainAxis);
-    const commonAlign = reference[length] / 2 - floating[length] / 2;
-    const side = getSide(placement);
-    const isVertical = mainAxis === 'x';
+    const commonAlign = reference[alignLength] / 2 - floating[alignLength] / 2;
     let coords;
     switch (side) {
       case 'top':
@@ -2500,10 +4212,10 @@
     }
     switch (getAlignment(placement)) {
       case 'start':
-        coords[mainAxis] -= commonAlign * (rtl && isVertical ? -1 : 1);
+        coords[alignmentAxis] -= commonAlign * (rtl && isVertical ? -1 : 1);
         break;
       case 'end':
-        coords[mainAxis] += commonAlign * (rtl && isVertical ? -1 : 1);
+        coords[alignmentAxis] += commonAlign * (rtl && isVertical ? -1 : 1);
         break;
     }
     return coords;
@@ -2511,7 +4223,7 @@
 
   /**
    * Computes the `x` and `y` coordinates that will place the floating element
-   * next to a reference element when it is given a certain positioning strategy.
+   * next to a given reference element.
    *
    * This export does not have any `platform` interface logic. You will need to
    * write one for the platform you are using Floating UI with.
@@ -2589,7 +4301,6 @@
           } = computeCoordsFromPlacement(rects, statefulPlacement, rtl));
         }
         i = -1;
-        continue;
       }
     }
     return {
@@ -2600,32 +4311,6 @@
       middlewareData
     };
   };
-  function expandPaddingObject(padding) {
-    return {
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      ...padding
-    };
-  }
-  function getSideObjectFromPadding(padding) {
-    return typeof padding !== 'number' ? expandPaddingObject(padding) : {
-      top: padding,
-      right: padding,
-      bottom: padding,
-      left: padding
-    };
-  }
-  function rectToClientRect(rect) {
-    return {
-      ...rect,
-      top: rect.y,
-      left: rect.x,
-      right: rect.x + rect.width,
-      bottom: rect.y + rect.height
-    };
-  }
 
   /**
    * Resolves with an object of overflow side offsets that determine how much the
@@ -2654,8 +4339,8 @@
       elementContext = 'floating',
       altBoundary = false,
       padding = 0
-    } = options;
-    const paddingObject = getSideObjectFromPadding(padding);
+    } = evaluate(options, state);
+    const paddingObject = getPaddingObject(padding);
     const altContext = elementContext === 'floating' ? 'reference' : 'floating';
     const element = elements[altBoundary ? altContext : elementContext];
     const clippingClientRect = rectToClientRect(await platform.getClippingRect({
@@ -2665,9 +4350,10 @@
       strategy
     }));
     const rect = elementContext === 'floating' ? {
-      ...rects.floating,
       x,
-      y
+      y,
+      width: rects.floating.width,
+      height: rects.floating.height
     } : rects.reference;
     const offsetParent = await (platform.getOffsetParent == null ? void 0 : platform.getOffsetParent(elements.floating));
     const offsetScale = (await (platform.isElement == null ? void 0 : platform.isElement(offsetParent))) ? (await (platform.getScale == null ? void 0 : platform.getScale(offsetParent))) || {
@@ -2678,6 +4364,7 @@
       y: 1
     };
     const elementClientRect = rectToClientRect(platform.convertOffsetParentRelativeRectToViewportRelativeRect ? await platform.convertOffsetParentRelativeRectToViewportRelativeRect({
+      elements,
       rect,
       offsetParent,
       strategy
@@ -2689,44 +4376,40 @@
       right: (elementClientRect.right - clippingClientRect.right + paddingObject.right) / offsetScale.x
     };
   }
-  const min$1 = Math.min;
-  const max$1 = Math.max;
-  function within(min$1$1, value, max$1$1) {
-    return max$1(min$1$1, min$1(value, max$1$1));
-  }
 
   /**
    * Provides data to position an inner element of the floating element so that it
    * appears centered to the reference element.
    * @see https://floating-ui.com/docs/arrow
    */
-  const arrow = options => ({
+  const arrow$1 = options => ({
     name: 'arrow',
     options,
     async fn(state) {
-      // Since `element` is required, we don't Partial<> the type.
-      const {
-        element,
-        padding = 0
-      } = options || {};
       const {
         x,
         y,
         placement,
         rects,
         platform,
-        elements
+        elements,
+        middlewareData
       } = state;
+      // Since `element` is required, we don't Partial<> the type.
+      const {
+        element,
+        padding = 0
+      } = evaluate(options, state) || {};
       if (element == null) {
         return {};
       }
-      const paddingObject = getSideObjectFromPadding(padding);
+      const paddingObject = getPaddingObject(padding);
       const coords = {
         x,
         y
       };
-      const axis = getMainAxisFromPlacement(placement);
-      const length = getLengthFromAxis(axis);
+      const axis = getAlignmentAxis(placement);
+      const length = getAxisLength(axis);
       const arrowDimensions = await platform.getDimensions(element);
       const isYAxis = axis === 'y';
       const minProp = isYAxis ? 'top' : 'left';
@@ -2743,92 +4426,38 @@
       }
       const centerToReference = endDiff / 2 - startDiff / 2;
 
+      // If the padding is large enough that it causes the arrow to no longer be
+      // centered, modify the padding so that it is centered.
+      const largestPossiblePadding = clientSize / 2 - arrowDimensions[length] / 2 - 1;
+      const minPadding = min(paddingObject[minProp], largestPossiblePadding);
+      const maxPadding = min(paddingObject[maxProp], largestPossiblePadding);
+
       // Make sure the arrow doesn't overflow the floating element if the center
       // point is outside the floating element's bounds.
-      const min = paddingObject[minProp];
-      const max = clientSize - arrowDimensions[length] - paddingObject[maxProp];
+      const min$1 = minPadding;
+      const max = clientSize - arrowDimensions[length] - maxPadding;
       const center = clientSize / 2 - arrowDimensions[length] / 2 + centerToReference;
-      const offset = within(min, center, max);
+      const offset = clamp(min$1, center, max);
 
       // If the reference is small enough that the arrow's padding causes it to
       // to point to nothing for an aligned placement, adjust the offset of the
-      // floating element itself. This stops `shift()` from taking action, but can
-      // be worked around by calling it again after the `arrow()` if desired.
-      const shouldAddOffset = getAlignment(placement) != null && center != offset && rects.reference[length] / 2 - (center < min ? paddingObject[minProp] : paddingObject[maxProp]) - arrowDimensions[length] / 2 < 0;
-      const alignmentOffset = shouldAddOffset ? center < min ? min - center : max - center : 0;
+      // floating element itself. To ensure `shift()` continues to take action,
+      // a single reset is performed when this is true.
+      const shouldAddOffset = !middlewareData.arrow && getAlignment(placement) != null && center !== offset && rects.reference[length] / 2 - (center < min$1 ? minPadding : maxPadding) - arrowDimensions[length] / 2 < 0;
+      const alignmentOffset = shouldAddOffset ? center < min$1 ? center - min$1 : center - max : 0;
       return {
-        [axis]: coords[axis] - alignmentOffset,
+        [axis]: coords[axis] + alignmentOffset,
         data: {
           [axis]: offset,
-          centerOffset: center - offset
-        }
+          centerOffset: center - offset - alignmentOffset,
+          ...(shouldAddOffset && {
+            alignmentOffset
+          })
+        },
+        reset: shouldAddOffset
       };
     }
   });
-  const oppositeSideMap = {
-    left: 'right',
-    right: 'left',
-    bottom: 'top',
-    top: 'bottom'
-  };
-  function getOppositePlacement(placement) {
-    return placement.replace(/left|right|bottom|top/g, side => oppositeSideMap[side]);
-  }
-  function getAlignmentSides(placement, rects, rtl) {
-    if (rtl === void 0) {
-      rtl = false;
-    }
-    const alignment = getAlignment(placement);
-    const mainAxis = getMainAxisFromPlacement(placement);
-    const length = getLengthFromAxis(mainAxis);
-    let mainAlignmentSide = mainAxis === 'x' ? alignment === (rtl ? 'end' : 'start') ? 'right' : 'left' : alignment === 'start' ? 'bottom' : 'top';
-    if (rects.reference[length] > rects.floating[length]) {
-      mainAlignmentSide = getOppositePlacement(mainAlignmentSide);
-    }
-    return {
-      main: mainAlignmentSide,
-      cross: getOppositePlacement(mainAlignmentSide)
-    };
-  }
-  const oppositeAlignmentMap = {
-    start: 'end',
-    end: 'start'
-  };
-  function getOppositeAlignmentPlacement(placement) {
-    return placement.replace(/start|end/g, alignment => oppositeAlignmentMap[alignment]);
-  }
-  function getExpandedPlacements(placement) {
-    const oppositePlacement = getOppositePlacement(placement);
-    return [getOppositeAlignmentPlacement(placement), oppositePlacement, getOppositeAlignmentPlacement(oppositePlacement)];
-  }
-  function getSideList(side, isStart, rtl) {
-    const lr = ['left', 'right'];
-    const rl = ['right', 'left'];
-    const tb = ['top', 'bottom'];
-    const bt = ['bottom', 'top'];
-    switch (side) {
-      case 'top':
-      case 'bottom':
-        if (rtl) return isStart ? rl : lr;
-        return isStart ? lr : rl;
-      case 'left':
-      case 'right':
-        return isStart ? tb : bt;
-      default:
-        return [];
-    }
-  }
-  function getOppositeAxisPlacements(placement, flipAlignment, direction, rtl) {
-    const alignment = getAlignment(placement);
-    let list = getSideList(getSide(placement), direction === 'start', rtl);
-    if (alignment) {
-      list = list.map(side => side + "-" + alignment);
-      if (flipAlignment) {
-        list = list.concat(list.map(getOppositeAlignmentPlacement));
-      }
-    }
-    return list;
-  }
 
   /**
    * Optimizes the visibility of the floating element by flipping the `placement`
@@ -2836,7 +4465,7 @@
    * clipping boundary. Alternative to `autoPlacement`.
    * @see https://floating-ui.com/docs/flip
    */
-  const flip = function (options) {
+  const flip$1 = function (options) {
     if (options === void 0) {
       options = {};
     }
@@ -2844,7 +4473,7 @@
       name: 'flip',
       options,
       async fn(state) {
-        var _middlewareData$flip;
+        var _middlewareData$arrow, _middlewareData$flip;
         const {
           placement,
           middlewareData,
@@ -2861,12 +4490,22 @@
           fallbackAxisSideDirection = 'none',
           flipAlignment = true,
           ...detectOverflowOptions
-        } = options;
+        } = evaluate(options, state);
+
+        // If a reset by the arrow was caused due to an alignment offset being
+        // added, we should skip any logic now since `flip()` has already done its
+        // work.
+        // https://github.com/floating-ui/floating-ui/issues/2549#issuecomment-1719601643
+        if ((_middlewareData$arrow = middlewareData.arrow) != null && _middlewareData$arrow.alignmentOffset) {
+          return {};
+        }
         const side = getSide(placement);
+        const initialSideAxis = getSideAxis(initialPlacement);
         const isBasePlacement = getSide(initialPlacement) === initialPlacement;
         const rtl = await (platform.isRTL == null ? void 0 : platform.isRTL(elements.floating));
         const fallbackPlacements = specifiedFallbackPlacements || (isBasePlacement || !flipAlignment ? [getOppositePlacement(initialPlacement)] : getExpandedPlacements(initialPlacement));
-        if (!specifiedFallbackPlacements && fallbackAxisSideDirection !== 'none') {
+        const hasFallbackAxisSideDirection = fallbackAxisSideDirection !== 'none';
+        if (!specifiedFallbackPlacements && hasFallbackAxisSideDirection) {
           fallbackPlacements.push(...getOppositeAxisPlacements(initialPlacement, flipAlignment, fallbackAxisSideDirection, rtl));
         }
         const placements = [initialPlacement, ...fallbackPlacements];
@@ -2877,11 +4516,8 @@
           overflows.push(overflow[side]);
         }
         if (checkCrossAxis) {
-          const {
-            main,
-            cross
-          } = getAlignmentSides(placement, rects, rtl);
-          overflows.push(overflow[main], overflow[cross]);
+          const sides = getAlignmentSides(placement, rects, rtl);
+          overflows.push(overflow[sides[0]], overflow[sides[1]]);
         }
         overflowsData = [...overflowsData, {
           placement,
@@ -2915,8 +4551,17 @@
             switch (fallbackStrategy) {
               case 'bestFit':
                 {
-                  var _overflowsData$map$so;
-                  const placement = (_overflowsData$map$so = overflowsData.map(d => [d.placement, d.overflows.filter(overflow => overflow > 0).reduce((acc, overflow) => acc + overflow, 0)]).sort((a, b) => a[1] - b[1])[0]) == null ? void 0 : _overflowsData$map$so[0];
+                  var _overflowsData$filter2;
+                  const placement = (_overflowsData$filter2 = overflowsData.filter(d => {
+                    if (hasFallbackAxisSideDirection) {
+                      const currentSideAxis = getSideAxis(d.placement);
+                      return currentSideAxis === initialSideAxis ||
+                      // Create a bias to the `y` side axis due to horizontal
+                      // reading directions favoring greater width.
+                      currentSideAxis === 'y';
+                    }
+                    return true;
+                  }).map(d => [d.placement, d.overflows.filter(overflow => overflow > 0).reduce((acc, overflow) => acc + overflow, 0)]).sort((a, b) => a[1] - b[1])[0]) == null ? void 0 : _overflowsData$filter2[0];
                   if (placement) {
                     resetPlacement = placement;
                   }
@@ -2939,7 +4584,11 @@
       }
     };
   };
-  async function convertValueToCoords(state, value) {
+
+  // For type backwards-compatibility, the `OffsetOptions` type was also
+  // Derivable.
+
+  async function convertValueToCoords(state, options) {
     const {
       placement,
       platform,
@@ -2948,10 +4597,10 @@
     const rtl = await (platform.isRTL == null ? void 0 : platform.isRTL(elements.floating));
     const side = getSide(placement);
     const alignment = getAlignment(placement);
-    const isVertical = getMainAxisFromPlacement(placement) === 'x';
+    const isVertical = getSideAxis(placement) === 'y';
     const mainAxisMulti = ['left', 'top'].includes(side) ? -1 : 1;
     const crossAxisMulti = rtl && isVertical ? -1 : 1;
-    const rawValue = typeof value === 'function' ? value(state) : value;
+    const rawValue = evaluate(options, state);
 
     // eslint-disable-next-line prefer-const
     let {
@@ -2963,10 +4612,9 @@
       crossAxis: 0,
       alignmentAxis: null
     } : {
-      mainAxis: 0,
-      crossAxis: 0,
-      alignmentAxis: null,
-      ...rawValue
+      mainAxis: rawValue.mainAxis || 0,
+      crossAxis: rawValue.crossAxis || 0,
+      alignmentAxis: rawValue.alignmentAxis
     };
     if (alignment && typeof alignmentAxis === 'number') {
       crossAxis = alignment === 'end' ? alignmentAxis * -1 : alignmentAxis;
@@ -2987,37 +4635,46 @@
    * object may be passed.
    * @see https://floating-ui.com/docs/offset
    */
-  const offset = function (value) {
-    if (value === void 0) {
-      value = 0;
+  const offset$1 = function (options) {
+    if (options === void 0) {
+      options = 0;
     }
     return {
       name: 'offset',
-      options: value,
+      options,
       async fn(state) {
+        var _middlewareData$offse, _middlewareData$arrow;
         const {
           x,
-          y
+          y,
+          placement,
+          middlewareData
         } = state;
-        const diffCoords = await convertValueToCoords(state, value);
+        const diffCoords = await convertValueToCoords(state, options);
+
+        // If the placement is the same and the arrow caused an alignment offset
+        // then we don't need to change the positioning coordinates.
+        if (placement === ((_middlewareData$offse = middlewareData.offset) == null ? void 0 : _middlewareData$offse.placement) && (_middlewareData$arrow = middlewareData.arrow) != null && _middlewareData$arrow.alignmentOffset) {
+          return {};
+        }
         return {
           x: x + diffCoords.x,
           y: y + diffCoords.y,
-          data: diffCoords
+          data: {
+            ...diffCoords,
+            placement
+          }
         };
       }
     };
   };
-  function getCrossAxis(axis) {
-    return axis === 'x' ? 'y' : 'x';
-  }
 
   /**
    * Optimizes the visibility of the floating element by shifting it in order to
    * keep it in view when it will overflow the clipping boundary.
    * @see https://floating-ui.com/docs/shift
    */
-  const shift = function (options) {
+  const shift$1 = function (options) {
     if (options === void 0) {
       options = {};
     }
@@ -3046,14 +4703,14 @@
             }
           },
           ...detectOverflowOptions
-        } = options;
+        } = evaluate(options, state);
         const coords = {
           x,
           y
         };
         const overflow = await detectOverflow(state, detectOverflowOptions);
-        const mainAxis = getMainAxisFromPlacement(getSide(placement));
-        const crossAxis = getCrossAxis(mainAxis);
+        const crossAxis = getSideAxis(getSide(placement));
+        const mainAxis = getOppositeAxis(crossAxis);
         let mainAxisCoord = coords[mainAxis];
         let crossAxisCoord = coords[crossAxis];
         if (checkMainAxis) {
@@ -3061,14 +4718,14 @@
           const maxSide = mainAxis === 'y' ? 'bottom' : 'right';
           const min = mainAxisCoord + overflow[minSide];
           const max = mainAxisCoord - overflow[maxSide];
-          mainAxisCoord = within(min, mainAxisCoord, max);
+          mainAxisCoord = clamp(min, mainAxisCoord, max);
         }
         if (checkCrossAxis) {
           const minSide = crossAxis === 'y' ? 'top' : 'left';
           const maxSide = crossAxis === 'y' ? 'bottom' : 'right';
           const min = crossAxisCoord + overflow[minSide];
           const max = crossAxisCoord - overflow[maxSide];
-          crossAxisCoord = within(min, crossAxisCoord, max);
+          crossAxisCoord = clamp(min, crossAxisCoord, max);
         }
         const limitedCoords = limiter.fn({
           ...state,
@@ -3079,7 +4736,11 @@
           ...limitedCoords,
           data: {
             x: limitedCoords.x - x,
-            y: limitedCoords.y - y
+            y: limitedCoords.y - y,
+            enabled: {
+              [mainAxis]: checkMainAxis,
+              [crossAxis]: checkCrossAxis
+            }
           }
         };
       }
@@ -3088,7 +4749,7 @@
   /**
    * Built-in `limiter` that will stop `shift()` at a certain point.
    */
-  const limitShift = function (options) {
+  const limitShift$1 = function (options) {
     if (options === void 0) {
       options = {};
     }
@@ -3106,16 +4767,16 @@
           offset = 0,
           mainAxis: checkMainAxis = true,
           crossAxis: checkCrossAxis = true
-        } = options;
+        } = evaluate(options, state);
         const coords = {
           x,
           y
         };
-        const mainAxis = getMainAxisFromPlacement(placement);
-        const crossAxis = getCrossAxis(mainAxis);
+        const crossAxis = getSideAxis(placement);
+        const mainAxis = getOppositeAxis(crossAxis);
         let mainAxisCoord = coords[mainAxis];
         let crossAxisCoord = coords[crossAxis];
-        const rawOffset = typeof offset === 'function' ? offset(state) : offset;
+        const rawOffset = evaluate(offset, state);
         const computedOffset = typeof rawOffset === 'number' ? {
           mainAxis: rawOffset,
           crossAxis: 0
@@ -3154,44 +4815,49 @@
     };
   };
 
-  function getWindow(node) {
-    var _node$ownerDocument;
-    return ((_node$ownerDocument = node.ownerDocument) == null ? void 0 : _node$ownerDocument.defaultView) || window;
-  }
-  function getComputedStyle$1(element) {
-    return getWindow(element).getComputedStyle(element);
-  }
-  function isNode(value) {
-    return value instanceof getWindow(value).Node;
+  function hasWindow() {
+    return typeof window !== 'undefined';
   }
   function getNodeName(node) {
-    return isNode(node) ? (node.nodeName || '').toLowerCase() : '';
-  }
-  let uaString;
-  function getUAString() {
-    if (uaString) {
-      return uaString;
+    if (isNode(node)) {
+      return (node.nodeName || '').toLowerCase();
     }
-    const uaData = navigator.userAgentData;
-    if (uaData && Array.isArray(uaData.brands)) {
-      uaString = uaData.brands.map(item => item.brand + "/" + item.version).join(' ');
-      return uaString;
-    }
-    return navigator.userAgent;
+    // Mocked nodes in testing environments may not be instances of Node. By
+    // returning `#document` an infinite loop won't occur.
+    // https://github.com/floating-ui/floating-ui/issues/2317
+    return '#document';
   }
-  function isHTMLElement(value) {
-    return value instanceof getWindow(value).HTMLElement;
+  function getWindow(node) {
+    var _node$ownerDocument;
+    return (node == null || (_node$ownerDocument = node.ownerDocument) == null ? void 0 : _node$ownerDocument.defaultView) || window;
   }
-  function isElement(value) {
-    return value instanceof getWindow(value).Element;
+  function getDocumentElement(node) {
+    var _ref;
+    return (_ref = (isNode(node) ? node.ownerDocument : node.document) || window.document) == null ? void 0 : _ref.documentElement;
   }
-  function isShadowRoot(node) {
-    // Browsers without `ShadowRoot` support.
-    if (typeof ShadowRoot === 'undefined') {
+  function isNode(value) {
+    if (!hasWindow()) {
       return false;
     }
-    const OwnElement = getWindow(node).ShadowRoot;
-    return node instanceof OwnElement || node instanceof ShadowRoot;
+    return value instanceof Node || value instanceof getWindow(value).Node;
+  }
+  function isElement(value) {
+    if (!hasWindow()) {
+      return false;
+    }
+    return value instanceof Element || value instanceof getWindow(value).Element;
+  }
+  function isHTMLElement(value) {
+    if (!hasWindow()) {
+      return false;
+    }
+    return value instanceof HTMLElement || value instanceof getWindow(value).HTMLElement;
+  }
+  function isShadowRoot(value) {
+    if (!hasWindow() || typeof ShadowRoot === 'undefined') {
+      return false;
+    }
+    return value instanceof ShadowRoot || value instanceof getWindow(value).ShadowRoot;
   }
   function isOverflowElement(element) {
     const {
@@ -3205,44 +4871,103 @@
   function isTableElement(element) {
     return ['table', 'td', 'th'].includes(getNodeName(element));
   }
-  function isContainingBlock(element) {
-    // TODO: Try to use feature detection here instead.
-    const isFirefox = /firefox/i.test(getUAString());
-    const css = getComputedStyle$1(element);
-    const backdropFilter = css.backdropFilter || css.WebkitBackdropFilter;
-
-    // This is non-exhaustive but covers the most common CSS properties that
-    // create a containing block.
-    // https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block#identifying_the_containing_block
-    return css.transform !== 'none' || css.perspective !== 'none' || (backdropFilter ? backdropFilter !== 'none' : false) || isFirefox && css.willChange === 'filter' || isFirefox && (css.filter ? css.filter !== 'none' : false) || ['transform', 'perspective'].some(value => css.willChange.includes(value)) || ['paint', 'layout', 'strict', 'content'].some(value => {
-      // Add type check for old browsers.
-      const contain = css.contain;
-      return contain != null ? contain.includes(value) : false;
+  function isTopLayer(element) {
+    return [':popover-open', ':modal'].some(selector => {
+      try {
+        return element.matches(selector);
+      } catch (e) {
+        return false;
+      }
     });
   }
+  function isContainingBlock(elementOrCss) {
+    const webkit = isWebKit();
+    const css = isElement(elementOrCss) ? getComputedStyle$1(elementOrCss) : elementOrCss;
 
-  /**
-   * Determines whether or not `.getBoundingClientRect()` is affected by visual
-   * viewport offsets. In Safari, the `x`/`y` offsets are values relative to the
-   * visual viewport, while in other engines, they are values relative to the
-   * layout viewport.
-   */
-  function isClientRectVisualViewportBased() {
-    // TODO: Try to use feature detection here instead. Feature detection for
-    // this can fail in various ways, making the userAgent check the most
-    // reliable:
-    // • Always-visible scrollbar or not
-    // • Width of <html>
-
-    // Is Safari.
-    return /^((?!chrome|android).)*safari/i.test(getUAString());
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block#identifying_the_containing_block
+    // https://drafts.csswg.org/css-transforms-2/#individual-transforms
+    return ['transform', 'translate', 'scale', 'rotate', 'perspective'].some(value => css[value] ? css[value] !== 'none' : false) || (css.containerType ? css.containerType !== 'normal' : false) || !webkit && (css.backdropFilter ? css.backdropFilter !== 'none' : false) || !webkit && (css.filter ? css.filter !== 'none' : false) || ['transform', 'translate', 'scale', 'rotate', 'perspective', 'filter'].some(value => (css.willChange || '').includes(value)) || ['paint', 'layout', 'strict', 'content'].some(value => (css.contain || '').includes(value));
+  }
+  function getContainingBlock(element) {
+    let currentNode = getParentNode(element);
+    while (isHTMLElement(currentNode) && !isLastTraversableNode(currentNode)) {
+      if (isContainingBlock(currentNode)) {
+        return currentNode;
+      } else if (isTopLayer(currentNode)) {
+        return null;
+      }
+      currentNode = getParentNode(currentNode);
+    }
+    return null;
+  }
+  function isWebKit() {
+    if (typeof CSS === 'undefined' || !CSS.supports) return false;
+    return CSS.supports('-webkit-backdrop-filter', 'none');
   }
   function isLastTraversableNode(node) {
     return ['html', 'body', '#document'].includes(getNodeName(node));
   }
-  const min = Math.min;
-  const max = Math.max;
-  const round = Math.round;
+  function getComputedStyle$1(element) {
+    return getWindow(element).getComputedStyle(element);
+  }
+  function getNodeScroll(element) {
+    if (isElement(element)) {
+      return {
+        scrollLeft: element.scrollLeft,
+        scrollTop: element.scrollTop
+      };
+    }
+    return {
+      scrollLeft: element.scrollX,
+      scrollTop: element.scrollY
+    };
+  }
+  function getParentNode(node) {
+    if (getNodeName(node) === 'html') {
+      return node;
+    }
+    const result =
+    // Step into the shadow DOM of the parent of a slotted node.
+    node.assignedSlot ||
+    // DOM Element detected.
+    node.parentNode ||
+    // ShadowRoot detected.
+    isShadowRoot(node) && node.host ||
+    // Fallback.
+    getDocumentElement(node);
+    return isShadowRoot(result) ? result.host : result;
+  }
+  function getNearestOverflowAncestor(node) {
+    const parentNode = getParentNode(node);
+    if (isLastTraversableNode(parentNode)) {
+      return node.ownerDocument ? node.ownerDocument.body : node.body;
+    }
+    if (isHTMLElement(parentNode) && isOverflowElement(parentNode)) {
+      return parentNode;
+    }
+    return getNearestOverflowAncestor(parentNode);
+  }
+  function getOverflowAncestors(node, list, traverseIframes) {
+    var _node$ownerDocument2;
+    if (list === void 0) {
+      list = [];
+    }
+    if (traverseIframes === void 0) {
+      traverseIframes = true;
+    }
+    const scrollableAncestor = getNearestOverflowAncestor(node);
+    const isBody = scrollableAncestor === ((_node$ownerDocument2 = node.ownerDocument) == null ? void 0 : _node$ownerDocument2.body);
+    const win = getWindow(scrollableAncestor);
+    if (isBody) {
+      const frameElement = getFrameElement(win);
+      return list.concat(win, win.visualViewport || [], isOverflowElement(scrollableAncestor) ? scrollableAncestor : [], frameElement && traverseIframes ? getOverflowAncestors(frameElement) : []);
+    }
+    return list.concat(scrollableAncestor, getOverflowAncestors(scrollableAncestor, [], traverseIframes));
+  }
+  function getFrameElement(win) {
+    return win.parent && Object.getPrototypeOf(win.parent) ? win.frameElement : null;
+  }
+
   function getCssDimensions(element) {
     const css = getComputedStyle$1(element);
     // In testing environments, the `width` and `height` properties are empty
@@ -3260,29 +4985,25 @@
     return {
       width,
       height,
-      fallback: shouldFallback
+      $: shouldFallback
     };
   }
   function unwrapElement(element) {
     return !isElement(element) ? element.contextElement : element;
   }
-  const FALLBACK_SCALE = {
-    x: 1,
-    y: 1
-  };
   function getScale(element) {
     const domElement = unwrapElement(element);
     if (!isHTMLElement(domElement)) {
-      return FALLBACK_SCALE;
+      return createCoords(1);
     }
     const rect = domElement.getBoundingClientRect();
     const {
       width,
       height,
-      fallback
+      $
     } = getCssDimensions(domElement);
-    let x = (fallback ? round(rect.width) : rect.width) / width;
-    let y = (fallback ? round(rect.height) : rect.height) / height;
+    let x = ($ ? round(rect.width) : rect.width) / width;
+    let y = ($ ? round(rect.height) : rect.height) / height;
 
     // 0, NaN, or Infinity should always fallback to 1.
 
@@ -3297,8 +5018,27 @@
       y
     };
   }
+  const noOffsets = /*#__PURE__*/createCoords(0);
+  function getVisualOffsets(element) {
+    const win = getWindow(element);
+    if (!isWebKit() || !win.visualViewport) {
+      return noOffsets;
+    }
+    return {
+      x: win.visualViewport.offsetLeft,
+      y: win.visualViewport.offsetTop
+    };
+  }
+  function shouldAddVisualOffsets(element, isFixed, floatingOffsetParent) {
+    if (isFixed === void 0) {
+      isFixed = false;
+    }
+    if (!floatingOffsetParent || isFixed && floatingOffsetParent !== getWindow(element)) {
+      return false;
+    }
+    return isFixed;
+  }
   function getBoundingClientRect(element, includeScale, isFixedStrategy, offsetParent) {
-    var _win$visualViewport, _win$visualViewport2;
     if (includeScale === void 0) {
       includeScale = false;
     }
@@ -3307,7 +5047,7 @@
     }
     const clientRect = element.getBoundingClientRect();
     const domElement = unwrapElement(element);
-    let scale = FALLBACK_SCALE;
+    let scale = createCoords(1);
     if (includeScale) {
       if (offsetParent) {
         if (isElement(offsetParent)) {
@@ -3317,29 +5057,30 @@
         scale = getScale(element);
       }
     }
-    const win = domElement ? getWindow(domElement) : window;
-    const addVisualOffsets = isClientRectVisualViewportBased() && isFixedStrategy;
-    let x = (clientRect.left + (addVisualOffsets ? ((_win$visualViewport = win.visualViewport) == null ? void 0 : _win$visualViewport.offsetLeft) || 0 : 0)) / scale.x;
-    let y = (clientRect.top + (addVisualOffsets ? ((_win$visualViewport2 = win.visualViewport) == null ? void 0 : _win$visualViewport2.offsetTop) || 0 : 0)) / scale.y;
+    const visualOffsets = shouldAddVisualOffsets(domElement, isFixedStrategy, offsetParent) ? getVisualOffsets(domElement) : createCoords(0);
+    let x = (clientRect.left + visualOffsets.x) / scale.x;
+    let y = (clientRect.top + visualOffsets.y) / scale.y;
     let width = clientRect.width / scale.x;
     let height = clientRect.height / scale.y;
     if (domElement) {
       const win = getWindow(domElement);
       const offsetWin = offsetParent && isElement(offsetParent) ? getWindow(offsetParent) : offsetParent;
-      let currentIFrame = win.frameElement;
-      while (currentIFrame && offsetParent && offsetWin !== win) {
+      let currentWin = win;
+      let currentIFrame = getFrameElement(currentWin);
+      while (currentIFrame && offsetParent && offsetWin !== currentWin) {
         const iframeScale = getScale(currentIFrame);
         const iframeRect = currentIFrame.getBoundingClientRect();
-        const css = getComputedStyle(currentIFrame);
-        iframeRect.x += (currentIFrame.clientLeft + parseFloat(css.paddingLeft)) * iframeScale.x;
-        iframeRect.y += (currentIFrame.clientTop + parseFloat(css.paddingTop)) * iframeScale.y;
+        const css = getComputedStyle$1(currentIFrame);
+        const left = iframeRect.left + (currentIFrame.clientLeft + parseFloat(css.paddingLeft)) * iframeScale.x;
+        const top = iframeRect.top + (currentIFrame.clientTop + parseFloat(css.paddingTop)) * iframeScale.y;
         x *= iframeScale.x;
         y *= iframeScale.y;
         width *= iframeScale.x;
         height *= iframeScale.y;
-        x += iframeRect.x;
-        y += iframeRect.y;
-        currentIFrame = getWindow(currentIFrame).frameElement;
+        x += left;
+        y += top;
+        currentWin = getWindow(currentIFrame);
+        currentIFrame = getFrameElement(currentWin);
       }
     }
     return rectToClientRect({
@@ -3349,45 +5090,51 @@
       y
     });
   }
-  function getDocumentElement(node) {
-    return ((isNode(node) ? node.ownerDocument : node.document) || window.document).documentElement;
-  }
-  function getNodeScroll(element) {
-    if (isElement(element)) {
-      return {
-        scrollLeft: element.scrollLeft,
-        scrollTop: element.scrollTop
-      };
+
+  // If <html> has a CSS width greater than the viewport, then this will be
+  // incorrect for RTL.
+  function getWindowScrollBarX(element, rect) {
+    const leftScroll = getNodeScroll(element).scrollLeft;
+    if (!rect) {
+      return getBoundingClientRect(getDocumentElement(element)).left + leftScroll;
     }
+    return rect.left + leftScroll;
+  }
+  function getHTMLOffset(documentElement, scroll, ignoreScrollbarX) {
+    if (ignoreScrollbarX === void 0) {
+      ignoreScrollbarX = false;
+    }
+    const htmlRect = documentElement.getBoundingClientRect();
+    const x = htmlRect.left + scroll.scrollLeft - (ignoreScrollbarX ? 0 :
+    // RTL <body> scrollbar.
+    getWindowScrollBarX(documentElement, htmlRect));
+    const y = htmlRect.top + scroll.scrollTop;
     return {
-      scrollLeft: element.pageXOffset,
-      scrollTop: element.pageYOffset
+      x,
+      y
     };
   }
   function convertOffsetParentRelativeRectToViewportRelativeRect(_ref) {
     let {
+      elements,
       rect,
       offsetParent,
       strategy
     } = _ref;
-    const isOffsetParentAnElement = isHTMLElement(offsetParent);
+    const isFixed = strategy === 'fixed';
     const documentElement = getDocumentElement(offsetParent);
-    if (offsetParent === documentElement) {
+    const topLayer = elements ? isTopLayer(elements.floating) : false;
+    if (offsetParent === documentElement || topLayer && isFixed) {
       return rect;
     }
     let scroll = {
       scrollLeft: 0,
       scrollTop: 0
     };
-    let scale = {
-      x: 1,
-      y: 1
-    };
-    const offsets = {
-      x: 0,
-      y: 0
-    };
-    if (isOffsetParentAnElement || !isOffsetParentAnElement && strategy !== 'fixed') {
+    let scale = createCoords(1);
+    const offsets = createCoords(0);
+    const isOffsetParentAnElement = isHTMLElement(offsetParent);
+    if (isOffsetParentAnElement || !isOffsetParentAnElement && !isFixed) {
       if (getNodeName(offsetParent) !== 'body' || isOverflowElement(documentElement)) {
         scroll = getNodeScroll(offsetParent);
       }
@@ -3398,17 +5145,16 @@
         offsets.y = offsetRect.y + offsetParent.clientTop;
       }
     }
+    const htmlOffset = documentElement && !isOffsetParentAnElement && !isFixed ? getHTMLOffset(documentElement, scroll, true) : createCoords(0);
     return {
       width: rect.width * scale.x,
       height: rect.height * scale.y,
-      x: rect.x * scale.x - scroll.scrollLeft * scale.x + offsets.x,
-      y: rect.y * scale.y - scroll.scrollTop * scale.y + offsets.y
+      x: rect.x * scale.x - scroll.scrollLeft * scale.x + offsets.x + htmlOffset.x,
+      y: rect.y * scale.y - scroll.scrollTop * scale.y + offsets.y + htmlOffset.y
     };
   }
-  function getWindowScrollBarX(element) {
-    // If <html> has a CSS width greater than the viewport, then this will be
-    // incorrect for RTL.
-    return getBoundingClientRect(getDocumentElement(element)).left + getNodeScroll(element).scrollLeft;
+  function getClientRects(element) {
+    return Array.from(element.getClientRects());
   }
 
   // Gets the entire size of the scrollable document area, even extending outside
@@ -3431,46 +5177,6 @@
       y
     };
   }
-  function getParentNode(node) {
-    if (getNodeName(node) === 'html') {
-      return node;
-    }
-    const result =
-    // Step into the shadow DOM of the parent of a slotted node.
-    node.assignedSlot ||
-    // DOM Element detected.
-    node.parentNode ||
-    // ShadowRoot detected.
-    isShadowRoot(node) && node.host ||
-    // Fallback.
-    getDocumentElement(node);
-    return isShadowRoot(result) ? result.host : result;
-  }
-  function getNearestOverflowAncestor(node) {
-    const parentNode = getParentNode(node);
-    if (isLastTraversableNode(parentNode)) {
-      // `getParentNode` will never return a `Document` due to the fallback
-      // check, so it's either the <html> or <body> element.
-      return parentNode.ownerDocument.body;
-    }
-    if (isHTMLElement(parentNode) && isOverflowElement(parentNode)) {
-      return parentNode;
-    }
-    return getNearestOverflowAncestor(parentNode);
-  }
-  function getOverflowAncestors(node, list) {
-    var _node$ownerDocument;
-    if (list === void 0) {
-      list = [];
-    }
-    const scrollableAncestor = getNearestOverflowAncestor(node);
-    const isBody = scrollableAncestor === ((_node$ownerDocument = node.ownerDocument) == null ? void 0 : _node$ownerDocument.body);
-    const win = getWindow(scrollableAncestor);
-    if (isBody) {
-      return list.concat(win, win.visualViewport || [], isOverflowElement(scrollableAncestor) ? scrollableAncestor : []);
-    }
-    return list.concat(scrollableAncestor, getOverflowAncestors(scrollableAncestor));
-  }
   function getViewportRect(element, strategy) {
     const win = getWindow(element);
     const html = getDocumentElement(element);
@@ -3482,7 +5188,7 @@
     if (visualViewport) {
       width = visualViewport.width;
       height = visualViewport.height;
-      const visualViewportBased = isClientRectVisualViewportBased();
+      const visualViewportBased = isWebKit();
       if (!visualViewportBased || visualViewportBased && strategy === 'fixed') {
         x = visualViewport.offsetLeft;
         y = visualViewport.offsetTop;
@@ -3501,10 +5207,7 @@
     const clientRect = getBoundingClientRect(element, true, strategy === 'fixed');
     const top = clientRect.top + element.clientTop;
     const left = clientRect.left + element.clientLeft;
-    const scale = isHTMLElement(element) ? getScale(element) : {
-      x: 1,
-      y: 1
-    };
+    const scale = isHTMLElement(element) ? getScale(element) : createCoords(1);
     const width = element.clientWidth * scale.x;
     const height = element.clientHeight * scale.y;
     const x = left * scale.x;
@@ -3525,16 +5228,13 @@
     } else if (isElement(clippingAncestor)) {
       rect = getInnerBoundingClientRect(clippingAncestor, strategy);
     } else {
-      const mutableRect = {
-        ...clippingAncestor
+      const visualOffsets = getVisualOffsets(element);
+      rect = {
+        x: clippingAncestor.x - visualOffsets.x,
+        y: clippingAncestor.y - visualOffsets.y,
+        width: clippingAncestor.width,
+        height: clippingAncestor.height
       };
-      if (isClientRectVisualViewportBased()) {
-        var _win$visualViewport, _win$visualViewport2;
-        const win = getWindow(element);
-        mutableRect.x -= ((_win$visualViewport = win.visualViewport) == null ? void 0 : _win$visualViewport.offsetLeft) || 0;
-        mutableRect.y -= ((_win$visualViewport2 = win.visualViewport) == null ? void 0 : _win$visualViewport2.offsetTop) || 0;
-      }
-      rect = mutableRect;
     }
     return rectToClientRect(rect);
   }
@@ -3554,7 +5254,7 @@
     if (cachedResult) {
       return cachedResult;
     }
-    let result = getOverflowAncestors(element).filter(el => isElement(el) && getNodeName(el) !== 'body');
+    let result = getOverflowAncestors(element, [], false).filter(el => isElement(el) && getNodeName(el) !== 'body');
     let currentContainingBlockComputedStyle = null;
     const elementIsFixed = getComputedStyle$1(element).position === 'fixed';
     let currentNode = elementIsFixed ? getParentNode(element) : element;
@@ -3589,7 +5289,7 @@
       rootBoundary,
       strategy
     } = _ref;
-    const elementClippingAncestors = boundary === 'clippingAncestors' ? getClippingElementAncestors(element, this._c) : [].concat(boundary);
+    const elementClippingAncestors = boundary === 'clippingAncestors' ? isTopLayer(element) ? [] : getClippingElementAncestors(element, this._c) : [].concat(boundary);
     const clippingAncestors = [...elementClippingAncestors, rootBoundary];
     const firstClippingAncestor = clippingAncestors[0];
     const clippingRect = clippingAncestors.reduce((accRect, clippingAncestor) => {
@@ -3608,7 +5308,51 @@
     };
   }
   function getDimensions(element) {
-    return getCssDimensions(element);
+    const {
+      width,
+      height
+    } = getCssDimensions(element);
+    return {
+      width,
+      height
+    };
+  }
+  function getRectRelativeToOffsetParent(element, offsetParent, strategy) {
+    const isOffsetParentAnElement = isHTMLElement(offsetParent);
+    const documentElement = getDocumentElement(offsetParent);
+    const isFixed = strategy === 'fixed';
+    const rect = getBoundingClientRect(element, true, isFixed, offsetParent);
+    let scroll = {
+      scrollLeft: 0,
+      scrollTop: 0
+    };
+    const offsets = createCoords(0);
+    if (isOffsetParentAnElement || !isOffsetParentAnElement && !isFixed) {
+      if (getNodeName(offsetParent) !== 'body' || isOverflowElement(documentElement)) {
+        scroll = getNodeScroll(offsetParent);
+      }
+      if (isOffsetParentAnElement) {
+        const offsetRect = getBoundingClientRect(offsetParent, true, isFixed, offsetParent);
+        offsets.x = offsetRect.x + offsetParent.clientLeft;
+        offsets.y = offsetRect.y + offsetParent.clientTop;
+      } else if (documentElement) {
+        // If the <body> scrollbar appears on the left (e.g. RTL systems). Use
+        // Firefox with layout.scrollbar.side = 3 in about:config to test this.
+        offsets.x = getWindowScrollBarX(documentElement);
+      }
+    }
+    const htmlOffset = documentElement && !isOffsetParentAnElement && !isFixed ? getHTMLOffset(documentElement, scroll) : createCoords(0);
+    const x = rect.left + scroll.scrollLeft - offsets.x - htmlOffset.x;
+    const y = rect.top + scroll.scrollTop - offsets.y - htmlOffset.y;
+    return {
+      x,
+      y,
+      width: rect.width,
+      height: rect.height
+    };
+  }
+  function isStaticPositioned(element) {
+    return getComputedStyle$1(element).position === 'static';
   }
   function getTrueOffsetParent(element, polyfill) {
     if (!isHTMLElement(element) || getComputedStyle$1(element).position === 'fixed') {
@@ -3617,100 +5361,113 @@
     if (polyfill) {
       return polyfill(element);
     }
-    return element.offsetParent;
-  }
-  function getContainingBlock(element) {
-    let currentNode = getParentNode(element);
-    while (isHTMLElement(currentNode) && !isLastTraversableNode(currentNode)) {
-      if (isContainingBlock(currentNode)) {
-        return currentNode;
-      } else {
-        currentNode = getParentNode(currentNode);
-      }
+    let rawOffsetParent = element.offsetParent;
+
+    // Firefox returns the <html> element as the offsetParent if it's non-static,
+    // while Chrome and Safari return the <body> element. The <body> element must
+    // be used to perform the correct calculations even if the <html> element is
+    // non-static.
+    if (getDocumentElement(element) === rawOffsetParent) {
+      rawOffsetParent = rawOffsetParent.ownerDocument.body;
     }
-    return null;
+    return rawOffsetParent;
   }
 
   // Gets the closest ancestor positioned element. Handles some edge cases,
   // such as table ancestors and cross browser bugs.
   function getOffsetParent(element, polyfill) {
-    const window = getWindow(element);
+    const win = getWindow(element);
+    if (isTopLayer(element)) {
+      return win;
+    }
     if (!isHTMLElement(element)) {
-      return window;
+      let svgOffsetParent = getParentNode(element);
+      while (svgOffsetParent && !isLastTraversableNode(svgOffsetParent)) {
+        if (isElement(svgOffsetParent) && !isStaticPositioned(svgOffsetParent)) {
+          return svgOffsetParent;
+        }
+        svgOffsetParent = getParentNode(svgOffsetParent);
+      }
+      return win;
     }
     let offsetParent = getTrueOffsetParent(element, polyfill);
-    while (offsetParent && isTableElement(offsetParent) && getComputedStyle$1(offsetParent).position === 'static') {
+    while (offsetParent && isTableElement(offsetParent) && isStaticPositioned(offsetParent)) {
       offsetParent = getTrueOffsetParent(offsetParent, polyfill);
     }
-    if (offsetParent && (getNodeName(offsetParent) === 'html' || getNodeName(offsetParent) === 'body' && getComputedStyle$1(offsetParent).position === 'static' && !isContainingBlock(offsetParent))) {
-      return window;
+    if (offsetParent && isLastTraversableNode(offsetParent) && isStaticPositioned(offsetParent) && !isContainingBlock(offsetParent)) {
+      return win;
     }
-    return offsetParent || getContainingBlock(element) || window;
+    return offsetParent || getContainingBlock(element) || win;
   }
-  function getRectRelativeToOffsetParent(element, offsetParent, strategy) {
-    const isOffsetParentAnElement = isHTMLElement(offsetParent);
-    const documentElement = getDocumentElement(offsetParent);
-    const rect = getBoundingClientRect(element, true, strategy === 'fixed', offsetParent);
-    let scroll = {
-      scrollLeft: 0,
-      scrollTop: 0
-    };
-    const offsets = {
-      x: 0,
-      y: 0
-    };
-    if (isOffsetParentAnElement || !isOffsetParentAnElement && strategy !== 'fixed') {
-      if (getNodeName(offsetParent) !== 'body' || isOverflowElement(documentElement)) {
-        scroll = getNodeScroll(offsetParent);
-      }
-      if (isHTMLElement(offsetParent)) {
-        const offsetRect = getBoundingClientRect(offsetParent, true);
-        offsets.x = offsetRect.x + offsetParent.clientLeft;
-        offsets.y = offsetRect.y + offsetParent.clientTop;
-      } else if (documentElement) {
-        offsets.x = getWindowScrollBarX(documentElement);
-      }
-    }
+  const getElementRects = async function (data) {
+    const getOffsetParentFn = this.getOffsetParent || getOffsetParent;
+    const getDimensionsFn = this.getDimensions;
+    const floatingDimensions = await getDimensionsFn(data.floating);
     return {
-      x: rect.left + scroll.scrollLeft - offsets.x,
-      y: rect.top + scroll.scrollTop - offsets.y,
-      width: rect.width,
-      height: rect.height
+      reference: getRectRelativeToOffsetParent(data.reference, await getOffsetParentFn(data.floating), data.strategy),
+      floating: {
+        x: 0,
+        y: 0,
+        width: floatingDimensions.width,
+        height: floatingDimensions.height
+      }
     };
+  };
+  function isRTL(element) {
+    return getComputedStyle$1(element).direction === 'rtl';
   }
   const platform = {
-    getClippingRect,
     convertOffsetParentRelativeRectToViewportRelativeRect,
-    isElement,
-    getDimensions,
-    getOffsetParent,
     getDocumentElement,
+    getClippingRect,
+    getOffsetParent,
+    getElementRects,
+    getClientRects,
+    getDimensions,
     getScale,
-    async getElementRects(_ref) {
-      let {
-        reference,
-        floating,
-        strategy
-      } = _ref;
-      const getOffsetParentFn = this.getOffsetParent || getOffsetParent;
-      const getDimensionsFn = this.getDimensions;
-      return {
-        reference: getRectRelativeToOffsetParent(reference, await getOffsetParentFn(floating), strategy),
-        floating: {
-          x: 0,
-          y: 0,
-          ...(await getDimensionsFn(floating))
-        }
-      };
-    },
-    getClientRects: element => Array.from(element.getClientRects()),
-    isRTL: element => getComputedStyle$1(element).direction === 'rtl'
+    isElement,
+    isRTL
   };
 
   /**
+   * Modifies the placement by translating the floating element along the
+   * specified axes.
+   * A number (shorthand for `mainAxis` or distance), or an axes configuration
+   * object may be passed.
+   * @see https://floating-ui.com/docs/offset
+   */
+  const offset = offset$1;
+
+  /**
+   * Optimizes the visibility of the floating element by shifting it in order to
+   * keep it in view when it will overflow the clipping boundary.
+   * @see https://floating-ui.com/docs/shift
+   */
+  const shift = shift$1;
+
+  /**
+   * Optimizes the visibility of the floating element by flipping the `placement`
+   * in order to keep it in view when the preferred placement(s) will overflow the
+   * clipping boundary. Alternative to `autoPlacement`.
+   * @see https://floating-ui.com/docs/flip
+   */
+  const flip = flip$1;
+
+  /**
+   * Provides data to position an inner element of the floating element so that it
+   * appears centered to the reference element.
+   * @see https://floating-ui.com/docs/arrow
+   */
+  const arrow = arrow$1;
+
+  /**
+   * Built-in `limiter` that will stop `shift()` at a certain point.
+   */
+  const limitShift = limitShift$1;
+
+  /**
    * Computes the `x` and `y` coordinates that will place the floating element
-   * next to a reference element when it is given a certain CSS positioning
-   * strategy.
+   * next to a given reference element.
    */
   const computePosition = (reference, floating, options) => {
     // This caches the expensive `getClippingElementAncestors` function so that
@@ -3781,10 +5538,7 @@
     }
     static debounce(func, wait) {
       let timeout;
-      return function executedFunction() {
-        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-          args[_key] = arguments[_key];
-        }
+      return function executedFunction(...args) {
         const later = () => {
           clearTimeout(timeout);
           func(...args);
@@ -3825,8 +5579,7 @@
       this.popoverElement.classList.remove('active');
       this.popoverIsOpen = false;
     }
-    async updatePopover(popover, placement) {
-      let anchor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.popoverAnchor;
+    async updatePopover(popover, placement, anchor = this.popoverAnchor) {
       try {
         const {
           x,
@@ -4007,6 +5760,11 @@
         ariaExpanded = this.trigger.getAttribute('aria-expanded') === 'true' ? 'false' : 'true';
       }
       this.trigger.setAttribute('aria-expanded', ariaExpanded);
+      const options = this.dropdown.querySelectorAll(`.js-${this.optionClass}`);
+      options.forEach(option => {
+        const isVisible = ariaExpanded === 'true';
+        option.setAttribute('aria-hidden', !isVisible);
+      });
       if (ariaExpanded === 'true') {
         const selectedOption = this.getSelectedOption() || this.allButton;
         this.constructor.moveFocusFn(selectedOption);
@@ -4175,7 +5933,8 @@
         const disabled = options[i].hasAttribute('disabled') ? 'disabled' : '';
         const checked = options[i].hasAttribute('selected') ? 'checked' : '';
         const uniqueName = this.constructor.createSafeCss(`${this.selectId}-${options[i].value}-${this.optionIndex.toString()}`);
-        list = `${list}<li class="js-${this.optionClass}" role="option" data-value="${options[i].value}" ${selected} data-label="${options[i].text}" data-index="${this.optionIndex}"><input aria-hidden="true" class="${this.prefix}${this.checkboxInputClass} js-${this.checkboxClass}" type="checkbox" id="${uniqueName}" ${checked} ${disabled}><label class="${this.prefix}${this.checkboxLabelClass} ${this.prefix}${this.itemClass} ${this.prefix}${this.itemClass}--option" aria-hidden="true" for="${uniqueName}"><span>${options[i].text}</span></label></li>`;
+        const ariaHidden = options[i].hasAttribute('hidden') ? 'aria-hidden="true"' : '';
+        list = `${list}<li class="js-${this.optionClass}" role="option" data-value="${options[i].value}" ${selected} ${ariaHidden} data-label="${options[i].text}" data-index="${this.optionIndex}"><input class="${this.prefix}${this.checkboxInputClass} js-${this.checkboxClass}" type="checkbox" id="${uniqueName}" ${checked} ${disabled}><label class="${this.prefix}${this.checkboxLabelClass} ${this.prefix}${this.itemClass} ${this.prefix}${this.itemClass}--option" for="${uniqueName}"><span>${options[i].text}</span></label></li>`;
         this.optionIndex += 1;
       }
       return list;
@@ -4364,10 +6123,9 @@
         }
       }
     }
-    arrowKeys(_ref) {
-      let {
-        which
-      } = _ref;
+    arrowKeys({
+      which
+    }) {
       const linkLength = this.tabLinks.length - 1;
       let index = this.tabLinks.indexOf(this.selectedTab);
       let down = false;
@@ -4558,8 +6316,7 @@
       this.toggletipElement.classList.remove('active');
       this.toggletipIsOpen = false;
     }
-    updateToggletip(toggletip, arrowElement) {
-      let anchor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.toggletipAnchor;
+    updateToggletip(toggletip, arrowElement, anchor = this.toggletipAnchor) {
       computePosition(anchor, toggletip, {
         placement: 'top',
         middleware: [offset(8), flip(), shift({
@@ -4567,13 +6324,12 @@
         }), arrow({
           element: arrowElement
         })]
-      }).then(_ref => {
-        let {
-          x,
-          y,
-          placement,
-          middlewareData
-        } = _ref;
+      }).then(({
+        x,
+        y,
+        placement,
+        middlewareData
+      }) => {
         Object.assign(toggletip.style, {
           left: `${x}px`,
           top: `${y}px`
@@ -4686,10 +6442,9 @@
       });
       this.tooltip.removeAttribute('title');
       const eventArray = ['mouseenter', 'mouseleave', 'focus', 'blur'];
-      eventArray.forEach((event, _ref) => {
-        let {
-          listener = this.handleEvent.bind(this)
-        } = _ref;
+      eventArray.forEach((event, {
+        listener = this.handleEvent.bind(this)
+      }) => {
         this.tooltip.addEventListener(event, listener);
       });
     }
@@ -4753,8 +6508,7 @@
         this.screenSize = 16;
       }
     }
-    updateTooltip(tooltip, arrowElement) {
-      let anchor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.tooltip;
+    updateTooltip(tooltip, arrowElement, anchor = this.tooltip) {
       computePosition(anchor, tooltip, {
         placement: 'top',
         middleware: [offset(8), flip(), shift({
@@ -4762,13 +6516,12 @@
         }), arrow({
           element: arrowElement
         })]
-      }).then(_ref2 => {
-        let {
-          x,
-          y,
-          placement,
-          middlewareData
-        } = _ref2;
+      }).then(({
+        x,
+        y,
+        placement,
+        middlewareData
+      }) => {
         Object.assign(tooltip.style, {
           left: `${x}px`,
           top: `${y}px`
@@ -4800,8 +6553,7 @@
   }
 
   class UtilityList extends Toggletip {
-    constructor(element) {
-      let toggletip = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : element.querySelector('.js-share');
+    constructor(element, toggletip = element.querySelector('.js-share')) {
       super(toggletip === null ? element : toggletip);
       this.element = element;
       this.share = toggletip;
@@ -4935,11 +6687,12 @@
     copiedMessage(element) {
       this.copyElement = element;
       const icon = '<span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">link</span>';
+      const originalText = this.copyElement.innerHTML;
       this.copyElement.classList.add('copied');
       this.copyElement.innerHTML = `${icon} Copied`;
       setTimeout(() => {
         this.copyElement.classList.remove('copied');
-        this.copyElement.innerHTML = `${icon} Copy link`;
+        this.copyElement.innerHTML = originalText;
       }, 3000);
     }
   }
@@ -4966,6 +6719,7 @@
   function initSite() {
     const accordions = document.querySelectorAll('.js-accordion');
     const backTop = document.querySelectorAll('button.js-back-to-top');
+    const breadcrumbs = document.querySelectorAll('.js-breadcrumbs');
     const carousel = document.querySelectorAll('.js-carousel');
     const closeSearchButton = document.querySelectorAll('button.js-close-search');
     const datePicker = document.querySelectorAll('.js-date-input');
@@ -4990,6 +6744,11 @@
     if (backTop) {
       backTop.forEach(element => {
         new BackTop(element).init();
+      });
+    }
+    if (breadcrumbs) {
+      breadcrumbs.forEach(element => {
+        new Breadcrumbs(element).init();
       });
     }
     if (carousel) {
@@ -5075,6 +6834,7 @@
   exports.Accordion = Accordion;
   exports.BackTop = BackTop;
   exports.Carousel = Carousel;
+  exports.CookieConsent = CookieConsent;
   exports.DatePicker = DatePicker;
   exports.Dialog = Dialog;
   exports.ExternalLink = ExternalLink;
