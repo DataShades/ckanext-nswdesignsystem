@@ -1,0 +1,51 @@
+{% from "macros/nswdesignsystem/_tabs_link.html" import link with context  %}
+
+
+
+{% macro pagination(pager, padding=3) %}
+    {% set current = pager.page %}
+    {% set total = pager.last_page %}
+
+    {% set is_first = current <= 1 %}
+    {% set is_last = current >= total %}
+
+    {% set url = pager._url_generator %}
+
+    {% set first_bound = [2, current - padding]|max %}
+    {% set last_bound = [total - 1, current + padding]|min %}
+
+
+    {% if total > 1 %}
+        <nav class="nsw-pagination" aria-label="Pagination">
+            <ul>
+                <li>
+                    <a class="nsw-icon-button {{ ' disabled' if is_first }}" href="{{ url(page=current-1) }}">
+                        <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_left</span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                </li>
+
+                <li><a class="{{ 'active' if current == 1}}" href="{{ url(page=pager.first_page) }}"><span class="sr-only">Page </span>{{ 1 }}</a></li>
+                {% if first_bound > 2 %}
+                    <li><span>…</span></li>
+                {% endif %}
+
+                {% for i in range(first_bound, last_bound+1) %}
+                    <li><a class="{{ 'active' if current == i }}" href="{{ url(page=i) }}"><span class="sr-only">Page </span>{{ i }}</a></li>
+                {% endfor %}
+
+                {% if last_bound < total - 1 %}
+                    <li><span>…</span></li>
+                {% endif %}
+                <li><a class="{{ 'active' if current == total }}" href="{{ url(page=total) }}"><span class="sr-only">Page </span>{{ total }}</a></li>
+                <li>
+                    <a class="nsw-icon-button {{ ' disabled' if is_last }}" href="{{ url(page=current+1) }}">
+                        <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_right</span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    {% endif %}
+
+{% endmacro %}

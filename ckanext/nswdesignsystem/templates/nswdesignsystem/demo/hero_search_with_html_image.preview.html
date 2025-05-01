@@ -1,0 +1,23 @@
+{% from "macros/nswdesignsystem/hero_search.html" import hero_search with context %}
+
+{% set url = "https://picsum.photos/id/204/2000/1250" %}
+
+{% call(region) hero_search("NSW Government", url, html_image=true) %}
+
+{% if region == "intro" %}
+    <p>
+        Find information, access services and have your say.
+    </p>
+{% elif region == "outro" %}
+    <ul>
+        <li><a href="#">COVID-19 (coronavirus)</a></li>
+        <li><a href="#">Water restrictions</a></li>
+        <li><a href="#">Support for bushfire affected communities</a></li>
+        <li><a href="#">Renew rego</a></li>
+        <li><a href="#">Green slips</a></li>
+        <li><a href="#">Driving, boating and transport</a></li>
+        <li><a href="#">School and public holidays</a></li>
+    </ul>
+{% endif %}
+
+{% endcall %}

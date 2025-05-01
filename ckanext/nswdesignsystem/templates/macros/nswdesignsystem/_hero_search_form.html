@@ -1,0 +1,12 @@
+{% macro form(value="", field="q", action="", label="Search site for:") %}
+    <form role="search" class="hero-search__form" action="{{ action }}" id="hero-search-form">
+        <div class="nsw-form__input-group nsw-form__input-group--icon">
+            <label class="sr-only" for="hero-search-input">{{ label }}</label>
+            <input class="nsw-form__input" type="text" id="hero-search-input" name="{{ field }}" value="{{ value }}">
+            <button class="nsw-button nsw-button--dark nsw-button--flex" type="submit">
+                <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">search</span>
+                <span class="sr-only">Search</span>
+            </button>
+        </div>
+    </form>
+{% endmacro %}

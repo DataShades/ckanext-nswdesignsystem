@@ -1,0 +1,35 @@
+
+{% macro card(title, link, tag=none, date=none, image=none, variant=none, horizontal=false) %}
+
+    <div class="nsw-card{{ ' nsw-card--' ~ variant if variant }}{{ ' nsw-card--horizontal' if horizontal }}">
+        {% if image %}
+            <div class="nsw-card__image">
+                <img src="{{ image }}">
+            </div>
+        {% endif %}
+        <div class="nsw-card__content">
+            {% if tag %}
+                <div class="nsw-card__tag">{{ tag }}</div>
+            {% endif %}
+
+            {% if date %}
+                <div class="nsw-card__date">
+                    <time datetime="{{ date }}">
+                        {{ h.render_datetime(date) }}
+                    </time>
+                </div>
+            {% endif %}
+
+            <div class="nsw-card__title">
+                <a href="{{ link }}">{{ title }}</a>
+            </div>
+
+            <div class="nsw-card__copy">
+                {{ caller() }}
+            </div>
+
+            <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">east</span>
+        </div>
+    </div>
+
+{% endmacro %}

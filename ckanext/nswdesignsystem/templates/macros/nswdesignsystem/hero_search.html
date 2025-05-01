@@ -1,0 +1,39 @@
+{% from "macros/nswdesignsystem/_hero_search_form.html" import form with context  %}
+
+
+{% macro hero_search(heading, image, html_image=false, search_value="", search_field="q", search_action="") %}
+    <div
+        {% if html_image %}
+            class="nsw-section nsw-section--image-html"
+        {% else %}
+            class="nsw-section nsw-section--image" style="background-image: url({{ image }});"
+        {% endif %}>
+
+        <div class="hero-search">
+            <div class="nsw-container">
+                <div class="hero-search__wrapper">
+                    <div class="hero-search__content">
+
+                        <h1>{{ heading }}</h1>
+
+                        <div class="nsw-intro">
+                            {{ caller("intro") }}
+                        </div>
+
+                        {{ caller("form")|trim or form(search_value, search_field, search_action) }}
+
+                        <div class="hero-search__suggested">
+                            {{ caller("outro") }}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if html_image %}
+            <img src="{{ image }}" alt="Background image"/>
+        {% endif %}
+    </div>
+
+
+{% endmacro %}
