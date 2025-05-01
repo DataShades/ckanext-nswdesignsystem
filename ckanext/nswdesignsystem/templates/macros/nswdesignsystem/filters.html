@@ -2,7 +2,7 @@
 
 {% macro filters(title="Filters", accept="Apply filters", cancel="Clear all filters",
     down=false, right=false, instant=false, count=false, id=null, cancel_url=null, submit_on_change=false) %}
-    <form class="nsw-filters{{ " js-filters" if down or right }}{{ " nsw-filters--down" if down }}{{ " nsw-filters--right" if right }}{{ " nsw-filters--instant" if instant }}" {% if id %}id="{{ id }}"{% endif %}
+    <div class="nsw-filters{{ " js-filters" if down or right }}{{ " nsw-filters--down" if down }}{{ " nsw-filters--right" if right }}{{ " nsw-filters--instant" if instant }}" {% if id %}id="{{ id }}"{% endif %}
           {% if submit_on_change %} onchange="this.submit()"{% endif %}
     >
 
@@ -52,15 +52,15 @@
             {% endif %}
 
         </div>
-    </form>
+    </div>
 {% endmacro %}
 
-{% macro filter(button_label) %}
+{% macro filter(button_label, expanded=false) %}
     <div class="nsw-filters__item">
 
         {% if button_label %}
 
-            <button class="nsw-filters__item-button">
+            <button class="nsw-filters__item-button {{ 'active' if expanded }}" aria-expanded="{{ 'true' if expanded else 'false' }}">
                 <span class="nsw-filters__item-name">{{ button_label }}</span>
                 <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_down</span>
             </button>
@@ -74,19 +74,23 @@
     </div>
 {% endmacro %}
 
-{% macro facet(name, values, labels=[], visible=5, title=null, show_all_label="Show all", empty_label=null) %}
+{% macro facet(name, values, labels=[], visible=5, title=null, show_all_label="Show all", empty_label=null, collapsible=false, expanded=false) %}
     {% if not labels %}
         {% set labels = values %}
     {% endif %}
 
-    {% call filter() %}
+    {% call filter(collapsible and title, expanded) %}
 
         {% set selected = request.args.getlist(name) %}
         {% set main = values[:visible] %}
         {% set rest = values[visible:] %}
 
         <fieldset class="nsw-form__fieldset">
-            <legend class="nsw-form__legend">{{ title or name }}</legend>
+            <legend class="nsw-form__legend">
+                {% if not collapsible %}
+                    {{ title or name }}
+                {% endif %}
+            </legend>
 
             {% for val in main %}
                 {{ form.checkbox(

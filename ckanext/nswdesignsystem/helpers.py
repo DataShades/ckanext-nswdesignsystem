@@ -136,7 +136,8 @@ def nswdesignsystem_demo_links() -> list[types.NavDict]:
     return [
         {
             "label": "NSW Digital Design System",
-            "href": "#",
+            "href": "https://designsystem.nsw.gov.au/",
+            "attrs": {"target": "_blank"},
             "subnav": {
                 "children": [
                     types.NavDict({

@@ -2227,16 +2227,16 @@
     <ul class="nsw-cookie-dialog__list">
     ${preferencesModal.sections.map((section, index) => `
           <li class="nsw-cookie-dialog__list-item">
-            <input 
-              class="nsw-form__checkbox-input" 
-              value="${section.linkedCategory}" 
-              type="checkbox" 
-              name="form-checkbox-multi-${index + 1}" 
+            <input
+              class="nsw-form__checkbox-input"
+              value="${section.linkedCategory}"
+              type="checkbox"
+              name="form-checkbox-multi-${index + 1}"
               id="cookie-settings-${index + 1}"
               ${categories[section.linkedCategory].readOnly ? 'disabled' : ''}
             >
-            <label 
-              class="nsw-form__checkbox-label" 
+            <label
+              class="nsw-form__checkbox-label"
               for="cookie-settings-${index + 1}"
             >
               ${section.title}
@@ -2288,7 +2288,7 @@
                 <section id="cookie-information" class="nsw-tabs__content nsw-tabs__content--side-flush">
                   <div class="nsw-cookie-dialog__content-wrapper">
                     <p>Cookies are small files stored on your phone, tablet, or computer when you visit a website. They help us understand how you use our website and improve your experience.</p>
-                    
+
                     <p>Some cookies collect information about how you interact with our website, such as the pages you visit and links you click. Others may store personal information, depending on their purpose and configuration.</p>
 
                     <p>Personal information that may be collected by cookies includes:</p>
@@ -2717,7 +2717,7 @@
       </header>
 
       <ol class="nsw-date-picker__dates js-date-picker__dates" aria-labelledby="${this.uID}">
-        
+
       </ol>
 
       <div class="nsw-date-picker__buttongroup">
@@ -3449,14 +3449,15 @@
         this.accordionButtons.forEach(button => {
           const buttonElem = button;
           const uID = uniqueId('collapsed');
+          const isExpanded = buttonElem.getAttribute('aria-expanded') === "true";
           buttonElem.setAttribute('type', 'button');
-          buttonElem.setAttribute('aria-expanded', 'false');
+          isExpanded || buttonElem.setAttribute('aria-expanded', 'false');
           buttonElem.setAttribute('aria-controls', uID);
           const label = buttonElem.querySelector(`.${this.prefix}${this.itemClass}-name`);
           buttonElem.setAttribute('data-label', label.innerText);
           const contentElem = buttonElem.nextElementSibling;
           contentElem.id = buttonElem.getAttribute('aria-controls');
-          contentElem.hidden = true;
+          if (!isExpanded) {contentElem.hidden = true;}
           this.content.push(contentElem);
           this.buttons.push(buttonElem);
         });
