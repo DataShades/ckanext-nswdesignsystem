@@ -26,4 +26,4 @@ hljs:  ## build and copy highlight.js into CKAN assets
 
 
 changelog:  ## compile changelog
-	git changelog -c conventional -o CHANGELOG.md
+	git changelog -c conventional -o CHANGELOG.md $(if $(bump),-B $(bump))
