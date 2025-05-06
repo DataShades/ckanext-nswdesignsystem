@@ -1,7 +1,7 @@
 {% import "macros/form.html" as form %}
 
 {% macro filters(title="Filters", accept="Apply filters", cancel="Clear all filters",
-    down=false, right=false, instant=false, count=false, id=null, cancel_url=null, submit_on_change=false) %}
+    down=false, right=false, instant=false, count=false, id=null, cancel_url=null, submit_on_change=false, accept_form=none) %}
     <div class="nsw-filters{{ " js-filters" if down or right }}{{ " nsw-filters--down" if down }}{{ " nsw-filters--right" if right }}{{ " nsw-filters--instant" if instant }}" {% if id %}id="{{ id }}"{% endif %}
           {% if submit_on_change %} onchange="this.submit()"{% endif %}
     >
@@ -35,7 +35,10 @@
 
             {% if accept %}
             <div class="nsw-filters__accept">
-                <button type="submit" class="nsw-button nsw-button--dark nsw-button--full-width">{{ accept }}</button>
+                <button type="submit" class="nsw-button nsw-button--dark nsw-button--full-width"
+                        {% if accept_form %} form="{{ accept_form }}"{% endif %}>
+                    {{ accept }}
+                </button>
             </div>
             {% endif %}
 
@@ -74,7 +77,7 @@
     </div>
 {% endmacro %}
 
-{% macro facet(name, values, labels=[], visible=5, title=null, show_all_label="Show all", empty_label=null, collapsible=false, expanded=false) %}
+{% macro facet(name, values, labels=[], visible=5, title=null, show_all_label="Show all", empty_label=null, collapsible=false, expanded=false, attrs={}) %}
     {% if not labels %}
         {% set labels = values %}
     {% endif %}
@@ -97,6 +100,7 @@
                     name,
                     id="filter-" ~ name ~ "-main-" ~ loop.index0, label=labels[loop.index0], value=val,
                     checked=val in selected,
+                    attrs=attrs,
                 )}}
             {% else %}
                 {{ empty_label }}
@@ -109,6 +113,7 @@
                             name,
                             id="filter-" ~ name ~ "-rest-" ~ loop.index0, label=labels[loop.index0 + visible], value=val,
                             checked=val in selected,
+                            attrs=attrs,
                         )}}
                     {% endfor %}
 

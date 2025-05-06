@@ -11,7 +11,7 @@ is_required - Boolean of whether this input is requred for the form to validate
 
 
 #}
-{% macro date(name, id='', label='', value=none, error="", is_required=false) %}
+{% macro date(name, id='', label='', value=none, error="", is_required=false, attrs={}) %}
 
     {% set id = id or name %}
     {% if value is none %}
@@ -31,15 +31,15 @@ is_required - Boolean of whether this input is requred for the form to validate
                 <div class="nsw-form__date-wrapper">
                     <div class="nsw-form__date-input">
                         <label for="{{ id }}-day" class="nsw-form__label nsw-form__label--small">Day</label>
-                        <input min="1" max="31" type="text" maxlength="2" value="{{ value[2] }}" id="{{ id }}-day" name="{{ name }}-day" class="nsw-form__input"{% if error %} aria-invalid="true"{% endif %}>
+                        <input min="1" max="31" type="text" maxlength="2" value="{{ value[2] }}" id="{{ id }}-day" name="{{ name }}_day" class="nsw-form__input"{% if error %} aria-invalid="true"{% endif %} {{ attributes(attrs) }}>
                     </div>
                     <div class="nsw-form__date-input">
                         <label for="{{ id }}-month" class="nsw-form__label nsw-form__label--small">Month</label>
-                        <input min="1" max="12" type="text" maxlength="2" value="{{ value[1] }}" id="{{ id }}-month" name="{{ name }}-month" class="nsw-form__input"{% if error %} aria-invalid="true"{% endif %}>
+                        <input min="1" max="12" type="text" maxlength="2" value="{{ value[1] }}" id="{{ id }}-month" name="{{ name }}_month" class="nsw-form__input"{% if error %} aria-invalid="true"{% endif %} {{ attributes(attrs) }}>
                     </div>
                     <div class="nsw-form__date-input nsw-form__date-input--large">
                         <label for="{{ id }}-year" class="nsw-form__label nsw-form__label--small">Year</label>
-                        <input min="1" max="9999" type="text" maxlength="4" value="{{ value[0] }}" id="{{ id }}-year" name="{{ name }}-year" class="nsw-form__input"{% if error %} aria-invalid="true"{% endif %}>
+                        <input min="1" max="9999" type="text" maxlength="4" value="{{ value[0] }}" id="{{ id }}-year" name="{{ name }}_year" class="nsw-form__input"{% if error %} aria-invalid="true"{% endif %} {{ attributes(attrs) }}>
                     </div>
                 </div>
             </fieldset>
