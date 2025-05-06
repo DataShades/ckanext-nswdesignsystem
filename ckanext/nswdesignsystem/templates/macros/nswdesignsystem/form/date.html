@@ -20,37 +20,33 @@ is_required - Boolean of whether this input is requred for the form to validate
         {% set value = value.split("-") %}
     {% endif %}
 
-
-    <div class="nsw-form">
-        <div class="nsw-form__group">
-            <fieldset class="nsw-form__date">
-                <legend>
-                    <span class="nsw-form__label{{ " nsw-form__required" if is_required }}">{{ label or name }}</span>
-                    {{ caller and caller() }}
-                </legend>
-                <div class="nsw-form__date-wrapper">
-                    <div class="nsw-form__date-input">
-                        <label for="{{ id }}-day" class="nsw-form__label nsw-form__label--small">Day</label>
-                        <input min="1" max="31" type="text" maxlength="2" value="{{ value[2] }}" id="{{ id }}-day" name="{{ name }}_day" class="nsw-form__input"{% if error %} aria-invalid="true"{% endif %} {{ attributes(attrs) }}>
-                    </div>
-                    <div class="nsw-form__date-input">
-                        <label for="{{ id }}-month" class="nsw-form__label nsw-form__label--small">Month</label>
-                        <input min="1" max="12" type="text" maxlength="2" value="{{ value[1] }}" id="{{ id }}-month" name="{{ name }}_month" class="nsw-form__input"{% if error %} aria-invalid="true"{% endif %} {{ attributes(attrs) }}>
-                    </div>
-                    <div class="nsw-form__date-input nsw-form__date-input--large">
-                        <label for="{{ id }}-year" class="nsw-form__label nsw-form__label--small">Year</label>
-                        <input min="1" max="9999" type="text" maxlength="4" value="{{ value[0] }}" id="{{ id }}-year" name="{{ name }}_year" class="nsw-form__input"{% if error %} aria-invalid="true"{% endif %} {{ attributes(attrs) }}>
-                    </div>
+    <div class="nsw-form__group">
+        <fieldset class="nsw-form__date">
+            <legend>
+                <span class="nsw-form__label{{ " nsw-form__required" if is_required }}">{{ label or name }}</span>
+                {{ caller and caller() }}
+            </legend>
+            <div class="nsw-form__date-wrapper">
+                <div class="nsw-form__date-input">
+                    <label for="{{ id }}-day" class="nsw-form__label nsw-form__label--small">Day</label>
+                    <input min="1" max="31" type="text" maxlength="2" value="{{ value[2] }}" id="{{ id }}-day" name="{{ name }}_day" class="nsw-form__input"{% if error %} aria-invalid="true"{% endif %} {{ attributes(attrs) }}>
                 </div>
-            </fieldset>
-            {% if error %}
-                <span class="nsw-form__helper nsw-form__helper--error">
-                    <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">cancel</span>
-                    {{ error if error is string else error|join(", ") }}
-                </span>
-            {% endif %}
-        </div>
+                <div class="nsw-form__date-input">
+                    <label for="{{ id }}-month" class="nsw-form__label nsw-form__label--small">Month</label>
+                    <input min="1" max="12" type="text" maxlength="2" value="{{ value[1] }}" id="{{ id }}-month" name="{{ name }}_month" class="nsw-form__input"{% if error %} aria-invalid="true"{% endif %} {{ attributes(attrs) }}>
+                </div>
+                <div class="nsw-form__date-input nsw-form__date-input--large">
+                    <label for="{{ id }}-year" class="nsw-form__label nsw-form__label--small">Year</label>
+                    <input min="1" max="9999" type="text" maxlength="4" value="{{ value[0] }}" id="{{ id }}-year" name="{{ name }}_year" class="nsw-form__input"{% if error %} aria-invalid="true"{% endif %} {{ attributes(attrs) }}>
+                </div>
+            </div>
+        </fieldset>
+        {% if error %}
+            <span class="nsw-form__helper nsw-form__helper--error">
+                <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">cancel</span>
+                {{ error if error is string else error|join(", ") }}
+            </span>
+        {% endif %}
     </div>
-
 
 {% endmacro %}

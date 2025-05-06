@@ -89,11 +89,11 @@
         {% set rest = values[visible:] %}
 
         <fieldset class="nsw-form__fieldset">
-            <legend class="nsw-form__legend">
-                {% if not collapsible %}
+            {% if not collapsible %}
+                <legend class="nsw-form__legend">
                     {{ title or name }}
-                {% endif %}
-            </legend>
+                </legend>
+            {% endif %}
 
             {% for val in main %}
                 {{ form.checkbox(
