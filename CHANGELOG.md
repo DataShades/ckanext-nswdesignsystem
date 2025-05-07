@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v0.2.3](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.3) - 2025-05-07
+
+<small>[Compare with v0.2.2](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.2...v0.2.3)</small>
+
+### Bug Fixes
+
+- show-more on filters does not work ([5880e46](https://github.com/DataShades/ckanext-nswdesignsystem/commit/5880e460df57257e684166e3bfb3548ce880000c) by Sergey Motornyuk).
+
+## [v0.2.2](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.2) - 2025-05-06
+
+<small>[Compare with v0.2.1](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.1...v0.2.2)</small>
+
+## [v0.2.1](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.1) - 2025-05-06
+
+<small>[Compare with v0.2.0](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.0...v0.2.1)</small>
+
+### Features
+
+- date input accept attributes ([8c55ed8](https://github.com/DataShades/ckanext-nswdesignsystem/commit/8c55ed813370b8f660d9996548dba8e7c0c2b5f8) by Sergey Motornyuk).
+
 ## [v0.2.0](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.0) - 2025-05-01
 
 <small>[Compare with v0.1.9](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.9...v0.2.0)</small>
