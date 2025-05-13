@@ -1,7 +1,7 @@
 {% from "macros/nswdesignsystem/_accordion_toggle_all.html" import toggle_all with context  %}
 
 
-{% macro accordion(length_or_headers, with_toggle_all=false, toggle_all_labels=[]) %}
+{% macro accordion(length_or_headers, with_toggle_all=false, toggle_all_labels=[], open=[]) %}
     {% if length_or_headers is iterable %}
         {% set headers = length_or_headers %}
         {% set length = headers | length %}
@@ -18,7 +18,7 @@
 
         {% for idx in range(length) %}
 
-            <div class="nsw-accordion__title">
+            <div class="nsw-accordion__title {{ 'nsw-accordion__open' if idx in open }}">
                 {% if headers %}
                     {{ headers[idx] }}
                 {% else %}

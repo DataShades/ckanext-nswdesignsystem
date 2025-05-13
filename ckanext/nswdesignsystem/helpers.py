@@ -88,7 +88,7 @@ def nswdesignsystem_demo_links() -> list[types.NavDict]:
         "breadcrumbs", "buttons", "callout", "cards", "content_blocks", "dialog", "file_upload", "filters",
         "forms", "global_alert", "hero_banner", "hero_search", "in_page_alert", "in_page_navigation",
         "link_list", "list_item", "loader", "pagination", "popover", "progress_indicator", "results_bar",
-        "select", "status_labels", "steps", "table", "tags", "tooltip",
+        "select", "status_labels", "steps", "table", "tags", "tooltip", "utility_list",
 
     ]
 

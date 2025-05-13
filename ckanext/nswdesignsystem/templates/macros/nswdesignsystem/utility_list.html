@@ -1,0 +1,24 @@
+{% from "macros/form/attributes.html" import attributes %}
+
+{% macro utility(label=none, icon=none, href=none, class=none, attrs={}) %}
+    <li class="nsw-utility-list__item {{ class if class }}" {{ attributes(attrs) }}>
+        {% if caller %}
+            {{ caller() }}
+        {% else %}
+            {% if icon %}
+                <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">{{ icon }}</span>
+            {% endif %}
+            <span>{{ label }}</span>
+        {% endif %}
+    </li>
+{% endmacro %}
+
+{% macro utility_list(utilities=[], horizontal=false)%}
+    <div class="nsw-utility-list js-utility-list{{ ' nsw-utility-list--horizontal' if horizontal }}">
+        <ul>
+            {% for item in utilities %}
+                {{ item }}
+            {% endfor %}
+        </ul>
+    </div>
+{% endmacro %}
