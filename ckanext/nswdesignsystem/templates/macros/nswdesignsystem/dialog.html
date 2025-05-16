@@ -38,6 +38,11 @@
 
 {% endmacro %}
 
-{% macro trigger(id, label) %}
-    <button class="nsw-button nsw-button--dark js-open-dialog-{{ id }}" aria-haspopup="dialog">{{ label }}</button>
+{% macro trigger(id, label, icon=none) %}
+    <button class="nsw-button nsw-button--dark js-open-dialog-{{ id }}" aria-haspopup="dialog">
+        {% if icon %}
+            <span class="material-icons nsw-material-icons">{{ icon }}</span>
+        {% endif %}
+        {{ label }}
+    </button>
 {% endmacro %}
