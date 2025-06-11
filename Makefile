@@ -15,7 +15,8 @@ help:
 vendor:  ## copy NSW Design System JS/CSS from node_modules into CKAN assets
 	cp -f "$(nds_node_path)/js/main.js" "$(nds_ckan_path)/nswdesignsystem.js"
 	cp -f "$(nds_node_path)/css/main.css" "$(nds_ckan_path)/nswdesignsystem.css"
-	@echo "Add conditional setting aria-expanded and hidden on filter button only if it is not already expanded"
+	@echo "Add conditional setting aria-expanded and hidden on filter button only if it is not already expanded:"
+	@echo -e "\tpatches/default-expanded-filters.patch"
 
 hljs:  ## build and copy highlight.js into CKAN assets
 	npm explore highlight.js -- npm i; \

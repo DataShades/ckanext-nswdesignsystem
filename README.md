@@ -83,7 +83,34 @@ Follow [conventional commits specification](https://www.conventionalcommits.org/
 * commit with a bugfix start with: `fix: <bug description(without angles)>`
 * commit with anything not important for changelog: `chore: <short message(without angles)>`
 
+### Update version of NSW design system library
 
+Do not copy the source manually without further notices, because it will be
+hard to identify the current version of the NSW design system. Instead, update
+the version of the library using `npm`:
+
+```sh
+npm up nsw-design-system
+```
+
+Now you have the latest version of the library inside `node_modules`. Next,
+copy it to assets folder using make-rule:
+
+```sh
+make vendor
+```
+
+Pay attention to the output of the command. This extension applies a number of
+changes to the library. For example, it adds expanded default state to search
+filters. These changes can be applied via patches from `patches` folder. `make
+vendor` lists expected modifications like this:
+
+```
+Add conditional setting aria-expanded and hidden on filter button only if it is not already expanded:
+        patches/default-expanded-filters.patch
+```
+
+When it's done, add feature commit `feat: nswdesignsystem vX.Y.Z` with all the changes.
 
 ## Tests
 
