@@ -33,3 +33,7 @@
 }
 
 .nsw-form__fieldset legend { float: none; }
+
+.nsw-footer hr { opacity: 1; }
+
+.nsw-link { text-decoration: underline; }
