@@ -34,7 +34,7 @@ Advanced form with custom templates:
                                 {% if caller is defined %}
                                     {{ caller("link", link) }}
                                 {% else %}
-                                    <a href="{{ link.href }}" class="nsw-link">{{ link.label }}</a>
+                                    <a href="{{ link.href }}">{{ link.label }}</a>
                                 {% endif %}
                             </li>
                         {% endfor %}
@@ -64,7 +64,7 @@ Advanced form with custom templates:
                     </div>
                     <div class="nsw-footer__built">
                         {{ _("Built by") }}
-                        <a href="https://www.digital.nsw.gov.au/digital-design-system" target="_blank" rel="noopener noreferrer"  class="nsw-link">
+                        <a href="https://www.digital.nsw.gov.au/digital-design-system" target="_blank" rel="noopener noreferrer">
                             {{ _("NSW Design System") }}
                         </a>
                     </div>

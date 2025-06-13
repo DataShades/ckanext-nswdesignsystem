@@ -26,7 +26,7 @@ Advanced form with custom templates:
                         {% if caller is defined %}
                             {{ caller("heading", group) }}
                         {% elif group.href %}
-                            <a href="{{ group.href }}" class="nsw-link">{{ group.label }}</a>
+                            <a href="{{ group.href }}">{{ group.label }}</a>
                         {% else %}
                             <span class="nsw-h5">{{ group.label }}</span>
                         {% endif %}
@@ -39,7 +39,7 @@ Advanced form with custom templates:
                                     {% if caller is defined %}
                                         {{ caller("link", link) }}
                                     {% else %}
-                                        <a href="{{ link.href }}" class="nsw-link">{{ link.label }}</a>
+                                        <a href="{{ link.href }}">{{ link.label }}</a>
                                     {% endif %}
                                 </li>
                             {% endfor %}
