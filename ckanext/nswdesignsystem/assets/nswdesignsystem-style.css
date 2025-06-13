@@ -33,3 +33,12 @@
 }
 
 .nsw-form__fieldset legend { float: none; }
+
+.nsw-footer hr { opacity: 1; }
+
+.footer__links a,
+.nsw-footer__built a,
+.nsw-footer__group a,
+.nsw-footer__links a {
+    text-decoration: underline;
+}

@@ -20,39 +20,42 @@ Advanced form with custom templates:
     <div class="nsw-footer__lower">
         <div class="nsw-container">
             {% if with_respect %}
-                <p>
+                <p class="nsw-footer__acknowledgement">
                     {{ _("We pay respect to the Traditional Custodians and First Peoples of NSW, and acknowledge their continued connection to their country and culture.") }}
                 </p>
                 <hr />
             {% endif %}
 
-            <div class="nsw-footer__links">
-                <ul>
-                    {% for link in links %}
-                        <li>
-                            {% if caller is defined %}
-                                {{ caller("link", link) }}
-                            {% else %}
-                                <a href="{{ link.href }}">{{ link.label }}</a>
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-
-                {% if social_links %}
-                    <div class="nsw-footer__social">
-                        {% for link in social_links %}
-                            {% if caller is defined %}
-                                {{ caller("social", link) }}
-                            {% else %}
-                                <a href="{{ link.href }}">
-                                    <span>{{ link.label }}</span>
-                                </a>
-                            {% endif %}
+            {% if  links %}
+                <div class="nsw-footer__links">
+                    <ul>
+                        {% for link in links %}
+                            <li>
+                                {% if caller is defined %}
+                                    {{ caller("link", link) }}
+                                {% else %}
+                                    <a href="{{ link.href }}">{{ link.label }}</a>
+                                {% endif %}
+                            </li>
                         {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
+                    </ul>
+
+                    {% if social_links %}
+                        <div class="nsw-footer__social">
+                            {% for link in social_links %}
+                                {% if caller is defined %}
+                                    {{ caller("social", link) }}
+                                {% else %}
+                                    <a href="{{ link.href }}">
+                                        <span>{{ link.label }}</span>
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
 
             {% if with_copyright %}
                 <div class="nsw-footer__info">
