@@ -6,6 +6,42 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v0.2.7](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.7) - 2025-06-16
+
+<small>[Compare with v0.2.6](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.6...v0.2.7)</small>
+
+### Features
+
+- nsw-design-system v3.20.3 ([282bed9](https://github.com/DataShades/ckanext-nswdesignsystem/commit/282bed9d8e68480a54413a24b53091708bfa516c) by Sergey Motornyuk).
+
+### Bug Fixes
+
+- filters show number of hidden items instead of total ([9a11e90](https://github.com/DataShades/ckanext-nswdesignsystem/commit/9a11e906e2dd82921baff7bd2e8da9494df17d75) by Sergey Motornyuk).
+
+## [v0.2.6](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.6) - 2025-05-16
+
+<small>[Compare with v0.2.5](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.5...v0.2.6)</small>
+
+### Features
+
+- dialog trigger with icon ([1f5b3f5](https://github.com/DataShades/ckanext-nswdesignsystem/commit/1f5b3f575649f8c765548d53cf4a69bf3346a60b) by Sergey Motornyuk).
+
+## [v0.2.5](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.5) - 2025-05-13
+
+<small>[Compare with v0.2.4](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.4...v0.2.5)</small>
+
+### Features
+
+- add utility list ([4e5ac53](https://github.com/DataShades/ckanext-nswdesignsystem/commit/4e5ac535b72a6c7e2cc730977058393b7a12ad66) by Sergey Motornyuk).
+
+## [v0.2.4](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.4) - 2025-05-07
+
+<small>[Compare with v0.2.3](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.3...v0.2.4)</small>
+
+### Features
+
+- form macros have no label when label and name empty ([e4bc4e7](https://github.com/DataShades/ckanext-nswdesignsystem/commit/e4bc4e72b258839b6514ce5856436dc65d714e30) by Sergey Motornyuk).
+
 ## [v0.2.3](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.3) - 2025-05-07
 
 <small>[Compare with v0.2.2](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.2...v0.2.3)</small>
