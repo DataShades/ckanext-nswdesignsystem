@@ -1,0 +1,18 @@
+{% macro filter(button_label, expanded=false) %}
+    <div class="nsw-filters__item">
+
+        {% if button_label %}
+
+            <button class="nsw-filters__item-button {{ 'active' if expanded }}" aria-expanded="{{ 'true' if expanded else 'false' }}">
+                <span class="nsw-filters__item-name">{{ button_label }}</span>
+                <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_down</span>
+            </button>
+
+        {% endif %}
+
+        <div class="nsw-filters__item-content">
+            {{ caller() }}
+        </div>
+
+    </div>
+{% endmacro %}
