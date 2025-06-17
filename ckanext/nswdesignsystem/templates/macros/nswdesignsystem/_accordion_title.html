@@ -1,0 +1,6 @@
+
+{% macro title(value=none, open=false) %}
+    <div class="nsw-accordion__title {{ 'nsw-accordion__open' if open }}">
+        {{ value if value else caller() }}
+    </div>
+{% endmacro %}
