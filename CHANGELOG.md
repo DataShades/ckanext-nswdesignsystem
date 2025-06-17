@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v0.2.8](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.8) - 2025-06-17
+
+<small>[Compare with v0.2.7](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.7...v0.2.8)</small>
+
+### Features
+
+- detailed macros for accordion ([17c245c](https://github.com/DataShades/ckanext-nswdesignsystem/commit/17c245ca8c81360a80660be18ab93785519452d3) by Sergey Motornyuk).
+
 ## [v0.2.7](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.7) - 2025-06-16
 
 <small>[Compare with v0.2.6](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.6...v0.2.7)</small>
@@ -17,6 +25,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Bug Fixes
 
 - filters show number of hidden items instead of total ([9a11e90](https://github.com/DataShades/ckanext-nswdesignsystem/commit/9a11e906e2dd82921baff7bd2e8da9494df17d75) by Sergey Motornyuk).
+- footer style, fixed styles and classes ([e1be61d](https://github.com/DataShades/ckanext-nswdesignsystem/commit/e1be61dee105e4766fd9ccef5b65b4a3b748f966) by Pavlo Malko).
+- footer style ([4047bdb](https://github.com/DataShades/ckanext-nswdesignsystem/commit/4047bdb427b2ac621deef9988b82f218e8865d43) by Pavlo Malko).
 
 ## [v0.2.6](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.6) - 2025-05-16
 
