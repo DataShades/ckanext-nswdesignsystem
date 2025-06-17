@@ -1,0 +1,65 @@
+
+{#
+style: dark|light|true|off-white
+#}
+{% macro hero_banner(title, intro, style="dark", img=none, with_lines=false) %}
+    {% call wrapper(style, with_lines) %}
+        {% call content() %}
+            <h1>{{ title }}</h1>
+            <p class="nsw-intro">{{ intro }}</p>
+        {% endcall %}
+
+        {% if img %}
+            {{ image(img) }}
+        {% elif with_lines %}
+            {{ lines() }}
+        {% endif %}
+
+    {% endcall %}
+{% endmacro %}
+
+{% macro wrapper(style="dark", with_lines=false) %}
+    <div class="nsw-hero-banner nsw-hero-banner--{{ style }} nsw-hero-banner--wide {{ 'nsw-hero-banner--lines' if with_lines }}">
+        <div class="nsw-hero-banner__container">
+            <div class="nsw-hero-banner__wrapper">
+                {{ caller() }}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro content() %}
+    <div class="nsw-hero-banner__content">
+        {{ caller() }}
+    </div>
+{% endmacro %}
+
+<div class="nsw-hero-banner__lines"></div>
+{% macro image(src) %}
+    <div class="nsw-hero-banner__box">
+        <img class="nsw-hero-banner__image" src="{{ src }}" alt="" />
+    </div>
+
+{% endmacro %}
+
+{% macro lines() %}
+    <div class="nsw-hero-banner__box">
+        <div class="nsw-hero-banner__lines"></div>
+    </div>
+{% endmacro %}
+
+{% macro links(title=none, links=[]) %}
+    <div class="nsw-hero-banner__links">
+        <div class="nsw-hero-banner__list">
+            {% if title %}
+                <div class="nsw-hero-banner__sub-title">{{ title }}</div>
+            {% endif %}
+            <ul>
+                {% for link in links %}
+                    <li><a href="{{ link.href }}">{{ link.label }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+{% endmacro %}

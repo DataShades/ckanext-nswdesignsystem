@@ -1,0 +1,20 @@
+{% import "macros/nswdesignsystem/hero_banner.html" as banner with context  %}
+
+
+{% call banner.wrapper("light") %}
+    {% call banner.content() %}
+        <h1>Helping you deliver great government services</h1>
+        <div class="nsw-intro">
+            Find the building blocks for creating user-centred digital services, as well as policy, tools and guidance
+        </div>
+    {% endcall %}
+
+    {{ banner.links("Key coronavirus links", [
+        {"href": "#", "label": "COVIDSafe App"},
+        {"href": "#", "label": "Current COVID-19 case locations"},
+        {"href": "#", "label": "Travel to and from NSW"},
+        {"href": "#", "label": "Health and wellbeing"},
+        {"href": "#", "label": "Business and work"},
+        {"href": "#", "label": "COVID-19 testing centres"},
+    ]) }}
+{% endcall %}
