@@ -9,7 +9,7 @@
                 <button>
                     <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">tune</span>
                     <span>{{ title }}</span>
-                    <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_down</span>
+                    <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_{{ "down" if down else "right" }}</span>
                 </button>
             </div>
         {% endif %}
