@@ -37,8 +37,8 @@ Complete example:
 
 {% macro select(name, id='', label='', options='', selected='', error='', classes=[], attrs={'class': 'nsw-form__select'}, is_required=false) %}
     {% set classes = (classes|list) %}
-    {% set input_class = attrs.class or "" %}
-    {% do attrs.update(class=input_class.replace("form-control", "nsw-form__select")) %}
+    {% do attrs.setdefault("class", "nsw-form__select") %}
+    {% do attrs.update(class=attrs.class.replace("form-control", "nsw-form__select")) %}
 
     {%- set extra_html = caller() if caller -%}
     {% call input_block(id or name, label or name, error, classes, extra_html=extra_html, is_required=is_required) %}

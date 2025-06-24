@@ -1,7 +1,7 @@
 {% macro filters(title="Filters", accept="Apply filters", cancel="Clear all filters",
     down=false, right=false, instant=false, count=false, id=null, cancel_url=null, submit_on_change=false, accept_form=none) %}
     <div class="nsw-filters{{ " js-filters" if down or right }}{{ " nsw-filters--down" if down }}{{ " nsw-filters--right" if right }}{{ " nsw-filters--instant" if instant }}" {% if id %}id="{{ id }}"{% endif %}
-         {% if submit_on_change %} onchange="this.submit()"{% endif %}
+         {% if submit_on_change %} onchange="{{ 'document.forms["{}"]'.format(accept_form) if accept_form else 'this' }}.submit()"{% endif %}
     >
 
         {% if down or right %}
