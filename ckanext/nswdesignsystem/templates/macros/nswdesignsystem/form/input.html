@@ -24,7 +24,9 @@ Examples:
 {% macro input(name, id='', label='', value='', placeholder='', type='text', error="", classes=[], attrs={'class': 'nsw-form__input'}, is_required=false) %}
     {%- set extra_html = caller() if caller -%}
     {% do attrs.setdefault("class", "nsw-form__input") %}
-    {% do attrs.update(class=attrs.class.replace("form-control", "nsw-form__input")) %}
+    {% if attrs.class is string %}
+        {% do attrs.update(class=attrs.class.replace("form-control", "nsw-form__input")) %}
+    {% endif %}
 
     {% call input_block(id or name, label or name, error, classes, extra_html=extra_html, is_required=is_required) %}
         <input id="{{ id or name }}" type="{{ type }}" name="{{ name }}" value="{{ value | empty_and_escape }}" placeholder="{{ placeholder }}" {{ attributes(attrs) }} />
