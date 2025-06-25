@@ -6,6 +6,38 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v0.2.12](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.12) - 2025-06-25
+
+<small>[Compare with v0.2.11](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.11...v0.2.12)</small>
+
+### Bug Fixes
+
+- error on rendering select or input with none-class ([98ecb0c](https://github.com/DataShades/ckanext-nswdesignsystem/commit/98ecb0c457dbfe67ac6b87a58eb6b0f02d8b33f7) by Sergey Motornyuk).
+
+## [v0.2.11](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.11) - 2025-06-24
+
+<small>[Compare with v0.2.10](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.10...v0.2.11)</small>
+
+### Bug Fixes
+
+- immediate filters do not work ([8b363c1](https://github.com/DataShades/ckanext-nswdesignsystem/commit/8b363c18e9018753b9ff007f45b156466235027d) by Sergey Motornyuk).
+
+## [v0.2.10](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.10) - 2025-06-19
+
+<small>[Compare with v0.2.9](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.9...v0.2.10)</small>
+
+### Bug Fixes
+
+- card images has no alt ([5f8c83b](https://github.com/DataShades/ckanext-nswdesignsystem/commit/5f8c83b76b33d72336876820a678d6bb637e9bed) by Sergey Motornyuk).
+
+## [v0.2.9](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.9) - 2025-06-17
+
+<small>[Compare with v0.2.8](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.8...v0.2.9)</small>
+
+### Features
+
+- macros for hero banner ([1d6db1f](https://github.com/DataShades/ckanext-nswdesignsystem/commit/1d6db1f2a2569a0c3346f463fad0a837061930bf) by Sergey Motornyuk).
+
 ## [v0.2.8](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.8) - 2025-06-17
 
 <small>[Compare with v0.2.7](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.7...v0.2.8)</small>
