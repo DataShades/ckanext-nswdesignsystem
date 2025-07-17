@@ -2,16 +2,17 @@
 Creates all the markup required for an date fieldset. Handles matching labels to
 inputs, error messages and other useful elements.
 
-name        - The name of the form parameter.
-id          - The id to use on the input and label. Convention is to prefix with 'field-'.
-label       - The human readable label.
-value       - The value of the input.
-error       - A list of error strings for the field or just true to highlight the field.
-is_required - Boolean of whether this input is requred for the form to validate
+name             - The name of the form parameter.
+id               - The id to use on the input and label. Convention is to prefix with 'field-'.
+label            - The human readable label.
+value            - The value of the input.
+error            - A list of error strings for the field or just true to highlight the field.
+is_required      - Boolean of whether this input is required for the form to validate
+with_date_picker - Boolean indicating whether the data picket should be used
 
 
 #}
-{% macro date(name, id='', label='', value=none, error="", is_required=false, attrs={}) %}
+{% macro date(name, id='', label='', value=none, error="", is_required=false, with_date_picker=false, attrs={}) %}
 
     {% set id = id or name %}
     {% if value is none %}
@@ -20,25 +21,43 @@ is_required - Boolean of whether this input is requred for the form to validate
         {% set value = value.split("-") %}
     {% endif %}
 
+{% set dp_fieldset_cls  = ' nsw-date-input js-date-input' if with_date_picker else '' %}
+{% set dp_wrapper_cls = ' nsw-date-input__wrapper js-date-input-multiple' if with_date_picker else '' %}
+{% set dp_day_cls  = ' js-date-picker-date'  if with_date_picker else '' %}
+{% set dp_month_cls  = ' js-date-picker-month' if with_date_picker else '' %}
+{% set dp_year_cls   = ' js-date-picker-year'  if with_date_picker else '' %}
+{% set dp_button %}
+    {% if with_date_picker %}
+        <div class="nsw-date-input__button">
+            <button type="button"
+                    class="nsw-button nsw-button--dark nsw-button--flex js-date-input__trigger"
+                    aria-label="Open date picker">
+                <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">calendar_today</span>
+            </button>
+        </div>
+    {% endif %}
+{% endset %}
+
     <div class="nsw-form__group">
-        <fieldset class="nsw-form__date">
+        <fieldset class="nsw-form__date{{ dp_fieldset_cls }}">
             <legend>
                 <span class="nsw-form__label{{ " nsw-form__required" if is_required }}">{{ label or name }}</span>
                 {{ caller and caller() }}
             </legend>
-            <div class="nsw-form__date-wrapper">
+            <div class="nsw-form__date-wrapper{{ dp_wrapper_cls }}">
                 <div class="nsw-form__date-input">
                     <label for="{{ id }}-day" class="nsw-form__label nsw-form__label--small">Day</label>
-                    <input min="1" max="31" type="text" maxlength="2" value="{{ value[2] }}" id="{{ id }}-day" name="{{ name }}_day" class="nsw-form__input"{% if error %} aria-invalid="true"{% endif %} {{ attributes(attrs) }}>
+                    <input min="1" max="31" type="text" maxlength="2" value="{{ value[2] }}" id="{{ id }}-day" name="{{ name }}_day" class="nsw-form__input{{ dp_day_cls }}" {% if error %}aria-invalid="true"{% endif %} {{ attributes(attrs) }}>
                 </div>
                 <div class="nsw-form__date-input">
                     <label for="{{ id }}-month" class="nsw-form__label nsw-form__label--small">Month</label>
-                    <input min="1" max="12" type="text" maxlength="2" value="{{ value[1] }}" id="{{ id }}-month" name="{{ name }}_month" class="nsw-form__input"{% if error %} aria-invalid="true"{% endif %} {{ attributes(attrs) }}>
+                    <input min="1" max="12" type="text" maxlength="2" value="{{ value[1] }}" id="{{ id }}-month" name="{{ name }}_month" class="nsw-form__input{{ dp_month_cls }}" {% if error %}aria-invalid="true"{% endif %} {{ attributes(attrs) }}>
                 </div>
                 <div class="nsw-form__date-input nsw-form__date-input--large">
                     <label for="{{ id }}-year" class="nsw-form__label nsw-form__label--small">Year</label>
-                    <input min="1" max="9999" type="text" maxlength="4" value="{{ value[0] }}" id="{{ id }}-year" name="{{ name }}_year" class="nsw-form__input"{% if error %} aria-invalid="true"{% endif %} {{ attributes(attrs) }}>
+                    <input min="1" max="9999" type="text" maxlength="4" value="{{ value[0] }}" id="{{ id }}-year" name="{{ name }}_year" class="nsw-form__input{{ dp_year_cls }}" {% if error %}aria-invalid="true"{% endif %} {{ attributes(attrs) }}>
                 </div>
+                {{ dp_button | safe }}
             </div>
         </fieldset>
         {% if error %}
@@ -48,5 +67,4 @@ is_required - Boolean of whether this input is requred for the form to validate
             </span>
         {% endif %}
     </div>
-
 {% endmacro %}
