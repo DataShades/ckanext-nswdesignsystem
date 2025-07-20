@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v0.2.14](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.14) - 2025-07-20
+
+<small>[Compare with v0.2.13](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.13...v0.2.14)</small>
+
+### Features
+
+- add date input macro ([20ceba5](https://github.com/DataShades/ckanext-nswdesignsystem/commit/20ceba555c9d078e91b5e3866cf7acb536dee0e9) by Oleksandr Ivaniuk).
+
 ## [v0.2.13](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.13) - 2025-07-17
 
 <small>[Compare with v0.2.12](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.12...v0.2.13)</small>
