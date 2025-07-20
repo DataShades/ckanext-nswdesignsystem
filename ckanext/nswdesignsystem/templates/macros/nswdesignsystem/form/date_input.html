@@ -1,0 +1,34 @@
+{% from "macros/nswdesignsystem/form/input_block.html" import input_block %}
+{% from "macros/nswdesignsystem/form/attributes.html" import attributes %}
+
+{% macro date_input(
+        name,
+        id='',
+        label='',
+        value='',
+        placeholder='',
+        error="",
+        classes=[],
+        attrs={},
+        is_required=false
+    ) %}
+    {% set extra_html = caller() if caller %}
+    {% do attrs.setdefault('class', 'nsw-form__input js-date-input__text') %}
+
+    {% call input_block(id or name, label or name, error, classes, extra_html=extra_html, is_required=is_required) %}
+        <div class="nsw-date-input js-date-input">
+            <div class="nsw-date-input__wrapper nsw-form__input-group nsw-form__input-group--icon">
+                <input id="{{ id or name }}"
+                       type="text"
+                       name="{{ name }}"
+                       value="{{ value | empty_and_escape }}"
+                       placeholder="{{ placeholder }}"
+                       autocomplete="off"
+                       {{ attributes(attrs) }} />
+                <button class="nsw-button nsw-button--dark nsw-button--flex js-date-input__trigger" type="button">
+                    <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">calendar_today</span>
+                </button>
+            </div>
+        </div>
+    {% endcall %}
+{% endmacro %}

@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v0.2.13](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.13) - 2025-07-17
+
+<small>[Compare with v0.2.12](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.12...v0.2.13)</small>
+
+### Features
+
+- add date picker support to date fieldset macro ([ac08449](https://github.com/DataShades/ckanext-nswdesignsystem/commit/ac08449c9566f2d32081d1bdaf064b189d25c241) by oleksandrivaniuk).
+
 ## [v0.2.12](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.12) - 2025-06-25
 
 <small>[Compare with v0.2.11](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.11...v0.2.12)</small>
