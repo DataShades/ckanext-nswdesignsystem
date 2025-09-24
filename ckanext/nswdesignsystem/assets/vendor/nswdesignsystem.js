@@ -2407,7 +2407,7 @@
           isExpanded || buttonElem.setAttribute('aria-expanded', 'false');
           buttonElem.setAttribute('aria-controls', uID);
           const label = buttonElem.querySelector(`.${this.prefix}${this.itemClass}-name`);
-          buttonElem.setAttribute('data-label', label.innerText);
+          buttonElem.setAttribute('data-label', label.innerText || (label.textContent || '').trim());
           const contentElem = buttonElem.nextElementSibling;
           contentElem.id = buttonElem.getAttribute('aria-controls');
           if (!isExpanded) {contentElem.hidden = true;}
