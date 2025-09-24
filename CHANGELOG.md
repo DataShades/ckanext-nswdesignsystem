@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [0.2.15](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/0.2.15) - 2025-09-24
+
+<small>[Compare with v0.2.14](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.14...0.2.15)</small>
+
+### Bug Fixes
+
+- fallback to textContent when innerText is empty for filter labels ([3e1b902](https://github.com/DataShades/ckanext-nswdesignsystem/commit/3e1b9024ba7640a9c64243ad7b86abc4419ad2f8) by Oleksandr Ivaniuk).
+
 ## [v0.2.14](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.14) - 2025-07-20
 
 <small>[Compare with v0.2.13](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.13...v0.2.14)</small>
