@@ -1,0 +1,13 @@
+diff --git a/ckanext/nswdesignsystem/assets/vendor/nswdesignsystem.js b/ckanext/nswdesignsystem/assets/vendor/nswdesignsystem.js
+index 86b1655..f9f1fa0 100644
+--- a/ckanext/nswdesignsystem/assets/vendor/nswdesignsystem.js
++++ b/ckanext/nswdesignsystem/assets/vendor/nswdesignsystem.js
+@@ -2407,7 +2407,7 @@
+           isExpanded || buttonElem.setAttribute('aria-expanded', 'false');
+           buttonElem.setAttribute('aria-controls', uID);
+           const label = buttonElem.querySelector(`.${this.prefix}${this.itemClass}-name`);
+-          buttonElem.setAttribute('data-label', label.innerText);
++          buttonElem.setAttribute('data-label', label.innerText || (label.textContent || '').trim());
+           const contentElem = buttonElem.nextElementSibling;
+           contentElem.id = buttonElem.getAttribute('aria-controls');
+           if (!isExpanded) {contentElem.hidden = true;}
