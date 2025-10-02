@@ -1,6 +1,6 @@
 
 {% macro dialog(id, title=null, dismissible=false) %}
-    <div class="nsw-dialog js-dialog" id="{{ id }}" role="dialog">
+    <div class="nsw-dialog js-dialog {% if dismissible %}js-dialog-dismiss{% endif %}" id="{{ id }}" role="dialog">
         <div class="nsw-dialog__wrapper">
             <div class="nsw-dialog__container">
 
