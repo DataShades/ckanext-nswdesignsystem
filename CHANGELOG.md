@@ -6,9 +6,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
-## [0.2.15](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/0.2.15) - 2025-09-24
+## [0.2.16](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/0.2.16) - 2025-10-02
 
-<small>[Compare with v0.2.14](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.14...0.2.15)</small>
+<small>[Compare with v0.2.15](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.15...0.2.16)</small>
+
+### Features
+
+- conditionally add dismissible class in dialog macro ([b70d258](https://github.com/DataShades/ckanext-nswdesignsystem/commit/b70d258786acad9d557a2c5b13a71060b888881e) by Oleksandr Ivaniuk).
+
+## [v0.2.15](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.15) - 2025-09-24
+
+<small>[Compare with v0.2.14](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.14...v0.2.15)</small>
 
 ### Bug Fixes
 
