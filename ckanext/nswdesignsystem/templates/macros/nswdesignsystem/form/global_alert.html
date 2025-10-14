@@ -1,0 +1,58 @@
+{#
+Builds a NSW Design System global alert component.
+
+title         - The alert title text
+content       - The alert content/message
+type          - The alert type (default: "info") - determines the styling. Options are: "info", "light", "critical"
+button_text   - Optional button text for action button
+button_url    - Optional button URL for action button
+dismissible   - Whether the alert can be dismissed (default: true)
+
+Example:
+
+{% import 'macros/form.html' as form %}
+
+{{ form.global_alert(
+    title="State of Emergency for NSW",
+    content="Catastrophic weather conditions are forecast this week for north and north west regions of NSW. Keep up to date with the latest bush fires alerts and warnings in your area.",
+    type="light",
+    button_text="More information",
+    button_url="#",
+) }}
+
+#}
+
+{% macro global_alert(title="", content="", type="info", button_text="", button_url="", dismissible=true) %}
+    {% set button_type = "white" %}
+
+    {% if type == "light" %}
+        {% set button_type = "info" %}
+    {% endif %}
+
+    {% if title or content %}
+        <div class="nsw-global-alert {% if type %}nsw-global-alert--{{ type }}{% endif %} js-global-alert" role="alert" data-cookie-name="">
+            <div class="nsw-global-alert__wrapper">
+                <div class="nsw-global-alert__content">
+                    {% if title %}
+                        <div class="nsw-global-alert__title">{{ title }}</div>
+                    {% endif %}
+
+                    {% if content %}
+                        <p>{{ content }}</p>
+                    {% endif %}
+                </div>
+
+                {% if button_text and button_url %}
+                    <p><a href="{{ button_url }}" class="nsw-button nsw-button--{{ button_type }}">{{ button_text }}</a></p>
+                {% endif %}
+
+                {% if dismissible %}
+                    <button class="nsw-icon-button js-close-alert" type="button" aria-expanded="true">
+                        <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">close</span>
+                        <span class="sr-only">{{ _('Close message') }}</span>
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endmacro %}
