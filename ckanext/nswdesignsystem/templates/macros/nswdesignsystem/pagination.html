@@ -2,7 +2,7 @@
 
 
 
-{% macro pagination(pager, padding=3) %}
+{% macro pagination(pager, padding=3, args={}) %}
     {% set current = pager.page %}
     {% set total = pager.last_page %}
 
@@ -19,27 +19,27 @@
         <nav class="nsw-pagination" aria-label="Pagination">
             <ul>
                 <li>
-                    <a class="nsw-icon-button {{ ' disabled' if is_first }}" href="{{ url(page=current-1) }}">
+                    <a class="nsw-icon-button {{ ' disabled' if is_first }}" href="{{ url(page=current-1, **args) }}">
                         <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_left</span>
                         <span class="sr-only">Previous</span>
                     </a>
                 </li>
 
-                <li><a class="{{ 'active' if current == 1}}" href="{{ url(page=pager.first_page) }}"><span class="sr-only">Page </span>{{ 1 }}</a></li>
+                <li><a class="{{ 'active' if current == 1}}" href="{{ url(page=pager.first_page, **args) }}"><span class="sr-only">Page </span>{{ 1 }}</a></li>
                 {% if first_bound > 2 %}
                     <li><span>…</span></li>
                 {% endif %}
 
                 {% for i in range(first_bound, last_bound+1) %}
-                    <li><a class="{{ 'active' if current == i }}" href="{{ url(page=i) }}"><span class="sr-only">Page </span>{{ i }}</a></li>
+                    <li><a class="{{ 'active' if current == i }}" href="{{ url(page=i, **args) }}"><span class="sr-only">Page </span>{{ i }}</a></li>
                 {% endfor %}
 
                 {% if last_bound < total - 1 %}
                     <li><span>…</span></li>
                 {% endif %}
-                <li><a class="{{ 'active' if current == total }}" href="{{ url(page=total) }}"><span class="sr-only">Page </span>{{ total }}</a></li>
+                <li><a class="{{ 'active' if current == total }}" href="{{ url(page=total, **args) }}"><span class="sr-only">Page </span>{{ total }}</a></li>
                 <li>
-                    <a class="nsw-icon-button {{ ' disabled' if is_last }}" href="{{ url(page=current+1) }}">
+                    <a class="nsw-icon-button {{ ' disabled' if is_last }}" href="{{ url(page=current+1, **args) }}">
                         <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_right</span>
                         <span class="sr-only">Next</span>
                     </a>
