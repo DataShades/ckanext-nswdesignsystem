@@ -5,13 +5,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
-
-    {% asset 'nswdesignsystem/nswdesignsystem-css' %}
+    {% if h.nswdesignsystem_css_enabled() %}
+        {% asset 'nswdesignsystem/nswdesignsystem-css' %}
+    {% endif %}
     {{ super() }}
 {% endblock %}
 
 {% block scripts %}
-    {% asset 'nswdesignsystem/nswdesignsystem-js' %}
+    {% if h.nswdesignsystem_js_enabled() %}
+        {% asset 'nswdesignsystem/nswdesignsystem-js' %}
+    {% endif %}
 
     {{ super() }}
 {% endblock %}

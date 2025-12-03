@@ -1,0 +1,103 @@
+@use '../../global/scss/base/functions' as functions;
+@use '../../global/scss/base/mixins' as mixins;
+
+.nsw-tag {
+  font-weight: var(--nsw-font-normal);
+  padding: functions.rem(2px) functions.rem(16px);
+  border: solid 1px var(--nsw-brand-dark);
+  border-radius: functions.rem(24px);
+  color: var(--nsw-brand-dark);
+  text-decoration: none;
+  display: inline-block;
+  
+  @include mixins.font-size('xs');
+
+  &:visited {
+    color: var(--nsw-brand-dark);
+  }
+  
+  &:hover:not(.nsw-tag--checkbox, span) {
+    @include mixins.nsw-hover;
+    outline-width: 0;
+  }
+
+  &:is(span) {
+    cursor: default;
+  }
+
+  &:focus {
+    outline-width: 3px;
+  }
+
+  .nsw-section--invert & {
+    color: var(--nsw-text-light);
+    border-color: var(--nsw-text-light);
+
+    &:not(span) {
+      @include mixins.link-light;
+    }
+  }
+
+  &--checkbox {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    position: relative;
+
+    &:hover {
+      .nsw-section--invert & {    
+        background-color: transparent;
+      }
+    }
+
+    input {
+      position: absolute;
+      opacity: 0;
+
+      &:hover + label {
+        cursor: pointer;
+
+        @include mixins.nsw-hover;
+        
+        .nsw-section--invert & {    
+          background-color: var(--nsw-hover-light);
+        }
+      }
+
+      &:focus + label {
+        @include mixins.nsw-focus;
+        outline-offset: 0;
+
+        .nsw-section--invert & {    
+          outline-color: var(--nsw-white);
+        }
+      }
+
+      &:checked + label {
+        background-color: var(--nsw-brand-dark);
+        color: var(--nsw-text-light);
+
+        .nsw-section--invert & {    
+          background-color: var(--nsw-white);
+          color: var(--nsw-text-dark);
+        }
+      }
+    }
+
+    label {
+      padding: functions.rem(2px) functions.rem(16px);
+      border: solid 1px var(--nsw-brand-dark);
+      border-radius: functions.rem(24px);
+      display: inline-block;
+
+      .nsw-section--invert & {    
+        border-color: var(--nsw-text-light);
+      }
+    }
+  }
+
+  &.active {
+    background-color: var(--nsw-brand-dark);
+    color: var(--nsw-text-light);
+  }
+}

@@ -4,6 +4,7 @@
 
 nds_node_path = node_modules/nsw-design-system/dist
 nds_ckan_path = ckanext/nswdesignsystem/assets/vendor
+nds_node_source = node_modules/nsw-design-system/src
 
 hljs_ckan_path = ckanext/nswdesignsystem/assets/vendor
 hljs_supported_languages = django python css javascript
@@ -19,6 +20,10 @@ vendor:  ## copy NSW Design System JS/CSS from node_modules into CKAN assets
 	@echo -e "\tpatches/default-expanded-filters.patch"
 	@echo "Fix blank filter titles on narrow-first load by falling back to textContent:"
 	@echo -e "\tpatches/filters-label-fallback.patch"
+
+nsw-source:  ## copy NSW Design System Source Files from node_modules into CKAN assets
+	cp -rf "$(nds_node_source)" "ckanext/nswdesignsystem/assets/nswdesignsystem_source"
+	@echo "Copy completed."
 
 hljs:  ## build and copy highlight.js into CKAN assets
 	npm explore highlight.js -- npm i; \

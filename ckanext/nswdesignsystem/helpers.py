@@ -160,3 +160,9 @@ def nswdesignsystem_demo_links() -> list[types.NavDict]:
             },
         }
     ]
+
+def nswdesignsystem_css_enabled() -> bool:
+    return tk.config["ckanext.nswdesignsystem.css_enabled"]
+
+def nswdesignsystem_js_enabled() -> bool:
+    return tk.config["ckanext.nswdesignsystem.js_enabled"]

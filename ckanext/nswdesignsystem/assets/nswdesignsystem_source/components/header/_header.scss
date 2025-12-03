@@ -1,0 +1,324 @@
+@use 'sass:map';
+@use '../../global/scss/base/functions' as functions;
+@use '../../global/scss/base/mixins' as mixins;
+@use '../../global/scss/settings/settings' as settings;
+
+.nsw-header {
+  background-color: var(--nsw-white);
+  position: relative;
+  border-bottom: solid 1px var(--nsw-grey-04);
+
+  @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+    border-bottom: 0;
+  }
+
+  &--simple {
+    @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+      border-bottom: solid 1px var(--nsw-grey-04);
+    }
+  }
+
+  &__container {
+    @include mixins.container;
+    position: relative;
+  }
+
+  &__inner {
+    position: relative;
+
+    @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+      display: flex;
+    }
+  }
+
+  &__menu,
+  &__search {
+    button,
+    a {      
+      font-weight: var(--nsw-font-bold);
+      border-radius: var(--nsw-border-radius);
+      color: var(--nsw-brand-dark);
+      width: functions.rem(48px);
+      height: functions.rem(48px);
+      background: none;
+      border: 0;
+      padding: 0;
+      text-align: center;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+
+      @include mixins.font-size('xxs');
+
+      &:hover {
+        @include mixins.nsw-hover;
+      }
+
+      &:focus {
+        @include mixins.nsw-focus;
+      }
+
+      .nsw-material-icons {
+        font-size: functions.rem(map.get(settings.$nsw-icon-sizes, 24));
+      }
+    }
+
+  }
+
+  &__menu {
+    position: absolute;
+    top: functions.rem(12px);
+    left: functions.rem(-6px);
+
+    button {      
+      @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+        display: none;
+      }
+    }
+  }
+
+  &__search {
+    position: absolute;
+    top: functions.rem(12px);
+    right: functions.rem(-4px);
+
+    @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+      right: 0;
+      top: 50%;
+      margin-top: functions.rem(-24px);
+    }
+
+    button {      
+      @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+        > span:last-child {
+          @include mixins.sr-only;
+        }
+
+        .nsw-material-icons {
+          font-size: functions.rem(map.get(settings.$nsw-icon-sizes, 36));
+        }
+      }
+    }
+  }
+
+  &__main {
+    @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+      position: relative;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin: functions.rem(20px) functions.rem(72px) functions.rem(20px) 0;
+
+      &:focus-within {
+        @include mixins.nsw-focus;
+      }
+    }
+
+    .nsw-header__rectangular-logo {
+      @include mixins.breakpoint('lg') {
+        height: functions.rem(60px);
+        margin-top: functions.rem(8px);
+        margin-bottom: functions.rem(8px);
+      }
+    }
+  }
+
+  &__waratah {
+    padding: functions.rem(12px) functions.rem(48px);
+    display: flex;
+    justify-content: center;
+
+    @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+      padding: 0;
+    }
+
+    svg {
+      height: functions.rem(48px);
+      display: block;
+
+      @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+        height: functions.rem(76px);
+      }
+
+      &.nsw-header__waratah-gov {
+        height: functions.rem(55px);
+
+        @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+          height: functions.rem(76px);
+        }
+      }
+    }
+
+    a {
+      display: flex;
+      color: var(--nsw-brand-dark);
+      text-decoration: none;
+      align-items: center;
+
+      &:hover {
+        background: transparent;
+        outline-width: 0;
+      }
+
+      &:focus {
+        outline-width: 3px;
+
+        @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+          outline: none;
+        }
+      }
+
+      @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+        @include mixins.pseudo-clickable-block;
+      }
+
+      svg:not(:first-child) {
+        margin-left: functions.rem(24px);
+
+        @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+          margin-left: functions.rem(40px);
+        }
+      }      
+    }
+  }
+
+  &__waratah-gov {
+    margin-bottom: functions.rem(-7px);
+
+    @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+      margin-bottom: 0;
+    }
+
+    .hide {
+      display: none;
+
+      @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+        display: inline;
+      }
+    }
+  }
+
+  &__name {
+    padding: functions.rem(12px) 0;
+    color: var(--nsw-brand-dark);
+
+    @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+      padding: 0;
+      margin-left: functions.rem(40px);
+    }
+  }
+
+  &__title {
+    font-weight: var(--nsw-font-bold);
+    color: var(--nsw-brand-dark);
+    display: flex;
+    align-items: center;
+
+    @include mixins.font-size('lg');
+
+    @include mixins.breakpoint('lg') {
+      line-height: functions.rem(28px);
+    }
+
+    .nsw-tag {
+      margin-left: functions.rem(24px);
+    }
+  }
+
+  &__description {
+    color: var(--nsw-brand-dark);
+
+    @include mixins.font-size('xs');
+  }
+
+  &__logo {
+    display: flex;
+    justify-content: center;
+
+    @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+      justify-content: flex-start;
+    }
+
+    svg {
+      height: functions.rem(48px);
+      display: block;
+
+      @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+        height: functions.rem(76px);
+      }
+    }
+  }
+  
+  &__search-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+      width: functions.rem(394px);
+      left: auto;
+      right: functions.rem(16px);
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    button {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      cursor: pointer;
+    }
+
+    > button {
+      border-radius: 0;
+      
+      @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+        display: none;
+      }
+    }
+
+    form,
+    div {
+      button {
+        display: none;
+        padding: 0;
+        width: functions.rem(48px);
+
+        @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+          display: flex;
+        }
+      }
+
+      .nsw-material-icons {
+        font-size: functions.rem(map.get(settings.$nsw-icon-sizes, 36));
+      }
+    }
+
+    input {
+      background: var(--nsw-off-white);
+      padding: functions.rem(8px) functions.rem(72px) functions.rem(8px) functions.rem(16px);
+      color: var(--nsw-text-dark);
+      width: 100%;
+      appearance: none;
+      border: 0;
+      height: functions.rem(72px);
+      
+      @include mixins.font-size('md');
+
+      &:focus {
+        @include mixins.nsw-focus($offset: false);
+      }
+
+      @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+        border-radius: var(--nsw-border-radius);
+        height: functions.rem(48px);
+        padding: 0 functions.rem(16px);
+      }
+    }
+  }
+}

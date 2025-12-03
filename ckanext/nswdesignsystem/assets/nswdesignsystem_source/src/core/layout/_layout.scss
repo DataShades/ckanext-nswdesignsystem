@@ -1,0 +1,46 @@
+@use '../../global/scss/base/mixins' as mixins;
+@use '../../global/scss/base/functions' as functions;
+@use '../../global/scss/settings/settings' as settings;
+
+$nsw-layout-gap: 32px;
+
+.nsw-layout {
+  @include mixins.grid();
+
+  &__main {
+    @include mixins.column-default();
+
+    &:not(:first-child) {
+      @include mixins.column(8, settings.$nsw-desktop-breakpoint);
+    }
+
+    &:not(:last-child) {
+      @include mixins.column(8, settings.$nsw-desktop-breakpoint);
+    }
+  }
+
+  &__sidebar {
+    @include mixins.column-default();
+    @include mixins.column(4, settings.$nsw-desktop-breakpoint);
+
+    &:first-child {
+      @include mixins.breakpoint('lg') {
+        padding-right: functions.rem(settings.$grid-gutters*2 + $nsw-layout-gap);
+      }
+    }
+
+    &:last-child {
+      @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+        padding-left: functions.rem(settings.$grid-gutters*2 + $nsw-layout-gap);
+      }
+    }
+
+    &--desktop {
+      display: none;
+
+      @include mixins.breakpoint(settings.$nsw-desktop-breakpoint) {
+        display: block;
+      }
+    }
+  }
+}

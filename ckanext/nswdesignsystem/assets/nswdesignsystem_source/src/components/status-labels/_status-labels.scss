@@ -1,0 +1,22 @@
+@use '../../global/scss/base/functions' as functions;
+@use '../../global/scss/base/mixins' as mixins;
+@use '../../global/scss/settings/settings' as settings;
+
+.nsw-status-label {
+  padding: functions.rem(2px) functions.rem(16px);
+  border: solid 1px var(--nsw-off-white);
+  background-color: var(--nsw-off-white);
+  border-radius: functions.rem(24px);
+  color: var(--nsw-text-dark);
+  display: inline-block;
+  
+  @include mixins.font-size('xs');
+
+  @each $color, $variant in settings.$nsw-status-labels {
+    &--#{"" + $color} {
+      border-color: var(--nsw-status-#{$color});
+      background-color: var(--nsw-status-#{$color});
+      color: var(--nsw-white);
+    }
+  }
+}

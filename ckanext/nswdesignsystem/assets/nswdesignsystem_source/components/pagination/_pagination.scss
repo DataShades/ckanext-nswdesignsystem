@@ -1,0 +1,75 @@
+@use '../../global/scss/base/functions' as functions;
+@use '../../global/scss/base/mixins' as mixins;
+
+.nsw-pagination {
+  @include mixins.component-spacing();
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+  }
+
+  li {
+    margin: 0;
+
+    > span {
+      padding: functions.rem(4px);
+    }
+  }
+
+  a {
+    display: block;
+    text-decoration: none;
+    text-align: center;
+    padding: functions.rem(4px);
+    min-width: functions.rem(30px);
+    border-radius: var(--nsw-border-radius);
+
+    &:hover {
+      @include mixins.nsw-hover;
+      outline-width: 0;
+
+      .nsw-section--invert & {    
+        @include mixins.nsw-hover-light;
+        outline-width: 0;
+      }
+    }
+
+    &:focus {
+      outline-width: 3px;
+    }
+
+    &.active {
+      position: relative;
+      color: var(--nsw-text-dark);
+
+      &:hover {
+        background-color: transparent;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: functions.rem(4px);
+        right: functions.rem(4px);
+        height: 2px;
+        background-color: var(--nsw-brand-accent);        
+      }
+      
+      .nsw-section--invert & {    
+        color: var(--nsw-text-light);
+      }
+    }
+    
+    &.disabled,
+    .disabled > & {
+      pointer-events: none;
+      opacity: 0.4;
+    }
+  }
+}
