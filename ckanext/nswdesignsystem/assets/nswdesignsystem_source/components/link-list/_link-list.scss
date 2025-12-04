@@ -1,0 +1,85 @@
+@use 'sass:map';
+@use '../../global/scss/base/functions' as functions;
+@use '../../global/scss/base/mixins' as mixins;
+@use '../../global/scss/settings/settings' as settings;
+
+.nsw-link-list {
+  @include mixins.component-spacing();
+
+  &__title {
+    font-weight: var(--nsw-font-bold);
+    padding-bottom: functions.rem(16px);
+    
+    @include mixins.font-size('lg');
+    
+    @include mixins.breakpoint('md') {
+      padding-bottom: functions.rem(24px);
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+
+  li {
+    margin: 0;
+    border-top: 1px solid var(--nsw-grey-04);
+
+    &:last-child {
+      border-bottom: 1px solid var(--nsw-grey-04);
+    }
+  }
+
+  a {
+    padding: functions.rem(16px);
+    color: var(--nsw-brand-dark);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+
+    &:hover {
+      @include mixins.nsw-hover;
+      outline-width: 0;
+    }
+
+    &:focus {
+      outline-width: 3px;
+    }
+
+    span {
+      text-decoration: underline;
+
+      span.nsw-material-icons {
+        bottom: functions.rem(-5px);
+      }
+    }
+
+    .nsw-material-icons {
+      text-decoration: none;
+      bottom: 0;
+    }
+
+    .nsw-section--invert & {    
+      color: var(--nsw-text-light);
+
+      &:hover {
+        @include mixins.nsw-hover-light;
+        outline-width: 0;
+      }
+    }
+  }
+
+  .nsw-section--brand-light & {
+    li {
+      border-color: var(--nsw-brand-dark);
+    } 
+  }
+
+  .nsw-material-icons {
+    font-size: functions.rem(map.get(settings.$nsw-icon-sizes, 20));
+    margin-left: functions.rem(16px);
+  }
+}

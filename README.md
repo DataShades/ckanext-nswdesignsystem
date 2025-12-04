@@ -100,6 +100,12 @@ copy it to assets folder using make-rule:
 make vendor
 ```
 
+Update the NSW Design System source files in assets using following command:
+
+```sh
+make nsw-source
+```
+
 Pay attention to the output of the command. This extension applies a number of
 changes to the library. For example, it adds expanded default state to search
 filters. These changes can be applied via patches from `patches` folder. `make

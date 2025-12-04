@@ -1,0 +1,100 @@
+@use '../../global/scss/base/functions' as functions;
+@use '../../global/scss/base/mixins' as mixins;
+
+.nsw-tabs {
+  @include mixins.component-spacing();
+
+  &__list-wrapper {
+    overflow: hidden;
+    height: functions.rem(48px);
+    background-color: var(--nsw-off-white);
+
+    @include mixins.breakpoint('md') {
+      background-color: transparent;
+    }
+  }
+
+  &__list {
+    margin: 0;
+    padding: 0 0 functions.rem(20px) 0;
+    list-style: none;
+    display: flex;
+    position: relative;
+    overflow-x: auto;
+    white-space: nowrap;
+
+    li {
+      margin: 0;
+    }
+
+    a {
+      @include mixins.z-index;
+      display: block;
+      padding: functions.rem(12px) functions.rem(16px);
+      position: relative;
+      text-decoration: none;
+      color: var(--nsw-brand-dark);
+      height: 100%;
+
+      &:hover {
+        @include mixins.nsw-hover;
+        outline-width: 0;
+      }
+
+      &:focus {
+        outline-width: 3px;
+        outline-offset: -3px;
+      }
+
+      &.active {
+        color: var(--nsw-text-dark);
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 0;
+          border-bottom: solid 2px var(--nsw-brand-accent);
+        }
+      
+        .nsw-section--invert & {    
+          color: var(--nsw-text-light);
+        }
+      }
+      
+      .nsw-section--invert & {    
+        color: var(--nsw-text-light);
+      }
+    }
+  }
+
+  &__content {
+    padding: functions.rem(24px) functions.rem(16px);
+    border-bottom: solid 1px var(--nsw-grey-04);
+    border-top: solid 2px var(--nsw-grey-04);
+    margin-top: -2px;
+
+    &:focus {
+      @include mixins.nsw-focus;
+
+      .nsw-section--invert & {    
+        outline-color: var(--nsw-white);
+      }
+    }
+
+    &--flush {
+      padding: 0;
+    }
+
+    &--side-flush {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    &--no-border {
+      border-bottom: 0;
+    }
+  }
+}

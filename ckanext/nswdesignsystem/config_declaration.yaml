@@ -4,3 +4,9 @@ groups:
     options:
       - key: ckanext.nswdesignsystem.debug
         type: bool
+      - key: ckanext.nswdesignsystem.css_enabled
+        type: bool
+        default: true
+      - key: ckanext.nswdesignsystem.js_enabled
+        type: bool
+        default: true

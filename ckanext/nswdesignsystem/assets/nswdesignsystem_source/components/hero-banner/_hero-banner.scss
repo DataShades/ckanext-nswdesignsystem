@@ -1,0 +1,250 @@
+@use '../../global/scss/base/functions' as functions;
+@use '../../global/scss/base/mixins' as mixins;
+@use '../../global/scss/settings/settings' as settings;
+
+.nsw-hero-banner {
+  background-color: var(--nsw-white);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: rgba(var(--nsw-black-rgb), 0.1);
+  }
+
+  &__container {
+    @include mixins.container;
+  }
+
+  &__wrapper {
+    @include mixins.grid();
+  }
+
+  &__content {
+    @include mixins.column-default();
+    @include mixins.column(7, md);
+    @include mixins.column(6, xl);
+
+    @include mixins.breakpoint('xs') { 
+      padding-top: functions.rem(32px);
+      padding-bottom: functions.rem(32px);
+    }
+
+    @include mixins.breakpoint('md') { 
+      min-height: functions.rem(260px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    @include mixins.breakpoint('lg') { 
+      padding-top: functions.rem(88px);
+      padding-bottom: functions.rem(88px);
+    }
+
+    .nsw-hero-banner--wide & {
+      @include mixins.column(8, md);
+      @include mixins.column(7, xl);      
+    } 
+
+    .nsw-hero-banner--featured & {
+      @include mixins.breakpoint('md') { 
+        min-height: 0;
+        display: block;
+      }   
+    } 
+
+    .nsw-button {
+      margin: functions.rem(24px) 0 0 0;
+    }
+
+    .nsw-intro {
+      margin: functions.rem(8px) 0 0 0;
+
+      @include mixins.breakpoint('md') {
+        margin-top: functions.rem(16px);
+      }    
+    }
+  }
+
+  &__links {
+    @include mixins.column-default();
+    @include mixins.column(4, md);
+    @include mixins.column(4, xl, 1);
+
+    @include mixins.breakpoint('xs') { 
+      margin-top: functions.rem(-8px);
+      padding-top: 0;
+      padding-bottom: functions.rem(32px);
+    }
+
+    @include mixins.breakpoint('md') { 
+      margin-top: 0;
+      padding-top: functions.rem(32px);
+    }
+
+    @include mixins.breakpoint('lg') { 
+      padding-top: functions.rem(88px);
+      padding-bottom: functions.rem(88px);
+    }
+  }
+
+  &__list {
+    @include mixins.z-index;
+    border-left: solid 2px var(--nsw-brand-accent);
+    padding-left: functions.rem(16px);
+    position: relative;
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    li {
+      display: block;
+      margin-top: functions.rem(16px);
+
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+
+    a:not(.nsw-icon-button) {
+      line-height: 1.5;
+      padding: functions.rem(8px) functions.rem(24px) functions.rem(8px) 0;
+      
+      @include mixins.breakpoint('md') {
+        padding: functions.rem(4px) functions.rem(4px) functions.rem(4px) 0;
+      }
+    }
+  }
+
+  &__sub-title {
+    margin: 0 0 functions.rem(16px) 0;
+    font-weight: var(--nsw-font-bold);
+    
+    @include mixins.font-size(md);
+  }
+
+  &__box {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 41.66667%;
+    padding-left: functions.rem(settings.$grid-gutters*2);
+    overflow: hidden;
+
+    @include mixins.breakpoint('md') {
+      display: flex;
+    }
+
+    @include mixins.breakpoint('xl') {
+      width: 50%;
+      padding-left: calc(var(--nsw-container-width)/12 + #{functions.rem(settings.$grid-gutters)}*2);
+    }
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  &__lines {
+    display: none;
+    background-color: var(--nsw-brand-light);
+    position: relative;
+
+    @include mixins.breakpoint('md') {
+      display: block;
+      width: 100%;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: functions.rem(-16px);
+      width: functions.rem(32px);
+      background-color: var(--nsw-brand-supplementary);
+    }
+  }
+
+  &--light {
+    background-color: var(--nsw-brand-light);
+
+    .nsw-hero-banner__lines {
+      background-color: var(--nsw-brand-dark);
+    }
+  }
+
+  &--off-white {
+    background-color: var(--nsw-off-white);
+  }
+
+  &--dark {
+    background-color: var(--nsw-brand-dark);
+
+    .nsw-hero-banner__content {
+      color: var(--nsw-text-light);
+    }
+
+    .nsw-hero-banner__links {
+      color: var(--nsw-text-light);
+
+      a {
+        @include mixins.link-light;
+      }
+    }
+
+    .nsw-hero-banner__list {
+      border-color: var(--nsw-brand-light);
+    }
+  }
+
+  &--lines {
+    border-bottom: functions.rem(32px) solid var(--nsw-brand-light);
+
+    @include mixins.breakpoint('md') {
+      border: 0;
+    }
+
+    &.nsw-hero-banner--light {
+      border-color: var(--nsw-brand-dark);
+    }
+
+    &::after {
+      visibility: hidden;
+
+      @include mixins.breakpoint('md') {
+        visibility: visible;
+      }
+    }
+
+    .nsw-hero-banner__container {
+      border-bottom: functions.rem(16px) solid var(--nsw-brand-supplementary);
+
+      @include mixins.breakpoint('md') {
+        border: 0;
+      }
+    }
+
+    .nsw-hero-banner__box {
+      width: 25%;
+
+      @include mixins.breakpoint('xl') {
+        width: 50%;
+        padding-left: calc(var(--nsw-container-width)/4 + #{functions.rem(settings.$grid-gutters)}*2);
+      }
+    }
+  }
+}

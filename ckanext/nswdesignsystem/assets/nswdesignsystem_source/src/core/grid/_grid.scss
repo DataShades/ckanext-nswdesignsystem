@@ -1,0 +1,122 @@
+@use 'sass:math';
+@use '../../global/scss/base/mixins' as mixins;
+@use '../../global/scss/base/functions' as functions;
+@use '../../global/scss/settings/settings' as settings;
+
+.nsw-container {
+  @include mixins.container;
+
+  &--flush {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.nsw-grid {
+  @include mixins.grid();
+
+  &--spaced {
+    margin-top: functions.rem(-(settings.$grid-gutters));
+    margin-bottom: functions.rem(-(settings.$grid-gutters));
+
+    @include mixins.breakpoint('md') {
+      margin-top: functions.rem(-(settings.$grid-gutters)*2);
+      margin-bottom: functions.rem(-(settings.$grid-gutters)*2);
+    }
+
+    .nsw-col {
+      padding-top: functions.rem(settings.$grid-gutters*2);
+      padding-bottom: functions.rem(settings.$grid-gutters*2);
+
+      @include mixins.breakpoint('md') {
+        padding-top: functions.rem(settings.$grid-gutters*4);
+        padding-bottom: functions.rem(settings.$grid-gutters*4);
+      }
+    }
+  }
+
+  &--flush {
+    margin-top: functions.rem(-(settings.$grid-gutters));
+    margin-bottom: functions.rem(-(settings.$grid-gutters));
+
+    @include mixins.breakpoint('md') {
+      margin-top: functions.rem(-(settings.$grid-gutters)*2);
+      margin-bottom: functions.rem(-(settings.$grid-gutters)*2);
+    }
+  }
+
+  &-overlay {
+    position: fixed;
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    .nsw-container,
+    .nsw-grid {
+      height: 100%;
+    }
+
+    .nsw-col {
+      padding-top: 0;
+      padding-bottom: 0;
+
+      > div {
+        height: 100%;
+        background-color: var(--nsw-brand-accent);
+        opacity: 0.1;
+      }
+    }
+  }
+}
+
+.nsw-row {
+  @include mixins.row();
+
+  &--reverse {
+    @include mixins.breakpoint('lg') {
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+    }
+  }
+}
+
+.nsw-col {
+  @include mixins.column-default();
+
+  @for $i from 1 through 12 {
+    &-#{$i} {
+      width: math.percentage(math.div($i, 12));
+      max-width: math.percentage(math.div($i, 12));
+    }
+  }
+
+  @each $breakpoint, $breakpoint-size in settings.$nsw-breakpoints {
+    @include mixins.breakpoint($breakpoint) {
+      @for $i from 1 through 12 {
+        &-#{$breakpoint}-#{$i} {
+          width: math.percentage(math.div($i, 12));
+          max-width: math.percentage(math.div($i, 12));
+        }
+      }
+    }
+  }
+}
+
+.nsw-offset {
+  @for $i from 1 through 12 {
+    &-#{$i} {
+      margin-left: math.percentage(math.div($i, 12));
+    }
+  }
+
+  @each $breakpoint, $breakpoint-size in settings.$nsw-breakpoints {
+    @include mixins.breakpoint($breakpoint) {
+      @for $i from 1 through 12 {
+        &-#{$breakpoint}-#{$i} {
+          margin-left: math.percentage(math.div($i, 12));
+        }
+      }
+    }
+  }
+}

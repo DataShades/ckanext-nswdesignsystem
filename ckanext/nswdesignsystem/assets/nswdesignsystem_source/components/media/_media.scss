@@ -1,0 +1,126 @@
+@use '../../global/scss/base/functions' as functions;
+@use '../../global/scss/base/mixins' as mixins;
+@use '../../global/scss/settings/settings' as settings;
+
+.nsw-media {
+  width: 100%;
+  margin: functions.rem(16px) auto;
+
+  .nsw-section--invert & {    
+    color: var(--nsw-text-dark);
+  }
+
+  @include mixins.breakpoint('md') {
+    margin-top: functions.rem(32px);
+    margin-bottom: functions.rem(32px);
+
+    &--90 {
+      width: 90%;
+    }
+
+    &--80 {
+      width: 80%;
+    }
+
+    &--70 {
+      width: 70%;
+    }
+
+    &--60 {
+      width: 60%;
+    }
+
+    &--left-50,
+    &--left-40,
+    &--left-30 {
+      margin-left: 0;
+      padding-right: functions.rem(16px);
+      margin-right: functions.rem(16px);
+      float: left;
+    }
+
+    &--right-50,
+    &--right-40,
+    &--right-30 {
+      padding-left: functions.rem(16px);
+      margin-left: functions.rem(16px);
+      margin-right: 0;
+      float: right;
+    }
+
+    &--right-50,
+    &--left-50 {
+      width: 50%;
+    }
+
+    &--right-40,
+    &--left-40 {
+      width: 40%;
+    }
+
+    &--right-30,
+    &--left-30 {
+      width: 30%;
+    }
+  }
+
+  &__video {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+
+    &::after {
+      content: '';
+      display: block;
+      padding-top: 56.25%;
+    }
+
+    iframe,
+    video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  img {
+    display: block;
+    border: 0;
+    width: 100%;
+  }
+
+  figcaption {
+    background-color: var(--nsw-off-white);
+    padding: functions.rem(16px);
+    
+    @include mixins.font-size('xs');
+  }
+
+  &--light {
+    figcaption {
+      background-color: var(--nsw-brand-light);
+    }
+  }
+
+  &--dark {
+    figcaption {
+      background-color: var(--nsw-brand-dark);
+      color: var(--nsw-text-light);
+    }
+  }
+
+  &--transparent {
+    figcaption {
+      background-color: transparent;
+      padding-left: 0;
+      padding-right: 0;
+      padding-bottom: 0;
+
+      .nsw-section--invert & {    
+        color: var(--nsw-text-light);
+      }
+    }
+  }
+}

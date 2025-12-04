@@ -1,0 +1,33 @@
+@use '../../global/scss/base/functions' as functions;
+@use '../../global/scss/base/mixins' as mixins;
+
+.nsw-results-bar {
+  margin: functions.rem(24px) 0;
+
+  @include mixins.breakpoint('lg') {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  &__sorting {
+    display: flex;
+    align-items: center;
+    padding-top: functions.rem(24px);
+
+    @include mixins.breakpoint('lg') {
+      padding-top: 0;
+    }
+
+    label {
+      white-space: nowrap;
+      margin-right: functions.rem(8px);
+    }
+
+    select {
+      margin-top: 0;
+      min-width: functions.rem(200px);
+    }
+  }
+}
