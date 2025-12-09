@@ -28,9 +28,9 @@
                     </a>
                 </div>
 
-                {% if details.subnav.description %}
+                {% if details.subnav.description or details.description %}
                     <div class="nsw-main-nav__description">
-                        {{ details.subnav.description }}
+                        {{ details.subnav.description or details.description }}
                     </div>
                 {% endif %}
 
