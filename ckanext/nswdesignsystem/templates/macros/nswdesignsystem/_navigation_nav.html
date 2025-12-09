@@ -1,7 +1,8 @@
 {% from "macros/nswdesignsystem/_navigation_link.html" import link with context  %}
+{% from "macros/form/attributes.html" import attributes %}
 
 {% macro nav(details, path) %}
-    <li>
+    <li {% if details.attrs %} {{ attributes(details.attrs) }} {% endif %}>
         {{ caller("nav", details) if caller is defined else link(details, path) }}
 
         {% if details.subnav %}
