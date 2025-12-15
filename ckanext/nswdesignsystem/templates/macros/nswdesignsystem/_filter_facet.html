@@ -2,7 +2,7 @@
 
 
 
-{% macro facet(name, values, labels=[], visible=5, title=null, show_all_label="Show all", empty_label=null, collapsible=false, expanded=false, attrs={}, show_all_counter=none) %}
+{% macro facet(name, values, labels=[], visible=5, title=null, show_all_label="Show all", empty_label=null, collapsible=false, expanded=false, attrs={}, show_all_counter=none, add_search=false) %}
     {% if not labels %}
         {% set labels = values %}
     {% endif %}
@@ -18,6 +18,14 @@
                 <legend class="nsw-form__legend">
                     {{ title or name }}
                 </legend>
+            {% endif %}
+
+            {% if add_search and values|length > visible %}
+                <input
+                    placeholder="{{ _('Start typing to see all options') }}"
+                    data-module="nsw-facet-filter"
+                    type="text" class="nsw-form__input"
+                />
             {% endif %}
 
             {% for val in main %}

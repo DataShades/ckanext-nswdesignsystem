@@ -4,6 +4,7 @@ nswdesignsystem-js:
   contents:
     - vendor/nswdesignsystem.js
     - nswdesignsystem-script.js
+    - nsw-facet-filter.js
   extra:
     preload:
       - base/main

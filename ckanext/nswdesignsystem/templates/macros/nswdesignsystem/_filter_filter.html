@@ -1,13 +1,18 @@
-{% macro filter(button_label, expanded=false) %}
+{% macro filter(button_label, expanded=false, collapsible=true) %}
     <div class="nsw-filters__item">
 
-        {% if button_label %}
+        {% if button_label and collapsible %}
 
             <button class="nsw-filters__item-button {{ 'active' if expanded }}" aria-expanded="{{ 'true' if expanded else 'false' }}">
                 <span class="nsw-filters__item-name">{{ button_label }}</span>
                 <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_down</span>
             </button>
-
+        {% else %}
+            {% if button_label %}
+                <div class="nsw-form__legend nsw-m-bottom-sm">
+                    {{ button_label }}
+                </div>
+            {% endif %}
         {% endif %}
 
         <div class="nsw-filters__item-content">
