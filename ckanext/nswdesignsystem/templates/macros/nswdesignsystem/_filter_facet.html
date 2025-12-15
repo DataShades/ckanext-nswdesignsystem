@@ -21,11 +21,13 @@
             {% endif %}
 
             {% if add_search and values|length > visible %}
-                <input
-                    placeholder="{{ _('Start typing to see all options') }}"
-                    data-module="nsw-facet-filter"
-                    type="text" class="nsw-form__input"
-                />
+                {% block facet_search_input %}
+                    <input
+                        placeholder="{{ _('Start typing to see all options') }}"
+                        data-module="nsw-facet-filter"
+                        type="text" class="nsw-form__input"
+                    />
+                {% endblock %}
             {% endif %}
 
             {% for val in main %}
