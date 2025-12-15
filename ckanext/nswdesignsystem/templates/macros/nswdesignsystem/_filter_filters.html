@@ -17,12 +17,14 @@
         <div class="nsw-filters__wrapper">
 
             {% if right %}
-                <div class="nsw-filters__back">
-                    <button class="nsw-icon-button nsw-icon-button--flex js-close-sub-nav" type="button">
-                        <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">close</span>
-                        <span class="sr-only">Close filters</span>
-                    </button>
-                </div>
+                {% block close_filters_button %}
+                    <div class="nsw-filters__back">
+                        <button class="nsw-icon-button nsw-icon-button--flex js-close-sub-nav" type="button">
+                            <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">close</span>
+                            <span class="sr-only">Close filters</span>
+                        </button>
+                    </div>
+                {% endblock %}
             {% endif %}
 
             <div class="nsw-filters__title">{{ title }}</div>

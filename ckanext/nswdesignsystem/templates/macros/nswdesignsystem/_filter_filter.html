@@ -1,4 +1,4 @@
-{% macro filter(button_label, expanded=false, collapsible=true) %}
+{% macro filter(button_label, expanded=false, collapsible=true, sub_text='') %}
     <div class="nsw-filters__item">
 
         {% if button_label and collapsible %}
@@ -13,6 +13,12 @@
                     {{ button_label }}
                 </div>
             {% endif %}
+        {% endif %}
+
+        {% if sub_text %}
+            <div class="nsw-form__helper">
+                {{ sub_text }}
+            </div>
         {% endif %}
 
         <div class="nsw-filters__item-content">
