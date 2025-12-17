@@ -21,11 +21,12 @@
             {% endif %}
 
             {% if add_search and values|length > visible %}
-                {% block facet_search_input %}
+                {% block facet_search_input scoped %}
                     <input
                         placeholder="{{ _('Start typing to see all options') }}"
                         data-module="nsw-facet-filter"
                         type="text" class="nsw-form__input"
+                        aria-label="{{ title or name }} {{ _('suggestions') }}"
                     />
                 {% endblock %}
             {% endif %}
