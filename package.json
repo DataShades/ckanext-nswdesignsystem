@@ -10,7 +10,7 @@
     "gulp-sourcemaps": "^3.0.0",
     "gulp-touch-cmd": "^0.0.1",
     "highlight.js": "github:highlightjs/highlight.js#11.8.0",
-    "nsw-design-system": "^3.17.1",
+    "nsw-design-system": "^3.24.0",
     "postcss-combine-media-query": "^1.0.1",
     "sass": "^1.77.6"
   }
