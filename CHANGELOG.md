@@ -6,9 +6,43 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
-## [0.2.16](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/0.2.16) - 2025-10-02
+## [0.2.19](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/0.2.19) - 2026-01-21
 
-<small>[Compare with v0.2.15](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.15...0.2.16)</small>
+<small>[Compare with v0.2.18](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.18...0.2.19)</small>
+
+### Features
+
+- nsw-design-system v3.24.0 ([3c98964](https://github.com/DataShades/ckanext-nswdesignsystem/commit/3c9896405dd80d5869e7630a6c1c7f724fab651d) by Sergey Motornyuk).
+- Update templates to extend possible additions ([ea22603](https://github.com/DataShades/ckanext-nswdesignsystem/commit/ea2260340914da6b438bdafb7181e84c17f0cb65) by Yan Rudenko).
+- Add optional facet search ([542d686](https://github.com/DataShades/ckanext-nswdesignsystem/commit/542d686bf8e3e1fb392c8e4e541c307816ac80b6) by Yan Rudenko).
+- Update navigation tempalte ([ebf4905](https://github.com/DataShades/ckanext-nswdesignsystem/commit/ebf4905653c51bf41a178bfd9f22b4a906884d1d) by Yan Rudenko).
+- Strore NSW Design system source ([476543a](https://github.com/DataShades/ckanext-nswdesignsystem/commit/476543a289afecf1b8454a1635e10b67221d7aac) by Yan Rudenko).
+
+### Bug Fixes
+
+- adding context to blocks and add accessibility fix ([bc3573b](https://github.com/DataShades/ckanext-nswdesignsystem/commit/bc3573b15be57e8fce7b3e128b6aadbadde6a1e6) by Yan Rudenko).
+- Add missing step ([45f049c](https://github.com/DataShades/ckanext-nswdesignsystem/commit/45f049c654f606bf45200e845a90f7cd672680f4) by Yan Rudenko).
+- add an ability to add additional arguments to pagination ([52dacc3](https://github.com/DataShades/ckanext-nswdesignsystem/commit/52dacc3731bb0ee0ae3a5b3718d49063a336d9f9) by Yan Rudenko).
+
+## [v0.2.18](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.18) - 2025-10-14
+
+<small>[Compare with v0.2.17](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.17...v0.2.18)</small>
+
+### Bug Fixes
+
+- fix global_alert macro button margin ([00a09a7](https://github.com/DataShades/ckanext-nswdesignsystem/commit/00a09a7c764db7659380d2d11481eee4495ba579) by mutantsan).
+
+## [v0.2.17](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.17) - 2025-10-14
+
+<small>[Compare with v0.2.16](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.16...v0.2.17)</small>
+
+### Features
+
+- add global_alert component macro ([e4926dc](https://github.com/DataShades/ckanext-nswdesignsystem/commit/e4926dcf300b7fc482d7fe1e820f21f2ccc6c82a) by mutantsan).
+
+## [v0.2.16](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.16) - 2025-10-02
+
+<small>[Compare with v0.2.15](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.15...v0.2.16)</small>
 
 ### Features
 
