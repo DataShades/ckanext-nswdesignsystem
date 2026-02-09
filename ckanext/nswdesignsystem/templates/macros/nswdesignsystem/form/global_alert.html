@@ -7,6 +7,7 @@ type          - The alert type (default: "info") - determines the styling. Optio
 button_text   - Optional button text for action button
 button_url    - Optional button URL for action button
 dismissible   - Whether the alert can be dismissed (default: true)
+cookie_name   - Optional unique identifier. If provided, the alert dismissal status will be saved in a cookie (default: "")
 
 Example:
 
@@ -16,13 +17,12 @@ Example:
     title="State of Emergency for NSW",
     content="Catastrophic weather conditions are forecast this week for north and north west regions of NSW. Keep up to date with the latest bush fires alerts and warnings in your area.",
     type="light",
-    button_text="More information",
-    button_url="#",
+    cookie_name="weather_alert_2023"
 ) }}
 
 #}
 
-{% macro global_alert(title="", content="", type="info", button_text="", button_url="", dismissible=true) %}
+{% macro global_alert(title="", content="", type="info", button_text="", button_url="", dismissible=true, cookie_name="") %}
     {% set button_type = "white" %}
 
     {% if type == "light" %}
@@ -30,7 +30,7 @@ Example:
     {% endif %}
 
     {% if title or content %}
-        <div class="nsw-global-alert {% if type %}nsw-global-alert--{{ type }}{% endif %} js-global-alert" role="alert" data-cookie-name="">
+        <div class="nsw-global-alert {% if type %}nsw-global-alert--{{ type }}{% endif %} js-global-alert" role="alert" data-cookie-name="{{ cookie_name }}">
             <div class="nsw-global-alert__wrapper">
                 <div class="nsw-global-alert__content">
                     {% if title %}
