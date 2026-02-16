@@ -2,12 +2,12 @@
 
 
 
-{% macro facet(name, values, labels=[], visible=5, title=null, show_all_label="Show all", empty_label=null, collapsible=false, expanded=false, attrs={}, show_all_counter=none, add_search=false) %}
+{% macro facet(name, values, labels=[], visible=5, title=null, sub_text='', show_all_label="Show all", empty_label=null, collapsible=false, expanded=false, attrs={}, show_all_counter=none, add_search=false) %}
     {% if not labels %}
         {% set labels = values %}
     {% endif %}
 
-    {% call filter(collapsible and title, expanded) %}
+    {% call filter(collapsible and title, expanded, collapsible=collapsible, sub_text=sub_text) %}
 
         {% set selected = request.args.getlist(name) %}
         {% set main = values[:visible] %}
