@@ -20,7 +20,7 @@ ckan.module("nsw-facet-filter", function ($, _) {
             $(this.input).on("input", this._onInputChange);
         },
         _onInputChange: function () {
-            const val = this.input.val().toLowerCase();
+            const val = (this.input.val() || "").trim().toLowerCase();
             this.children.each((idx) => {
                 this.children[idx].hidden = !~(
                 this.children[idx]
@@ -32,6 +32,12 @@ ckan.module("nsw-facet-filter", function ($, _) {
             var visibleItems = this.children.filter(function(idx,item) {
                 return !item.hasAttribute('hidden');
             });
+            if (val) {
+                this.all_filters.removeClass('nsw-display-none');
+                this.show_more.addClass('nsw-display-none');
+                return;
+            }
+
             if (visibleItems.length <= this.visibleLimit) {
                 this.all_filters.removeClass('nsw-display-none');
                 this.show_more.addClass('nsw-display-none');
