@@ -1,0 +1,78 @@
+{%- macro breadcrumb(content, href, active) -%}
+    {%- if active -%}
+        {%- do ui.util.augment_attrs(kwargs, {"class": "current", "aria-current": "page"} if active else {}) -%}
+    {%- endif %}
+    <li>
+        {{ ui.link(content, href=href, **kwargs) }}
+    </li>
+{%- endmacro %}
+
+{%- macro nav_item(content, href, active) -%}
+    {%- call ui.util.call(ui.list_item, attrs={"class": "nav-item" ~ (" active"  if active else "")}) -%}
+        <a {{ ui.util.attrs(kwargs, {"class": "nav-link" ~ (" active" if active else "")}) }} href="{{ href }}">
+            {{ content }}
+        </a>
+    {%- endcall %}
+{%- endmacro %}
+
+{%- macro main_nav_item(content, href, active) -%}
+    {%- call ui.util.call(ui.list_item, attrs={"class": "nav-item" ~ (" active"  if active else "")}) -%}
+        <a {{ ui.util.attrs(kwargs, {"class": (" active" if active else "")}) }} href="{{ href }}">
+            {{ content }}
+        </a>
+    {%- endcall %}
+{%- endmacro %}
+
+{%- macro sidebar_nav_item(content, href, active) -%}
+    {{ ui.nav_item(content, href, active, **kwargs) }}
+{%- endmacro %}
+
+{%- macro account_nav_item(content, href, active) -%}
+    {{ ui.nav_item(content, href, active, **ui.util.augment_attrs(kwargs, {"class": ""})) }}
+{%- endmacro %}
+
+{%- macro content_nav_item(content, href, active, icon) -%}
+    {%- set prefix = (ui.icon(icon) ~ " ") if icon else "" -%}
+    {{ ui.nav_item(prefix ~ content, href=href, active=active, **kwargs) }}
+{%- endmacro %}
+
+{%- macro page_action(content, href) -%}
+    {{ ui.button(content, href=href, **kwargs) }}
+{%- endmacro %}
+
+{%- macro content_action(content, href) -%}
+    {{ ui.button(content, href=href, **kwargs) }}
+{%- endmacro %}
+
+{%- macro pagination(page=1, total=1, url_generator=h.pager_url, padding=2, hide_edges=false, hide_siblings=false, start_label=null, end_label=null, previous_label=ui.icon("chevron-left", style="solid"), next_label=ui.icon("chevron-right", style="solid"), padding_label="...", url_params={}) -%}
+    {%- if total > 1 %}
+        {%- call ui.util.call(ui.pagination_wrapper, **kwargs) -%}
+            {{ ui.pagination_item(previous_label, href=url_generator(page=page - 1, **url_params)) if page > 1 and not hide_siblings }}
+
+            {%- if page - 1 > padding %}
+                {{ ui.pagination_item(start_label or 1, href=url_generator(page=1, **url_params)) if not hide_edges}}
+                <li class="disabled"><a href="#">{{ padding_label }}</a></li>
+            {%- endif %}
+
+            {%- for i in range([page - padding, 1]|max, [page + padding, total]|min + 1) %}
+                {{ ui.pagination_item(i, href=url_generator(page=i, **url_params), active=i == page) }}
+            {%- endfor %}
+
+            {%- if total - page > padding %}
+                <li class="disabled"><a href="#">{{ padding_label }}</a></li>
+                {{ ui.pagination_item(end_label or total, href=url_generator(page=total, **url_params)) if not hide_edges}}
+            {%- endif %}
+
+            {{ ui.pagination_item(next_label, href=url_generator(page=page + 1, **url_params)) if page < total and not hide_siblings }}
+        {%- endcall %}
+    {%- endif %}
+{%- endmacro %}
+
+{%- macro pagination_item(content, href, active) -%}
+    <li {{ ui.util.attrs(kwargs) }} class="page-item{% if active %} active{% endif %}"><a class="page-link" href="{{ href }}">{{ content }}</a></li>
+{%- endmacro %}
+
+{%- macro dropdown_item(content) -%}
+    {%- do kwargs.setdefault("attrs", {}).setdefault("class", "dropdown-item") -%}
+    <li>{{ ui.button(content, **kwargs) }}</li>
+{%- endmacro %}

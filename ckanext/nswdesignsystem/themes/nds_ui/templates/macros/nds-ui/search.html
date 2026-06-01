@@ -1,0 +1,98 @@
+{%- macro search_input(content, name="q", value="", label=_("Search"), placeholder=_("Search...")) -%}
+    <input {{ ui.util.attrs(kwargs, {"class": "form-control"}) }} aria-label="{{ placeholder }}" autocomplete="off" type="search" name="{{ name }}" value="{{ value }}" placeholder="{{ placeholder }}">
+{%- endmacro %}
+
+{%- macro search_submit_button(content=ui.icon("search")) -%}
+    <button {{ ui.util.attrs(kwargs, {"class": "btn"}) }} type="submit" value="search" aria-label="{{_('Submit')}}">
+        {{ content }}
+    </button>
+{%- endmacro %}
+
+{%- macro search_sort_control(content, name="sort", selected="", options=[], label=_("Order by")) -%}
+    {%- if options -%}
+        {#{ ui.select(content, name=name, label=label, options=options?revert-items, selected=selected, group_class="control-order-by") }#}
+
+        <div {{ ui.util.attrs(kwargs, {"class": "form-group control-order-by"}) }}>
+            <label for="{{ id }}">{{ label }}</label>
+            <select id="{{ id }}" name="sort" class="form-control form-select">
+                {% for label, value in options %}
+                    {% if label and value %}
+                        <option value="{{ value }}"{% if selected == value %} selected="selected"{% endif %}>{{ label }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            {{ content }}
+        </div>
+    {%- endif %}
+{%- endmacro %}
+
+{%- macro search_results_text(content, count, error, query, type="dataset") -%}
+    {%- call ui.util.call(ui.heading, level=2, **kwargs) -%}
+        {%- if error %}
+            {{ _('Error: {error}').format(error=error) }}
+        {%- elif content -%}
+            {{ content }}
+        {%- else %}
+            {% include 'snippets/search_result_text.html' %}
+        {%- endif %}
+    {%- endcall %}
+{%- endmacro %}
+
+
+{%- macro search_active_filters(active_filters, facet_titles, facets, use_htmx) -%}
+    {%- if active_filters -%}
+        <p {{ ui.util.attrs(kwargs, {"class": "filter-list"}) }}>
+            {%- for key, values in active_filters|groupby(0) -%}
+                {% set items = facets[key]['items'] if facets and key in facets else [] %}
+                <span class="facet">{{ facet_titles.get(key, key) }}:</span>
+                {%- for _key, value in values %}
+                    <span class="filtered pill">
+                        {{ ui.input(name=key, value=value) }}
+                        {{ h.list_dict_filter(items, 'name', 'display_name', value) }}
+                        {%- call ui.util.call(ui.tooltip, tooltip=_('Remove')) -%}
+                            <a href="{{ h.remove_url_param(key, value) }}" class="remove" aria-label="{{ _('Remove applied filter: {value}').format(value=value) }}" hx-boost="{{ 'true' if use_htmx else 'false' }}">
+                                {{- ui.icon('times') -}}
+                            </a>
+                        {%- endcall %}
+                    </span>
+                {% endfor %}
+            {%- endfor %}
+        </p>
+    {%- endif %}
+{%- endmacro %}
+
+{%- macro search_advanced_controls() -%}
+    {%- do kwargs -%}
+{%- endmacro %}
+
+{%- macro search_form_box(content, use_htmx) -%}
+    {%- do kwargs.setdefault("attrs", {}).setdefault("class", "search-form") -%}
+    {%- if use_htmx -%}
+        {%- do kwargs.setdefault("hx", {"boost": "true", "disinherit": "hx-boost", "trigger": "change, submit"}) -%}
+    {%- endif %}
+    {%- call ui.util.call(ui.form, **kwargs) -%}
+        {{ content }}
+    {%- endcall %}
+{%- endmacro %}
+
+{%- macro search_form(query, sorting, sorting_options, error, count, facets, facet_titles, active_filters, use_htmx, query_name="q", sorting_name="sort", type="dataset") -%}
+    {%- set facet_fields = {} -%}
+    {%- for k, v in active_filters -%}
+        {%- do facet_fields.setdefault(k, []).append(v) -%}
+    {%- endfor %}
+
+    {%- set params = {
+        "query": query,
+        "error": error,
+        "count": count,
+        "query": query,
+        "sorting_selected": sorting,
+        "sorting": sorting_options ,
+        "form_id": kwargs.setdefault("attrs", {}).id ,
+        "fields": active_filters,
+        "facets": {"titles": facet_titles, "search": facets, "fields": facet_fields, "remove_field": h.remove_url_param} ,
+        "type": type ,
+        } -%}
+    {%- do params.update(kwargs) -%}
+    {{ h.snippet("snippets/search_form.html", **params) }}
+{%- endmacro %}

@@ -1,0 +1,42 @@
+{%- macro group(content, group) -%}
+    {%- do kwargs.setdefault("position", 0) -%}
+    {{ h.snippet("group/snippets/group_item.html", group=group, **kwargs) }}
+{%- endmacro %}
+
+{%- macro organization(content, organization) -%}
+    {%- do kwargs.setdefault("position", 0) -%}
+    {{ h.snippet("organization/snippets/organization_item.html", organization=organization, **kwargs) }}
+{%- endmacro %}
+
+{%- macro package(content, package) -%}
+    {{ h.snippet("snippets/package_item.html", package=package, **kwargs) }}
+{%- endmacro %}
+
+{%- macro resource(content, resource, package) -%}
+    {{ h.snippet('package/snippets/resource_item.html', res=resource, pkg=package, **kwargs) }}
+{%- endmacro %}
+
+{%- macro user(content, user) -%}
+    <li {{ ui.util.attrs(kwargs) }}>{{ h.linked_user(user.name, maxlength=20) }}</li>
+{%- endmacro %}
+
+{%- macro facet(content, key, value, count, active) -%}
+    {% set href = h.remove_url_param(key, value) if active and key else h.add_url_param(new_params={key: value}) %}
+    {% set truncated = content|truncate(22) %}
+    <li class="nav-item {% if active %}active{% endif %}">
+        <a {{ ui.util.attrs(kwargs) }} href="{{ href }}" aria-label="{{ _('Search datasets by {name}: {label}').format(name=key, label=truncated) }}" {% if content != truncated %} data-bs-title="{{ content }}" data-bs-toggle="tooltip" {% endif %}>
+            <span class="item-label">{{ truncated }}</span>
+            <span class="hidden separator"> - </span>
+            <span class="item-count badge">{{ count }}</span>
+            {% if active %}<span class="facet-close"> <i class="fa fa-solid fa-circle-xmark"></i></span>{% endif %}
+        </a>
+    </li>
+{%- endmacro %}
+
+{%- macro activity(content, activity) -%}
+    {{ h.snippet([
+           "snippets/activities/{}.html".format(activity.activity_type.replace(' ', '_')),
+           "snippets/activities/fallback.html"
+        ], activity=activity, **kwargs) }}
+
+{%- endmacro %}

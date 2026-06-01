@@ -1,0 +1,86 @@
+{%- macro accordion_wrapper(content, toggle_all) -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-accordion--details js-accordion-details"}) }}>
+        {%- if toggle_all -%}
+            <div class="nsw-accordion__toggle">
+                <button type="button" aria-label="{{ _('Expand all sections') }}">{{ _("Expand all") }}</button>
+                <button type="button" aria-label="{{ _('Collapse all sections') }}">{{ _("Collapse all") }}</button>
+            </div>
+        {%- endif %}
+        {{- content -}}
+    </div>
+{%- endmacro %}
+
+{%- macro breadcrumb_wrapper(content) -%}
+    <nav {{ ui.util.attrs(kwargs, {"class": "nsw-breadcrumbs js-breadcrumbs", "aria-label": "Breadcrumbs"}) }}>
+        <ol>{{ content }}</ol>
+    </nav>
+{%- endmacro %}
+
+
+
+
+
+
+{%- macro account_nav_wrapper(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "list-unstyled"}) }}>
+        {{ content }}
+    </ul>
+{%- endmacro %}
+
+
+{%- macro content_action_wrapper(content) -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "content_action"}) }}>
+        {{- content -}}
+    </div>
+{%- endmacro %}
+
+{%- macro content_nav_wrapper(content) -%}
+    {{ ui.nav_wrapper(content, **ui.util.augment_attrs(kwargs, {"class": "nav nav-tabs"})) }}
+{%- endmacro %}
+
+{%- macro main_nav_wrapper(content) -%}
+    {{ ui.nav_wrapper(content, **ui.util.augment_attrs(kwargs, {"class": "navbar-nav ms-auto mb-2 mb-lg-0"})) }}
+{%- endmacro %}
+
+{%- macro nav_wrapper(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "nav"}) }}>
+        {{ content }}
+    </ul>
+{%- endmacro %}
+
+{%- macro page_action_wrapper(content) -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "page_primary_action"}) }}>
+        {{- content -}}
+    </div>
+{%- endmacro %}
+
+{%- macro tab_wrapper(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "nav nav-tabs"}) }} role="tablist">{{ content }}</ul>
+{%- endmacro %}
+
+{%- macro sidebar_nav_wrapper(content, title) -%}
+    <section {{ ui.util.attrs(kwargs, {"class": "module module-narrow module-shallow"}) }}>
+        <div class="module-group">
+            {{ ui.heading(title, level=2, attrs={"class": "module-heading"}) if title }}
+
+            <ul class="nav nav-aside">
+                {{ content }}
+            </ul>
+        </div>
+    </section>
+{%- endmacro %}
+
+{%- macro pagination_wrapper(content) -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "pagination-wrapper"}) }}>
+        <ul class="pagination justify-content-center">
+            {{- content -}}
+        </ul>
+    </div>
+{%- endmacro %}
+
+
+{%- macro tab_pane_wrapper(content) -%}
+    <div {{ ui.util.attrs(kwargs) }} class="tab-content">
+        {{ content }}
+    </div>
+{%- endmacro %}

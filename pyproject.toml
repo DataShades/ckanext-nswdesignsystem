@@ -102,6 +102,10 @@ filterwarnings = [
 [tool.pyright]
 pythonVersion = "3.8"
 include = ["ckanext"]
+extraPaths = [
+           "../ckan",
+           "../ckanext-theming",
+]
 exclude = [
     "**/test*",
     "**/migration",

@@ -1,0 +1,105 @@
+{%- macro breadcrumb_divider(content) -%}{%- do kwargs -%}{%- endmacro %}
+
+{%- macro button(content, href, size, outline, type="button", style="primary") -%}
+    {%- set _style_map = {
+        "primary": "dark",
+        "secondary": "light",
+        "warning": "danger",
+        "danger": "danger",
+    } -%}
+
+    {%- set class = "nsw-button" -%}
+    {%- if style -%}
+        {%- set class = class ~ " nsw-button--" ~ _style_map.get(style, style) ~ ("-outline" if outline else "")-%}
+    {%- endif %}
+    {%- if size == "sm" -%}
+        {%- set class = class ~ " nsw-button--small" -%}
+    {%- endif %}
+    {%- do ui.util.augment_attrs(kwargs, {"class": class}) -%}
+    {%- if href -%}
+        {{ ui.link(prefix ~ content, href=href, **kwargs) }}
+    {%- else -%}
+        <button {{ ui.util.attrs(kwargs) }} type="{{ type }}">
+            {{- content -}}
+        </button>
+    {%- endif %}
+{%- endmacro %}
+
+
+
+{%- macro badge(content, style="primary") -%}
+    {%- set class = "badge bg-" ~ style ~ ' text-bg-' ~ style -%}
+    <span {{ ui.util.attrs(kwargs, {"class": class}) }}>
+        {{- content -}}
+    </span>
+{%- endmacro %}
+
+
+{%- macro datetime(dt, date_format, with_hours, relative, empty="") -%}
+    <time {{ ui.util.attrs(kwargs) }} datetime="{{ h.render_datetime(dt, date_format='%Y-%m-%dT%H:%M:%S%z') }}">
+        {%- if relative -%}
+            {%- set value = h.time_ago_from_timestamp(dt) -%}
+            {{  value if value != "Unknown" else empty }}
+        {%- else -%}
+            {{ h.render_datetime(dt, date_format=date_format, with_hours=with_hours) or empty }}
+        {%- endif -%}
+    </time>
+{%- endmacro %}
+
+{%- macro divider(content) -%}
+    <hr {{ ui.util.attrs(kwargs) }} class="divider">
+{%- endmacro %}
+
+{%- macro heading(content, level) -%}
+    {%- set tag =  "h" ~ level -%}
+    <{{ tag }} {{ ui.util.attrs(kwargs) }}>{{ content }}</{{ tag }}>
+{%- endmacro %}
+
+{%- macro icon(name, style=none) -%}
+    {%- set base_class = "fa-{}".format(style) if style else "fa" -%}
+    <i {{ ui.util.attrs(kwargs) }} class="{{ base_class }} fa-{{ ui.util.icon(name) }}"></i>
+{%- endmacro %}
+
+{%- macro image(src, alt, height, width) -%}
+    {%- if not alt -%}
+        {%- do kwargs.setdefault("attrs", {}).setdefault("role", "presentation") -%}
+    {%- endif -%}
+    <img {{ ui.util.attrs(kwargs) }} src="{{ src }}" alt="{{ alt }}"
+                                     {%- if height %} height="{{ height }}"{% endif %}
+                                     {%- if width %} width="{{ width }}"{% endif %}
+    >
+{%- endmacro %}
+
+{%- macro link(content, href, blank) -%}
+    {%- if blank -%}
+        {%- do kwargs.setdefault("attrs", {}).setdefault("target", "_blank") -%}
+        {%- do kwargs.setdefault("attrs", {}).setdefault("rel", "noopener") -%}
+    {%- endif %}
+    <a {{ ui.util.attrs(kwargs) }} href="{{ href or content }}">{{ content }}</a>
+{%- endmacro %}
+
+{%- macro tag(content, href) -%}
+    {%- if href -%}
+        <a {{ ui.util.attrs(kwargs, {"class": "tag"}) }} href="{{ href }}">{{ content }}</a>
+    {%- else -%}
+        <span {{ ui.util.attrs(kwargs, {"class": "tag"}) }}>{{ content }}</span>
+    {%- endif %}
+{%- endmacro %}
+
+{%- macro tab(content, active, href, id) -%}
+    <li class="nav-item">
+        {%- if href is defined -%}
+            <a {{ ui.util.attrs(kwargs, {"class": "nav-link" ~ (" active" if active else "")}) }} href="{{ href }}">{{ content }}</a>
+        {%- else -%}
+            <button {{ ui.util.attrs(kwargs, {"class": "nav-link" ~ (" active" if active else ""), }) }} data-bs-toggle="tab" data-bs-target="#{{ id }}" type="button" role="tab" aria-controls="{{ id }}">{{ content }}</button>
+        {%- endif %}
+    </li>
+{%- endmacro %}
+
+{%- macro video(src, controls, autoplay) -%}
+    <video {{ ui.util.attrs(kwargs) }} src="{{ src }}" {{ "controls" if controls }} {{ "autoplay" if autoplay }}></video>
+{%- endmacro %}
+
+{%- macro empty(content) -%}
+    <p {{ ui.util.attrs(kwargs, {"class": "empty"}) }}>{{ content }}</p>
+{%- endmacro %}

@@ -1,0 +1,354 @@
+{%- macro accordion(content, title, open) -%}
+    <details {{ ui.util.attrs(kwargs, {"class": "nsw-accordion__item"}) }} {{ "open" if open}}>
+        <summary class="nsw-accordion__title">
+            {{- title -}}
+        </summary>
+        <div class="nsw-accordion__content-wrap">
+            <div class="nsw-accordion__content">
+                {{- content -}}
+            </div>
+        </div>
+    </details>
+{%- endmacro %}
+
+
+{%- macro activity_list(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "activity"}) }}>
+        {{ content }}
+    </ul>
+{%- endmacro %}
+
+{%- macro facet_list(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "list-unstyled nav nav-simple nav-facet"}) }}>{{ content }}</ul>
+{%- endmacro %}
+
+{%- macro group_list(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "media-grid", "data-module": "media-grid"}) }}>
+        {{ content }}
+    </ul>
+{%- endmacro %}
+
+{%- macro organization_list(content) -%}
+    {{ ui.group_list(content, **kwargs) }}
+{%- endmacro %}
+
+{%- macro package_list(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "dataset-list list-unstyled"}) }}>
+        {{ content }}
+    </ul>
+{%- endmacro %}
+
+{%- macro resource_list(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "resource-list"}) }}>
+        {{ content }}
+    </ul>
+{%- endmacro %}
+
+{%- macro user_list(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "user-list"}) }}>{{ content }}</ul>
+{%- endmacro %}
+
+{%- macro button_group(content, direction="row") -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "btn-group" ~ ("-vertical" if direction == "column" else "")}) }}>
+        {{- content -}}
+    </div>
+{%- endmacro %}
+
+{%- macro card(content, title, footer, img) -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "card"}) }} >
+        {%- if img -%}
+            {{ ui.image(img, attrs={"class": "carg-img-top"}) }}
+        {%- endif %}
+        <div class="card-body">
+            {%- if title -%}
+                <h5 class="card-title">{{ title }}</h5>
+            {%- endif %}
+            {%- if content -%}
+                <div class="card-text">{{ content }}</div>
+            {%- endif %}
+        </div>
+        {%- if footer -%}
+            <div class="card-footer">{{ footer }}</div>
+        {%- endif %}
+    </div>
+{%- endmacro %}
+
+{%- macro container(content, fluid) -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "container" ~ ('-fluid' if fluid else "")}) }}>{{ content }}</div>
+{%- endmacro %}
+
+{%- macro list(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "list-unstyled"}) }}>
+        {{ content }}
+    </ul>
+{%- endmacro %}
+
+{%- macro list_item(content) -%}
+    <li {{ ui.util.attrs(kwargs) }}>
+        {{ content }}
+    </li>
+{%- endmacro %}
+
+{%- macro dropdown(content, title, inline, id, style="primary") -%}
+    {%- do kwargs.setdefault("data", {}).setdefault("bs-toggle", "dropdown") -%}
+    {%- do kwargs.setdefault("attrs", {}).setdefault("id", ui.util.id()) -%}
+    {%- do kwargs.setdefault("aria", {}).setdefault("expanded", "false") -%}
+
+    <div class="dropdown {{ 'btn-group' if inline }}">
+        {{ ui.button(title, style=style ~ " dropdown-toggle", **kwargs) }}
+        <ul class="dropdown-menu" aria-labelledby="{{ kwargs.attrs.id }}">
+            {{ content }}
+        </ul>
+    </div>
+{%- endmacro %}
+
+{%- macro tab_pane(content, active, id) -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "tab-pane fade" ~(" show active" if active else ""), "id": id}) }} role="tabpanel" tabindex="0">
+        {{ content }}
+    </div>
+{%- endmacro %}
+
+{#
+NSW Design System v3 implementation
+===========================================================
+Requires NSW Design System v3.x CSS.
+CDN: https://cdn.jsdelivr.net/npm/nsw-design-system@3/dist/css/main.css
+
+── CLASS REFERENCE (sourced from v3.24.9 SCSS) ──────────────────────────
+
+Container:
+.nsw-container              max-width constrained, auto-centred, 16px side padding
+.nsw-container--flush       removes left/right padding
+
+Grid (the flex wrapper around rows):
+.nsw-grid                   display:flex, flex-wrap:wrap, negative gutters
+.nsw-grid--spaced           adds top/bottom padding on .nsw-col children
+.nsw-grid--flush            removes top/bottom negative margins
+
+Row (a full-width flex line inside a grid):
+.nsw-row                    width:100%, display:flex, flex-wrap:wrap
+.nsw-row--reverse           reverses column order at lg+ breakpoint
+
+Column:
+.nsw-col                    100% width default + gutter padding
+.nsw-col-{N}                percentage width for N/12 (no breakpoint, any viewport)
+.nsw-col-{bp}-{N}           responsive: bp = xs|sm|md|lg|xl, N = 1–12
+
+Offset (shifts column right via margin-left):
+.nsw-offset-{N}             offset N/12 at all viewports
+.nsw-offset-{bp}-{N}        responsive offset
+
+Alignment utility classes (from _utilities.scss):
+.nsw-align-items-{v}        v = start|end|center|baseline|stretch
+.nsw-justify-content-{v}    v = start|end|center|between|around|evenly
+(both are responsive: nsw-align-items-{bp}-{v} also valid)
+
+Flex wrap utility classes:
+.nsw-flex-nowrap             flex-wrap: nowrap
+.nsw-flex-wrap               flex-wrap: wrap
+.nsw-flex-wrap-reverse       flex-wrap: wrap-reverse
+
+Order utility classes:
+.nsw-order-{v}              v = first|-1, 0, 1, 2, 3, 4, 5, last|6
+(also responsive: nsw-order-{bp}-{v})
+
+── CANONICAL → NSW BREAKPOINT MAPPING ───────────────────────────────────
+canonical xs → nsw xs   (0px)
+canonical sm → nsw sm   (576px)
+canonical md → nsw md   (768px)
+canonical lg → nsw lg   (992px)
+canonical xl → nsw xl   (1200px)
+
+Perfect 1:1 mapping — no approximation needed.
+
+── GAP MAPPING ──────────────────────────────────────────────────────────
+NSW DS does not expose gap utility classes on .nsw-row.
+Gap is controlled by the built-in gutter system (8px mobile, 16px md+).
+The --spaced modifier doubles top/bottom padding on column children.
+
+We map our canonical gap tokens to the modifiers that exist:
+none → nsw-grid--flush      (removes top/bottom negative margin)
+xs   → nsw-grid             (bare grid, default gutters)
+sm   → nsw-grid             (bare grid, default gutters)
+md   → nsw-grid             (bare grid, default gutters — this IS the default)
+lg   → nsw-grid nsw-grid--spaced
+xl   → nsw-grid nsw-grid--spaced
+
+Note: NSW DS does not have arbitrary column-gap control beyond this.
+Left/right gutters are always the built-in 8px/16px. If you need
+custom gaps, add inline style="column-gap: Xrem" on the .nsw-row,
+but this is outside the design system's token contract.
+
+── ORDER MAPPING ────────────────────────────────────────────────────────
+NSW DS order utilities support values: first(-1), 0, 1, 2, 3, 4, 5, last(6).
+We clamp to this range. Numeric orders > 5 fall back to "last".
+For responsive order, we use nsw-order-{bp}-{v}.
+#}
+
+
+{%- macro grid(content, fluid) -%}
+    {#
+    NSW DS uses .nsw-container for max-width constraint.
+    fluid=true → adds .nsw-container--flush to remove side padding,
+    and wraps in an additional full-width div so content bleeds edge-to-edge.
+    Most NSW DS pages wrap in nsw-container at the page layout level and
+    use nsw-grid inside it, so fluid is a less common choice.
+    #}
+    {%- set class = "nsw-container" -%}
+    {%- if fluid -%}
+        {%- set class = class ~ " nsw-container--flush" -%}
+    {%- endif -%}
+    <div {{ ui.util.attrs(kwargs, {"class": class}) }}>
+        {{- content -}}
+    </div>
+{%- endmacro %}
+
+
+{%- macro row(content, align, justify, gap, wrap=true) -%}
+    {#—
+    NSW DS align-items utility classes (from _utilities.scss responsive utility generator):
+    nsw-align-items-start | end | center | baseline | stretch
+    —#}
+    {%- set _align_map = {
+        "start":    "nsw-align-items-start",
+        "center":   "nsw-align-items-center",
+        "end":      "nsw-align-items-end",
+        "stretch":  "nsw-align-items-stretch",
+        "baseline": "nsw-align-items-baseline"
+    } -%}
+
+    {#—
+    NSW DS justify-content utility classes:
+    nsw-justify-content-start | end | center | between | around | evenly
+    —#}
+    {%- set _justify_map = {
+        "start":   "nsw-justify-content-start",
+        "center":  "nsw-justify-content-center",
+        "end":     "nsw-justify-content-end",
+        "between": "nsw-justify-content-between",
+        "around":  "nsw-justify-content-around",
+        "evenly":  "nsw-justify-content-evenly"
+    } -%}
+
+    {#—
+    Gap mapping → nsw-grid modifier on the .nsw-row wrapper.
+    NSW DS has no column-gap utility classes; gap is structural via grid modifiers.
+    We signal gap intent via data-gap for companion CSS if needed.
+    —#}
+    {%- set _gap_spaced = gap in ["lg", "xl"] -%}
+    {%- set _gap_flush  = not gap -%}
+
+    {%- set class = "nsw-row" -%}
+
+    {#— alignment —#}
+    {%- if align -%}
+        {%- set class = class ~ " " ~ _align_map.get(align, "nsw-align-items-start") -%}
+    {%- endif -%}
+    {%- if justify -%}
+        {%- set class = class ~ " " ~ _justify_map.get(justify, "nsw-justify-content-start") -%}
+    {%- endif -%}
+
+    {#— wrap —#}
+    {%- if not wrap -%}
+        {%- set class = class ~ " nsw-flex-nowrap" -%}
+    {%- endif -%}
+
+    {%- set default_attrs = {"class": class} -%}
+
+    {#— emit data-gap for companion CSS —#}
+    {%- if gap -%}
+        {%- do default_attrs.update({"data-gap": gap}) -%}
+    {%- endif %}
+
+    <div {{ ui.util.attrs(kwargs, default_attrs) }}>
+        {{- content -}}
+    </div>
+{%- endmacro %}
+
+
+{%- macro column(content, span, offset, order) -%}
+    {#—
+    Canonical breakpoint = NSW DS breakpoint (perfect 1:1 match):
+    xs → xs   (0px)
+    sm → sm   (576px)
+    md → md   (768px)
+    lg → lg   (992px)
+    xl → xl   (1200px)
+
+    Column class patterns:
+    .nsw-col                    → auto (100% default)
+    .nsw-col-{N}                → applies at all viewports
+    .nsw-col-{bp}-{N}           → responsive
+    —#}
+
+    {%- set ns = namespace(class="nsw-col") -%}
+
+    {#— span —#}
+    {%- if span  -%}
+        {%- if span is integer -%}
+            {%- set ns.class = "nsw-col-" ~ span -%}
+        {%- else -%}
+            {#—
+              Multi-breakpoint: emit one nsw-col-{bp}-{N} class per entry.
+              First entry replaces the base "nsw-col"; subsequent entries append.
+            —#}
+            {%- for bp, size in span.items() -%}
+                {%- if loop.first -%}
+                    {%- set ns.class = "nsw-col-" ~ bp ~ "-" ~ size -%}
+                {%- else -%}
+                    {%- set ns.class = ns.class ~ " nsw-col-" ~ bp ~ "-" ~ size -%}
+                {%- endif -%}
+            {%- endfor -%}
+        {%- endif -%}
+    {%- endif -%}
+
+    {#—
+      Offset class patterns:
+        .nsw-offset-{N}             → all viewports
+        .nsw-offset-{bp}-{N}        → responsive
+    —#}
+    {%- if offset -%}
+        {%- if offset is integer -%}
+            {%- set ns.class = ns.class ~ " nsw-offset-" ~ offset -%}
+        {%- else -%}
+            {%- for bp, size in offset.items() -%}
+                {%- set ns.class = ns.class ~ " nsw-offset-" ~ bp ~ "-" ~ size -%}
+            {%- endfor -%}
+        {%- endif -%}
+    {%- endif -%}
+
+    {#—
+      Order class patterns (NSW DS utility classes):
+        .nsw-order-{v}              v = first, 0, 1, 2, 3, 4, 5, last
+        .nsw-order-{bp}-{v}         responsive
+      Values > 5 map to "last". Negative values map to "first".
+    —#}
+    {%- if order is defined -%}
+        {%- if order is integer -%}
+            {%- if order < 0 -%}
+                {%- set ns.class = ns.class ~ " nsw-order-first" -%}
+            {%- elif order > 5 -%}
+                {%- set ns.class = ns.class ~ " nsw-order-last" -%}
+            {%- else -%}
+                {%- set ns.class = ns.class ~ " nsw-order-" ~ order -%}
+            {%- endif -%}
+        {%- else -%}
+            {%- for bp, val in order.items() -%}
+                {%- if val < 0 -%}
+                    {%- set ns.class = ns.class ~ " nsw-order-" ~ bp ~ "-first" -%}
+                {%- elif val > 5 -%}
+                    {%- set ns.class = ns.class ~ " nsw-order-" ~ bp ~ "-last" -%}
+                {%- else -%}
+                    {%- set ns.class = ns.class ~ " nsw-order-" ~ bp ~ "-" ~ val -%}
+                {%- endif -%}
+            {%- endfor -%}
+        {%- endif -%}
+    {%- endif -%}
+
+    {%- set extra = kwargs.pop("class", "") -%}
+    {%- if extra -%}{%- set ns.class = ns.class ~ " " ~ extra -%}{%- endif -%}
+
+    <div {{ ui.util.attrs(kwargs, {"class": ns.class}) }}>
+        {{- content -}}
+    </div>
+{%- endmacro %}

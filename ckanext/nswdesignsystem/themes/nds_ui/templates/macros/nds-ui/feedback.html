@@ -1,0 +1,118 @@
+{%- macro alert(content, style, compact, icon) -%}
+    {%- set _style_map = {"danger": "error"} -%}
+    {%- set class = "nsw-in-page-alert" -%}
+    {%- if style -%}
+        {%- set class = class ~ " nsw-in-page-alert--" ~ _style_map.get(style, style) -%}
+    {%- endif %}
+    {%- if compact -%}
+        {%- set class = class ~ " nsw-in-page-alert--compact" -%}
+    {%- endif %}
+    <div {{ ui.util.attrs(kwargs, {"class": class}) }}>
+        {%- if icon -%}
+            <span class="material-icons nsw-material-icons nsw-in-page-alert__icon" focusable="false" aria-hidden="true">{{ icon }}</span>
+        {%- endif %}
+        <div class="nsw-in-page-alert__content">
+            {{- content -}}
+        </div>
+    </div>
+{%- endmacro %}
+
+{%- macro confirm_modal(content, title, id, form_id, cancel_label, confirm_label, href) -%}
+    {%- if not form_id -%}
+        {% set form_id = ui.util.id() %}
+        {{ ui.form(method="POST", attrs={"id": form_id}, action=href) }}
+    {%- endif %}
+
+    {%- set close_button = ui.modal_close_handle(cancel_label or _("Close"), id=id, style="secondary") %}
+    {%- set confirm_button = ui.modal_close_handle(confirm_label or _("Confirm"), id=id, type="submit", attrs={"form": form_id}) %}
+
+    {%- call ui.util.call(ui.modal, title=title or _("Confirm"), id=id, footer=close_button ~ confirm_button, **kwargs) -%}
+        {{ content }}
+    {%- endcall %}
+{%- endmacro %}
+
+{%- macro modal(content, title, footer, id, dismissible=true) -%}
+    {%- set default_attrs = {"class": "modal fade", "id": id, "tabindex": "-1"} -%}
+    {%- if not dismissible -%}
+        {%- do default_attrs.update({"data-bs-backdrop": "static", "data-bs-keyboard": "false"}) -%}
+    {%- endif %}
+    <div {{ ui.util.attrs(kwargs, default_attrs) }}>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                {%- if title or dismissible -%}
+                    <div class="modal-header">
+                        {%- if title -%}<h5 class="modal-title">{{ title }}</h5>{%- endif %}
+                        {%- if dismissible -%}
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        {%- endif %}
+                    </div>
+                {%- endif %}
+                <div class="modal-body">
+                    {{ content }}
+                </div>
+                {%- if footer -%}
+                    <div class="modal-footer">
+                        {{ footer }}
+                    </div>
+                {%- endif %}
+            </div>
+        </div>
+    </div>
+{%- endmacro %}
+
+
+{%- macro popover(content, title, id) -%}
+    <div {{ ui.util.attrs(kwargs) }} popover id="{{ id }}" data-popover-title="{{ title }}">
+        {{ content }}
+    </div>
+{%- endmacro %}
+
+{%- macro progress(content, value=0, max=100) -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "progress"}) }}>
+        <div class="progress-bar" style="width: {{ (value / max) * 100 }}%" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0" aria-valuemax="{{ max }}">
+            {%- if content %}{{ content }}{% else %}{{ value }} / {{ max }}{% endif %}
+        </div>
+    </div>
+{%- endmacro %}
+
+{%- macro spinner(content, style, size, variant="border") -%}
+    {%- set class = "spinner-" ~ variant -%}
+    {%- if size -%}
+        {%- set class = "{} {}-{}".format(class, class, size) -%}
+    {%- endif %}
+
+    {%- if style -%}
+        {%- set class = class ~ " text-" ~style -%}
+    {%- endif %}
+    <span {{ ui.util.attrs(kwargs, {"class": class, "role": "status"}) }}>
+        <span class="visually-hidden">{{ content or _("Loading...") }}</span>
+    </span>
+{%- endmacro %}
+
+{%- macro toast(content, title, style, dismissible) -%}
+    {%- set class = "toast fade show" -%}
+    {%- if style -%}
+        {%- set class = class ~ " text-bg-" ~ style -%}
+
+    {%- endif %}
+    <div {{ ui.util.attrs(kwargs, {"class": class, "role": "alert", "aria-live": "assertive", "aria-atomic": "true"}) }} >
+        {%- if title or dismissible -%}
+            <div class="toast-header">
+                {{ title }}
+                {%- if dismissible -%}
+                    <button type="button" class="ms-auto btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                {%- endif %}
+            </div>
+
+        {%- endif %}
+        <div class="toast-body">
+            {{ content }}
+        </div>
+    </div>
+{%- endmacro %}
+
+{%- macro tooltip(content, tooltip, position) -%}
+    <span {{ ui.util.attrs(kwargs, {"data-bs-title": tooltip, "data-bs-toggle": "tooltip", "data-bs-placement": position or "auto"}) }}>
+        {{- content -}}
+    </span>
+{%- endmacro %}
