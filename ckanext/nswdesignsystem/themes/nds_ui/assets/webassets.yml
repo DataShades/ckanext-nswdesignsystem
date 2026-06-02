@@ -1,0 +1,4 @@
+nds-ui-css:
+  output: ckanext-nswdesignsystem/%(version)s-nds-ui.css
+  contents:
+    - styles.css

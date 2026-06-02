@@ -1,0 +1,116 @@
+<h3>NSW Design System</h3>
+
+<p>
+    NSW Design System defines cards as a high-level summary of content related
+    to a single topic for users to navigate to.
+</p>
+
+<p>
+    Cards group information into meaningful sections, providing concise
+    information in a condensed space to allow users to distinguish between
+    content and find information easily. The information in a card outlines the
+    main idea of a product, service, or piece of information, allowing a user
+    to click through for further information.
+</p>
+
+<p>
+    Because it, card does not have a footer with actions. Instead, the whole
+    card works as a link. The <code>footer</code> argument of the card is
+    ignored and <code>href</code> argument must be used to specify card's link
+</p>
+
+<p>
+    Cards have 4 variants: standard card without specific variant, <code>dark</code>, <code>light</code>,
+    and <code>highlight</code>
+</p>
+
+<div>
+    {%- call ui.util.call(ui.grid) -%}
+        {%- call ui.util.call(ui.row, wrap=true, gap="lg") -%}
+            {%- call ui.util.call(ui.column, span={"xs": 6}) -%}
+                {{ ui.card(lipsum(1), title="Standard", href="") }}
+            {%- endcall %}
+
+            {%- call ui.util.call(ui.column, span={"xs": 6}) -%}
+                {{ ui.card(lipsum(1), title="Dark", href="", variant="dark") }}
+            {%- endcall %}
+
+            {%- call ui.util.call(ui.column, span={"xs": 6}) -%}
+                {{ ui.card(lipsum(1), title="Light", href="", variant="light") }}
+            {%- endcall %}
+
+            {%- call ui.util.call(ui.column, span={"xs": 6}) -%}
+                {{ ui.card(lipsum(1), title="Highlight", href="", variant="highlight") }}
+            {%- endcall %}
+        {%- endcall %}
+    {%- endcall %}
+</div>
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {%- call ui.util.call(ui.grid) -%}
+            {%- call ui.util.call(ui.row, wrap=true, gap="lg") -%}
+                {%- call ui.util.call(ui.column, span={"xs": 6}) -%}
+                    {{ ui.card(lipsum(1), title="Standard", href="") }}
+                {%- endcall %}
+
+                {%- call ui.util.call(ui.column, span={"xs": 6}) -%}
+                    {{ ui.card(lipsum(1), title="Dark", href="", variant="dark") }}
+                {%- endcall %}
+
+                {%- call ui.util.call(ui.column, span={"xs": 6}) -%}
+                    {{ ui.card(lipsum(1), title="Light", href="", variant="light") }}
+                {%- endcall %}
+
+                {%- call ui.util.call(ui.column, span={"xs": 6}) -%}
+                    {{ ui.card(lipsum(1), title="Highlight", href="", variant="highlight") }}
+                {%- endcall %}
+            {%- endcall %}
+        {%- endcall %}
+    {%- endraw %}
+{%- endcall %}
+
+<p>
+    Cards support <code>tag</code> and <code>date</code> parameters to enrich
+    the output. Tags can be used to specify categories applied to the card as a
+    plain text. Date adds temporal information to the card and its recommended
+    to use <a href="{{ h.url_for('theming.component', component='datetime') }}"><code>datetime</code></a> component
+    for it.
+</p>
+
+<div>
+    {{ ui.card(lipsum(1),
+            title="Rich card",
+            tag="Hello, World",
+            date=ui.datetime(ui.util.now())) }}
+</div>
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {{ ui.card(lipsum(1),
+            title="Rich card",
+            tag="Hello, World",
+            date=ui.datetime(ui.util.now())) }}
+    {%- endraw %}
+{%- endcall %}
+
+
+<p>
+    Cards can be rendered horizontally using <code>horizontal</code> parameter.
+</p>
+
+<div>
+    {{ ui.card(lipsum(1),
+            title="Horizontal card",
+            img="https://placehold.co/100x100",
+            horizontal=true) }}
+</div>
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {{ ui.card(lipsum(1),
+            title="Horizontal card",
+            img="https://placehold.co/300x200",
+            horizontal=true) }}
+    {%- endraw %}
+{%- endcall %}

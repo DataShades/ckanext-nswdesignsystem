@@ -11,6 +11,45 @@
     </details>
 {%- endmacro %}
 
+{%- macro button_group(content, direction="row") -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-button-group nsw-flex-" ~ direction}) }}>
+        {{- content -}}
+    </div>
+{%- endmacro %}
+
+{%- macro card(content, title, img, href, variant, tag, date, horizontal) -%}
+    {%- set class = "nsw-card" ~ (" nsw-card--" ~ variant if variant else "") -%}
+    {%- if horizontal -%}
+        {%- set class = class ~ " nsw-card--horizontal" -%}
+    {%- endif %}
+    <div {{ ui.util.attrs(kwargs, {"class": class}) }}>
+        {%- if img -%}
+            <div class="nsw-card__image">
+                <img src="{{ img }}" alt="{{ title }}">
+            </div>
+        {%- endif %}
+        <div class="nsw-card__content">
+            {%- if tag -%}
+                <div class="nsw-card__tag">{{ tag }}</div>
+            {%- endif %}
+            {%- if date -%}
+                <div class="nsw-card__date">{{ date }}</div>
+            {%- endif %}
+
+            <div class="nsw-card__title">
+                <a href="{{ href }}">{{ title }}</a>
+            </div>
+            <div class="nsw-card__copy">
+                {{ content }}
+            </div>
+            <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">east</span>
+        </div>
+    </div>
+{%- endmacro %}
+
+
+
+
 
 {%- macro activity_list(content) -%}
     <ul {{ ui.util.attrs(kwargs, {"class": "activity"}) }}>
@@ -46,31 +85,6 @@
 
 {%- macro user_list(content) -%}
     <ul {{ ui.util.attrs(kwargs, {"class": "user-list"}) }}>{{ content }}</ul>
-{%- endmacro %}
-
-{%- macro button_group(content, direction="row") -%}
-    <div {{ ui.util.attrs(kwargs, {"class": "btn-group" ~ ("-vertical" if direction == "column" else "")}) }}>
-        {{- content -}}
-    </div>
-{%- endmacro %}
-
-{%- macro card(content, title, footer, img) -%}
-    <div {{ ui.util.attrs(kwargs, {"class": "card"}) }} >
-        {%- if img -%}
-            {{ ui.image(img, attrs={"class": "carg-img-top"}) }}
-        {%- endif %}
-        <div class="card-body">
-            {%- if title -%}
-                <h5 class="card-title">{{ title }}</h5>
-            {%- endif %}
-            {%- if content -%}
-                <div class="card-text">{{ content }}</div>
-            {%- endif %}
-        </div>
-        {%- if footer -%}
-            <div class="card-footer">{{ footer }}</div>
-        {%- endif %}
-    </div>
 {%- endmacro %}
 
 {%- macro container(content, fluid) -%}
@@ -286,26 +300,22 @@ For responsive order, we use nsw-order-{bp}-{v}.
     {#— span —#}
     {%- if span  -%}
         {%- if span is integer -%}
-            {%- set ns.class = "nsw-col-" ~ span -%}
+            {%- set ns.class = ns.class ~ " nsw-col-" ~ span -%}
         {%- else -%}
             {#—
-              Multi-breakpoint: emit one nsw-col-{bp}-{N} class per entry.
-              First entry replaces the base "nsw-col"; subsequent entries append.
+            Multi-breakpoint: emit one nsw-col-{bp}-{N} class per entry.
+            First entry replaces the base "nsw-col"; subsequent entries append.
             —#}
             {%- for bp, size in span.items() -%}
-                {%- if loop.first -%}
-                    {%- set ns.class = "nsw-col-" ~ bp ~ "-" ~ size -%}
-                {%- else -%}
-                    {%- set ns.class = ns.class ~ " nsw-col-" ~ bp ~ "-" ~ size -%}
-                {%- endif -%}
+                {%- set ns.class = ns.class ~ " nsw-col-" ~ bp ~ "-" ~ size -%}
             {%- endfor -%}
         {%- endif -%}
     {%- endif -%}
 
     {#—
-      Offset class patterns:
-        .nsw-offset-{N}             → all viewports
-        .nsw-offset-{bp}-{N}        → responsive
+    Offset class patterns:
+    .nsw-offset-{N}             → all viewports
+    .nsw-offset-{bp}-{N}        → responsive
     —#}
     {%- if offset -%}
         {%- if offset is integer -%}
@@ -318,10 +328,10 @@ For responsive order, we use nsw-order-{bp}-{v}.
     {%- endif -%}
 
     {#—
-      Order class patterns (NSW DS utility classes):
-        .nsw-order-{v}              v = first, 0, 1, 2, 3, 4, 5, last
-        .nsw-order-{bp}-{v}         responsive
-      Values > 5 map to "last". Negative values map to "first".
+    Order class patterns (NSW DS utility classes):
+    .nsw-order-{v}              v = first, 0, 1, 2, 3, 4, 5, last
+    .nsw-order-{bp}-{v}         responsive
+    Values > 5 map to "last". Negative values map to "first".
     —#}
     {%- if order is defined -%}
         {%- if order is integer -%}

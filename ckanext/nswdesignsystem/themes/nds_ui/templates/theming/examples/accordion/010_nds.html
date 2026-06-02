@@ -1,0 +1,23 @@
+<h3>NSW Design System</h3>
+
+<p>
+    The theme adds <code>toggle_all</code> parameter to <code>accordion_wrapper</code> to
+    perform the action to all accordions, reducing time and clicks to reach the
+    required information.
+</p>
+
+<div>
+    {%- call ui.util.call(ui.accordion_wrapper, toggle_all=true) -%}
+        {{ ui.accordion(lipsum(1), title="Accordion 1") }}
+        {{ ui.accordion(lipsum(1), title="Accordion 2") }}
+    {%- endcall %}
+</div>
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {%- call ui.util.call(ui.accordion_wrapper, toggle_all=true) -%}
+            {{ ui.accordion(lipsum(1), title="Accordion 1") }}
+            {{ ui.accordion(lipsum(1), title="Accordion 2") }}
+        {%- endcall %}
+    {%- endraw %}
+{%- endcall %}

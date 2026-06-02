@@ -1,17 +1,14 @@
 {%- macro breadcrumb_divider(content) -%}{%- do kwargs -%}{%- endmacro %}
 
-{%- macro button(content, href, size, outline, type="button", style="primary") -%}
+{%- macro button(content, href, size, type="button", style="primary", color="dark") -%}
     {%- set _style_map = {
-        "primary": "dark",
-        "secondary": "light",
+        "primary": color,
+        "secondary": color ~ "-outline",
         "warning": "danger",
         "danger": "danger",
     } -%}
 
-    {%- set class = "nsw-button" -%}
-    {%- if style -%}
-        {%- set class = class ~ " nsw-button--" ~ _style_map.get(style, style) ~ ("-outline" if outline else "")-%}
-    {%- endif %}
+    {%- set class = "nsw-button" ~ " nsw-button--" ~ _style_map.get(style, style) -%}
     {%- if size == "sm" -%}
         {%- set class = class ~ " nsw-button--small" -%}
     {%- endif %}
@@ -51,13 +48,18 @@
 {%- endmacro %}
 
 {%- macro heading(content, level) -%}
-    {%- set tag =  "h" ~ level -%}
-    <{{ tag }} {{ ui.util.attrs(kwargs) }}>{{ content }}</{{ tag }}>
+    <p {{ ui.util.attrs(kwargs, {"class": "nsw-h" ~ level}) }}>{{ content }}</p>
 {%- endmacro %}
 
-{%- macro icon(name, style=none) -%}
+{%- macro icon(name, symbol, style) -%}
+    {%- set defaults = {
+         "class": "nsw-material-icons material-" ~ ("symbols" if symbols else "icons") ~ ("-" ~ style if style else ""),
+         "focusable": "false",
+         "aria-hidden": "true",
+    } -%}
+
     {%- set base_class = "fa-{}".format(style) if style else "fa" -%}
-    <i {{ ui.util.attrs(kwargs) }} class="{{ base_class }} fa-{{ ui.util.icon(name) }}"></i>
+    <span {{ ui.util.attrs(kwargs, defaults) }}>{{ ui.util.icon(name) }}</span>
 {%- endmacro %}
 
 {%- macro image(src, alt, height, width) -%}

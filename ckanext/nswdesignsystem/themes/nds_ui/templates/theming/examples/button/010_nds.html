@@ -1,0 +1,102 @@
+<h3>NSW Design system</h3>
+
+<p>
+    NSW design system suggests using brand button as <code>primary</code>,
+    outlined button as <code>secondary</code> and danger button as <code>danger/warning</code>.
+</p>
+
+<div>
+    {{ ui.button("Primary", style="primary") }}
+    {{ ui.button("Secondary", style="secondary") }}
+    {{ ui.button("Danger", style="danger") }}
+</div>
+
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {{ ui.button("Primary", style="primary") }}
+        {{ ui.button("Secondary", style="secondary") }}
+        {{ ui.button("Danger", style="danger") }}
+    {%- endraw %}
+{%- endcall %}
+
+<p>
+    The rest of recommended styles are not mapped and produce a button with
+    class <code>nsw-button--STYLE</code>, where <code>STYLE</code> is replaced
+    by the actual style value, so that you can add custom styles for these
+    classes.
+</p>
+
+<p>
+    The theme adds <code>color</code> parameter to the button, that can be
+    combined with primary and secondary styles. It accepts <code>dark</code>, <code>light</code>,
+    and <code>white</code> values. The <code>light</code> and <code>white</code> colors,
+    especially their outlined version produced by <code>secondary</code> style
+    are designed for the dark background and most likely will be unusable on
+    the light background.
+</p>
+
+<div>
+    {{ ui.button("Primary dark", style="primary", color="dark") }}
+    {{ ui.button("Secondary dark", style="secondary", color="dark") }}
+    {{ ui.button("Primary light", style="primary", color="light") }}
+    {{ ui.button("Secondary light", style="secondary", color="light") }}
+    {{ ui.button("Primary white", style="primary", color="white") }}
+    {{ ui.button("Secondary white", style="secondary", color="white") }}
+</div>
+
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {{ ui.button("Primary dark", style="primary", color="dark") }}
+        {{ ui.button("Secondary dark", style="secondary", color="dark") }}
+        {{ ui.button("Primary light", style="primary", color="light") }}
+        {{ ui.button("Secondary light", style="secondary", color="light") }}
+        {{ ui.button("Primary white", style="primary", color="white") }}
+        {{ ui.button("Secondary white", style="secondary", color="white") }}
+    {%- endraw %}
+{%- endcall %}
+
+
+<p>
+    Icons can be placed before and after the text. It's recommended to wrap the
+    text into separate <code>span</code> when it's combined with icon.
+</p>
+
+<div>
+    {% call ui.util.call(ui.button) -%}
+        {{ ui.icon("home") }}
+        <span>Text</span>
+    {%- endcall %}
+    {% call ui.util.call(ui.button) -%}
+        <span>Text</span>
+        {{ ui.icon("heart") }}
+    {%- endcall %}
+    {% call ui.util.call(ui.button) -%}
+        {{ ui.icon("star") }}
+        <span>Text</span>
+        {{ ui.icon("cog") }}
+    {%- endcall %}
+
+</div>
+
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {% call ui.util.call(ui.button) -%}
+            {{ ui.icon("home") }}
+            &lt;span&gt;Text&lt;/span&gt;
+        {%- endcall %}
+
+        {% call ui.util.call(ui.button) -%}
+            &lt;span&gt;Text&lt;/span&gt;
+            {{ ui.icon("heart") }}
+        {%- endcall %}
+
+        {% call ui.util.call(ui.button) -%}
+            {{ ui.icon("star") }}
+            &lt;span&gt;Text&lt;/span&gt;
+            {{ ui.icon("cog") }}
+        {%- endcall %}
+    {%- endraw %}
+{%- endcall %}

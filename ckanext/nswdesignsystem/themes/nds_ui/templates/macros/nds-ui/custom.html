@@ -1,0 +1,12 @@
+{%- macro nds_back_to_top(content) -%}
+    {{ ui.button(content, _extra_class="nsw-back-to-top js-back-to-top", **kwargs) }}
+{%- endmacro %}
+
+
+{%- macro nds_callout(content) -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-callout"}) }}>
+        <div class="nsw-callout__content">
+            {{ content }}
+        </div>
+    </div>
+{%- endmacro %}

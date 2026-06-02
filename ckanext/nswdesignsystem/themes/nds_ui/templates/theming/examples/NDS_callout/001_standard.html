@@ -1,0 +1,22 @@
+<h3>Standard</h3>
+
+<p>
+
+</p>
+
+<div>
+    {%- call ui.util.call(ui.nds_callout) -%}
+        {{ ui.heading("Title", level=4) }}
+        <p>{{ lipsum(1) }}</p>
+    {%- endcall %}
+</div>
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {%- call ui.util.call(ui.nds_callout) -%}
+            {{ ui.heading("Title", level=4) }}
+            &lt;p&gt;{{ lipsum(1) }}&lt;/p&gt;
+        {%- endcall %}
+
+    {%- endraw %}
+{%- endcall %}

@@ -10,6 +10,7 @@
 {% import "macros/nds-ui/nav.html" as _nav%}
 {% import "macros/nds-ui/search.html" as _search%}
 {% import "macros/nds-ui/section.html" as _section%}
+{% import "macros/nds-ui/custom.html" as _custom%}
 
 {% set accordion_wrapper = accordion_wrapper | default(_wrapper.accordion_wrapper) %}
 {% set account_nav_wrapper = account_nav_wrapper | default(_wrapper.account_nav_wrapper) %}
@@ -144,3 +145,6 @@
 {% set search_results_text = search_results_text | default(_search.search_results_text) %}
 {% set search_sort_control = search_sort_control | default(_search.search_sort_control) %}
 {% set search_submit_button = search_submit_button | default(_search.search_submit_button) %}
+
+{% set nds_back_to_top = nds_back_to_top | default(_custom.nds_back_to_top) %}
+{% set nds_callout = nds_callout | default(_custom.nds_callout) %}
