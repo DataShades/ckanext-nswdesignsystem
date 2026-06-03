@@ -1,32 +1,14 @@
+{%- macro facet_section(content, title, items, key, has_more) -%}
+    {{ ui.nds_filter_item(content, title=title, **kwargs) }}
+{%- endmacro %}
+
+
+
+
 {%- macro sidebar_section(content, title) -%}
     {%- do kwargs.setdefault("narrow", true) -%}
     {%- do kwargs.setdefault("shallow", true) -%}
     {{ ui.section(content, title, **kwargs) }}
-{%- endmacro %}
-
-{%- macro facet_section(content, title, items, key, has_more) -%}
-    <section {{ ui.util.attrs(kwargs, {"class": "module module-narrow module-shallow"}) }}>
-	<h2 class="module-heading">
-            {{ ui.icon("filter") }}
-	    {{ title }}
-	</h2>
-
-	{% if items %}
-	    <nav aria-label="{{ _('Filter by: {title}').format(title=title) }}">
-                {{ content }}
-	    </nav>
-
-	    <p class="module-footer">
-                {% if has_more %}
-                    <a hx-boost="true" href="{{ h.remove_url_param('_%s_limit' % key, replace=0) }}" class="read-more">{{ _('Show More {facet_type}').format(facet_type=title) }}</a>
-                {% elif request.args['_%s_limit' % key] %}
-                    <a hx-boost="true" href="{{ h.remove_url_param('_%s_limit' % key) }}" class="read-more">{{ _('Show Only Popular {facet_type}').format(facet_type=title) }}</a>
-                {% endif %}
-	    </p>
-	{% else %}
-	    <p class="module-content empty">{{ _('There are no {facet_type} that match this search').format(facet_type=title) }}</p>
-	{% endif %}
-    </section>
 {%- endmacro %}
 
 {%- macro section(content, title, icon, level=2, shallow=false, narrow=false) -%}

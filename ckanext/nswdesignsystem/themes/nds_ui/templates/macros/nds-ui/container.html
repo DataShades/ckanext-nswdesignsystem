@@ -17,7 +17,7 @@
     </div>
 {%- endmacro %}
 
-{%- macro card(content, title, img, href, variant, tag, date, horizontal) -%}
+{%- macro card(content, title, img, href, variant, tag, date, horizontal, icon="east") -%}
     {%- set class = "nsw-card" ~ (" nsw-card--" ~ variant if variant else "") -%}
     {%- if horizontal -%}
         {%- set class = class ~ " nsw-card--horizontal" -%}
@@ -42,7 +42,7 @@
             <div class="nsw-card__copy">
                 {{ content }}
             </div>
-            <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">east</span>
+            {{ ui.icon(icon) }}
         </div>
     </div>
 {%- endmacro %}
@@ -88,7 +88,7 @@
 {%- endmacro %}
 
 {%- macro container(content, fluid) -%}
-    <div {{ ui.util.attrs(kwargs, {"class": "container" ~ ('-fluid' if fluid else "")}) }}>{{ content }}</div>
+    <div {{ ui.util.attrs(kwargs, {"class": "" if fluid else "nsw-container"}) }}>{{ content }}</div>
 {%- endmacro %}
 
 {%- macro list(content) -%}

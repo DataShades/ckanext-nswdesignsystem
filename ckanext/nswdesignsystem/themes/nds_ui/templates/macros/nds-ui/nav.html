@@ -8,16 +8,13 @@
 {%- endmacro %}
 
 {%- macro nav_item(content, href, active) -%}
-    {%- call ui.util.call(ui.list_item, attrs={"class": "nav-item" ~ (" active"  if active else "")}) -%}
-        <a {{ ui.util.attrs(kwargs, {"class": "nav-link" ~ (" active" if active else "")}) }} href="{{ href }}">
-            {{ content }}
-        </a>
-    {%- endcall %}
+    <li>{{ ui.link(content, href=href, **kwargs) }}</li>
 {%- endmacro %}
 
 {%- macro main_nav_item(content, href, active) -%}
+    {%- set item_kwargs = kwargs -%}
     {%- call ui.util.call(ui.list_item, attrs={"class": "nav-item" ~ (" active"  if active else "")}) -%}
-        <a {{ ui.util.attrs(kwargs, {"class": (" active" if active else "")}) }} href="{{ href }}">
+        <a {{ ui.util.attrs(item_kwargs, {"class": (" active" if active else "")}) }} href="{{ href }}">
             {{ content }}
         </a>
     {%- endcall %}

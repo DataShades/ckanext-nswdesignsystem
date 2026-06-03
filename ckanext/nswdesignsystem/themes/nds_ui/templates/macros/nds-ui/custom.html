@@ -2,11 +2,222 @@
     {{ ui.button(content, _extra_class="nsw-back-to-top js-back-to-top", **kwargs) }}
 {%- endmacro %}
 
-
 {%- macro nds_callout(content) -%}
     <div {{ ui.util.attrs(kwargs, {"class": "nsw-callout"}) }}>
         <div class="nsw-callout__content">
             {{ content }}
         </div>
     </div>
+{%- endmacro %}
+
+{%- macro nds_card_carousel(content, title, drag, loop, navigation, pagination) -%}
+    {%- set defaults = {
+        "class": "nsw-carousel js-carousel",
+        "data-description": title,
+        "data-drag": "on" if drag else "off",
+        "data-loop": "on" if loop else "off",
+        "data-navigation": "on" if navigation or pagination else "off",
+        "data-navigation-pagination": "on" if pagination else "off",
+    } -%}
+    <div {{ ui.util.attrs(kwargs, defaults) }}>
+        <p class="sr-only">{{ _("Carousel items") }}</p>
+        <div class="nsw-carousel__wrapper js-carousel__wrapper">
+            <ol class="nsw-carousel__list">{{ content }}</ol>
+        </div>
+        <div class="nsw-carousel__header">
+            <div class="nsw-carousel__title">
+                {%- if title -%}
+                    <h2>{{ title }}</h2>
+                {%- endif %}
+            </div>
+            <nav aria-label="Carousel controls">
+                <ul>
+                    <li>
+                        <button aria-label="{{ _('Show previous items') }}" class="nsw-carousel__control nsw-carousel__control--prev js-carousel__control">
+                            <svg class="nsw-icon" viewBox="0 0 20 20">
+                                <title>{{ _("Show previous items") }}</title>
+                                <polyline points="13 2 5 10 13 18" fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="square" stroke-width="2" />
+                            </svg>
+                        </button>
+                    </li>
+                    <li>
+                        <button aria-label="{{ _('Show next items') }}" class="nsw-carousel__control nsw-carousel__control--next js-carousel__control">
+                            <svg class="nsw-icon" viewBox="0 0 20 20">
+                                <title>{{ _("Show next items") }}</title>
+                                <polyline points="7 2 15 10 7 18" fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="square" stroke-width="2" />
+                            </svg>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+{%- endmacro %}
+
+{%- macro nds_card_carousel_item(content) -%}
+    <li class="nsw-carousel__item">
+        {{ ui.card(content, **kwargs) }}
+    </li>
+{%- endmacro -%}
+
+{%- macro nds_content_block(content, title, image_content, list_items, link_content) -%}
+    <mark {{ ui.util.attrs(kwargs) }}>NOT IMPLEMENTED</mark>
+{%- endmacro %}
+
+{%- macro nds_date_input_group(content, name, label, id, required, errors, value, datepicker) -%}
+    {%- set value = value or [] -%}
+    {%- set id = id or (name and "field-" ~ name) or ui.util.id() -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-form__group"}) }}>
+        <fieldset class="nsw-form__date {{ 'nsw-date-input js-date-input' if datepicker }}" {{ ui.util.attrs({"data": datepicker} if datepicker is mapping) }}>
+            {%- if label or content -%}
+                <legend>
+                    {%- if label -%}
+                        <span class="nsw-form__label {{ 'nsw-form__required' if required }}">{{ label }}</span>
+                    {%- endif %}
+                    {%- if content -%}
+                        <span class="nsw-form__helper">{{ content }}</span>
+                    {%- endif %}
+                </legend>
+            {%- endif %}
+            <div class="nsw-form__date-wrapper {{ 'nsw-date-input__wrapper js-date-input-multiple' if datepicker }}">
+                <div class="nsw-form__date-input">
+                    <label for="{{ id }}-day" class="nsw-form__label nsw-form__label--small">Day</label>
+                    <input type="text" maxlength="2" id="{{ id }}-day" name="{{ name }}-day" autocomplete="bday-day" class="nsw-form__input {{ 'js-date-picker-date' if datepicker }}" aria-invalid="{{ 'true' if errors else 'false' }}" value="{{ value[2] }}">
+                </div>
+                <div class="nsw-form__date-input">
+                    <label for="{{ id }}-month" class="nsw-form__label nsw-form__label--small">Month</label>
+                    <input type="text" maxlength="2" id="{{ id }}-month" name="{{ name }}-month" autocomplete="bday-month" class="nsw-form__input {{ 'js-date-picker-month' if datepicker }}" aria-invalid="{{ 'true' if errors else 'false' }}"  value="{{ value[1] }}">
+                </div>
+                <div class="nsw-form__date-input nsw-form__date-input--large">
+                    <label for="{{ id }}-year" class="nsw-form__label nsw-form__label--small">Year</label>
+                    <input type="text" maxlength="4" id="{{ id }}-year" name="{{ name }}-year" autocomplete="bday-year" class="nsw-form__input {{ 'js-date-picker-year' if datepicker }}" aria-invalid="{{ 'true' if errors else 'false' }}" value="{{ value[0] }}">
+                </div>
+                {%- if datepicker -%}
+                    <div class="nsw-date-input__button">
+                        <button class="nsw-button nsw-button--dark nsw-button--flex js-date-input__trigger" type="button">
+                            <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">calendar_today</span>
+                        </button>
+                    </div>
+                {%- endif %}
+            </div>
+        </fieldset>
+        {%- if errors -%}
+            <span class="nsw-form__helper nsw-form__helper--error">
+                <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">cancel</span>
+                <span>{{ errors|join(", ") }}</span>
+            </span>
+        {%- endif %}
+    </div>
+{%- endmacro %}
+
+{%- macro nds_date_input(content, name, label, id, value, required, errors, datepicker) -%}
+    {%- set id = id or (name and "field-" ~ name) or ui.util.id() -%}
+    <div class="nsw-date-input js-date-input" {{ ui.util.attrs({"data": datepicker} if datepicker is mapping) }}>
+        {%- if label or content -%}
+            <legend>
+                {%- if label -%}
+                    <label for="{{ id }}" class="nsw-form__label {{ 'nsw-form__required' if required }}">{{ label }}</label>
+                {%- endif %}
+                {%- if content -%}
+                    <span class="nsw-form__helper">{{ content }}</span>
+                {%- endif %}
+            </legend>
+        {%- endif %}
+        <div class="nsw-date-input__wrapper nsw-form__input-group nsw-form__input-group--icon">
+            <input {{ ui.util.attrs(kwargs, {"class": "nsw-form__input js-date-input__text", "autocomplete": "off"}) }} type="text" id="{{ id }}" value="{{ value }}" name="{{ name }}" aria-invalid="{{ 'true' if errors else 'false' }}">
+            <button class="nsw-button nsw-button--dark nsw-button--flex js-date-input__trigger" type="button">
+                <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">calendar_today</span>
+            </button>
+        </div>
+        {%- if errors -%}
+            <span class="nsw-form__helper nsw-form__helper--error">
+                <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">cancel</span>
+                <span>{{ errors|join(", ") }}</span>
+            </span>
+        {%- endif %}
+    </div>
+{%- endmacro %}
+
+{%- macro nds_filter(content, js, instant, collapse_direction, form_id, title=_("Filters")) -%}
+    {%- set class = "nsw-filters" -%}
+    {%- if instant -%}
+        {%- set class = class ~ " nsw-filters--instant" -%}
+    {%- endif %}
+    {%- if collapse_direction == "right" -%}
+        {%- set class = class ~ " nsw-filters--right" -%}
+    {%- endif %}
+    {%- if collapse_direction == "down" -%}
+        {%- set class = class ~ " nsw-filters--down" -%}
+    {%- endif %}
+    {%- if js -%}
+        {%- set class = class ~ " js-filters" -%}
+    {%- endif %}
+    <div {{ ui.util.attrs(kwargs, {"class": class}) }}>
+        {%- if collapse_direction -%}
+            <div class="nsw-filters__controls">
+                <button>
+                    <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">tune</span>
+                    <span>{{ title }}</span>
+                    <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_{{ collapse_direction }}</span>
+                </button>
+            </div>
+        {%- endif %}
+        <div class="nsw-filters__wrapper">
+            {%- if collapse_direction == "right" -%}
+                <div class="nsw-filters__back">
+                    <button class="nsw-icon-button nsw-icon-button--flex js-close-sub-nav" type="button">
+                        <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">close</span>
+                        <span class="sr-only">{{ _("Close filters") }}</span>
+                    </button>
+                </div>
+            {%- endif %}
+            <div class="nsw-filters__title">{{ title }}</div>
+            <div class="nsw-filters__list">
+                {{ content }}
+            </div>
+            <div class="nsw-filters__accept">
+                <button type="submit" class="nsw-button nsw-button--dark nsw-button--full-width" disabled="">Apply filters</button>
+            </div>
+            <div class="nsw-filters__cancel">
+                <button onclick="window.location.href = '{{ h.url_for_static(request.path) }}'" type="reset">Clear all filters</button>
+            </div>
+        </div>
+    </div>
+{%- endmacro %}
+
+{%- macro nds_filter_item(content, title, collapsible) -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-filters__item"}) }}>
+        {%- if collapsible -%}
+            <button class="nsw-filters__item-button">
+                <span class="nsw-filters__item-name">{{ title }}</span>
+                <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_down</span>
+            </button>
+        {%- endif %}
+
+        <div class="nsw-filters__item-content">
+            {#
+            <label class="nsw-form__label {{ 'sr-only' if collapsible }}" for="{{ id }}">{{ title }}</label>
+            #}
+
+            <fieldset class="nsw-form__fieldset">
+                <legend class="nsw-form__legend {{ 'sr-only' if collapsible }}">{{ title }}</legend>
+                {{ content }}
+            </fieldset>
+        </div>
+    </div>
+{%- endmacro %}
+
+{%- macro nds_filter_checkbox(content, name, value, checked, form_id) -%}
+    {%- set value = value or content -%}
+    {%- set id = id or ui.util.id() -%}
+    {%- set defaults = {
+            "class": "nsw-form__checkbox-input",
+            "name": name,
+            "value": value,
+            "id": id,
+            "checked": checked,
+            "form": form_id,
+    } -%}
+    <input {{ ui.util.attrs(kwargs, defaults) }} type="checkbox">
+    <label class="nsw-form__checkbox-label" for="{{ id }}">{{ content }}</label>
 {%- endmacro %}

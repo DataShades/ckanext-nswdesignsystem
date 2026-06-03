@@ -1,23 +1,26 @@
 {%- macro breadcrumb_divider(content) -%}{%- do kwargs -%}{%- endmacro %}
 
-{%- macro button(content, href, size, type="button", style="primary", color="dark") -%}
+{%- macro button(content, href, size, flex, icon, type="button", style="primary", color="dark") -%}
     {%- set _style_map = {
         "primary": color,
         "secondary": color ~ "-outline",
         "warning": "danger",
         "danger": "danger",
     } -%}
-
+    {%- set prefix = ui.icon(icon) if icon else "" -%}
     {%- set class = "nsw-button" ~ " nsw-button--" ~ _style_map.get(style, style) -%}
     {%- if size == "sm" -%}
         {%- set class = class ~ " nsw-button--small" -%}
+    {%- endif %}
+    {%- if flex -%}
+        {%- set class = class ~ " nsw-button--flex" -%}
     {%- endif %}
     {%- do ui.util.augment_attrs(kwargs, {"class": class}) -%}
     {%- if href -%}
         {{ ui.link(prefix ~ content, href=href, **kwargs) }}
     {%- else -%}
         <button {{ ui.util.attrs(kwargs) }} type="{{ type }}">
-            {{- content -}}
+            {{- prefix ~ content -}}
         </button>
     {%- endif %}
 {%- endmacro %}

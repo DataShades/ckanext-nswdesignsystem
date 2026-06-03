@@ -22,7 +22,7 @@
 
 
 {%- macro account_nav_wrapper(content) -%}
-    <ul {{ ui.util.attrs(kwargs, {"class": "list-unstyled"}) }}>
+    <ul {{ ui.util.attrs(kwargs) }}>
         {{ content }}
     </ul>
 {%- endmacro %}

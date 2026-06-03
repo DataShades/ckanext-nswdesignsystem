@@ -1,3 +1,56 @@
+{%- macro footer(content, color) -%}
+    <footer {{ ui.util.attrs(kwargs, {"class": "nsw-footer" ~ (" nsw-footer--" ~ color if color else "")}) }}>
+        {{ content }}
+    </footer>
+{%- endmacro %}
+
+{%- macro footer_main(content) -%}
+    <div class="nsw-footer__upper">
+        <div class="nsw-container">
+            {#<div class="nsw-footer__group">
+            <div class="nsw-footer__heading"><a href="#">Popular</a></div>
+            <ul>
+                <li><a href="#">Contact the Premier</a></li>
+                <li><a href="#">Contact a Minister</a></li>
+            </ul>
+            </div>#}
+            {{ content }}
+        </div>
+    </div>
+
+{%- endmacro %}
+
+{%- macro footer_secondary(content, acknowledgement) -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-footer__lower"}) }}>
+        <div class="nsw-container">
+            {%- if acknowledgement is not none -%}
+                <p class="nsw-footer__acknowledgement">
+                    {%- if acknowledgement -%}
+                        {{  acknowledgement }}
+                    {%- else -%}
+                        We pay respect to the Traditional Custodians and First Peoples
+                        of NSW, and acknowledge their continued connection to their
+                        country and culture.
+                    {%- endif %}
+                </p>
+                <hr>
+            {%- endif %}
+            {{ content }}
+            <div class="nsw-footer__info">
+                <div class="nsw-footer__copyright">Copyright © {{ ui.util.now().year }}</div>
+                <div class="nsw-footer__built">
+                    Built by
+                    {{ ui.link(_("NSW Design System", href="https://www.digital.nsw.gov.au/digital-design-system", blank=true)) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{%- endmacro %}
+
+
+
+
+
 {%- macro subtitle_item(content, initial) -%}
     {%- do kwargs -%}
     {{ content }}
@@ -44,16 +97,4 @@
             </nav>
         {%- endcall %}
     </header>
-{%- endmacro %}
-
-{%- macro footer(content) -%}
-    <footer {{ ui.util.attrs(kwargs, {"class": "site-footer"}) }}>{{ content }}</footer>
-{%- endmacro %}
-
-{%- macro footer_main(content) -%}
-    {%- do kwargs -%}{{ content }}
-{%- endmacro %}
-
-{%- macro footer_secondary(content) -%}
-    {%- do kwargs -%}
 {%- endmacro %}
