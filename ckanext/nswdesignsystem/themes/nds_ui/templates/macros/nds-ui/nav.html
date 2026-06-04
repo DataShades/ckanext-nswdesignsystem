@@ -20,6 +20,15 @@
     {%- endcall %}
 {%- endmacro %}
 
+{%- macro footer_main_nav_item(content, href) -%}
+    <li>{{ ui.link(content, href=hred, **kwargs) }}</li>
+{%- endmacro %}
+
+{%- macro footer_secondary_nav_item(content, href) -%}
+    <li>{{ ui.link(content, href=hred, **kwargs) }}</li>
+{%- endmacro %}
+
+
 {%- macro sidebar_nav_item(content, href, active) -%}
     {{ ui.nav_item(content, href, active, **kwargs) }}
 {%- endmacro %}

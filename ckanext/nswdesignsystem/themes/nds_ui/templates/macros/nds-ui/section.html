@@ -1,5 +1,19 @@
-{%- macro facet_section(content, title, items, key, has_more) -%}
-    {{ ui.nds_filter_item(content, title=title, **kwargs) }}
+{%- macro facet_section(content, title, collapsible) -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-filters__item"}) }}>
+        {%- if collapsible -%}
+            <button class="nsw-filters__item-button">
+                <span class="nsw-filters__item-name">{{ title }}</span>
+                <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_down</span>
+            </button>
+        {%- endif %}
+
+        <div class="nsw-filters__item-content">
+            <fieldset class="nsw-form__fieldset">
+                <legend class="nsw-form__legend {{ 'sr-only' if collapsible }}">{{ title }}</legend>
+                {{ content }}
+            </fieldset>
+        </div>
+    </div>
 {%- endmacro %}
 
 

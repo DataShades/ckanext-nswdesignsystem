@@ -16,6 +16,20 @@
     </nav>
 {%- endmacro %}
 
+{%- macro footer_main_nav_wrapper(content, title) -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-footer__group"}) }}>
+        {%- if title -%}
+            <div class="nsw-footer__heading">{{ title }}</div>
+        {%- endif %}
+        <ul>{{ content }}</ul>
+    </div>
+{%- endmacro %}
+
+{%- macro footer_secondary_nav_wrapper(content) -%}
+    <ul {{ ui.util.attrs(kwargs) }}>
+        {{ content }}
+    </ul>
+{%- endmacro %}
 
 
 

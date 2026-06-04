@@ -1,13 +1,7 @@
 <h3>NSW Design System</h3>
 
 <p>
-    Facets must be wrapped into <code>nds_filter</code> and bound to search
-    form via <code>form_id</code> parameter set on <code>nds_filter</code> and
-    <code>facet</code>.
-</p>
-
-<p>
-    Enable <code>js</code> flag on <code>nds_filter</code> to activate "Apply"
+    Enable <code>js</code> flag on <code>filter</code> to activate "Apply"
     button only when filters selected. This parameter is also required when you
     pass <code>collapsible</code> into <code>facet_section</code>. Collapsible
     facets are initially collapsed and have an icon next to title, when at
@@ -17,7 +11,7 @@
 <div>
     {%- set id = ui.util.id() -%}
     <form id="{{ id }}"></form>
-    {%- call ui.util.call(ui.nds_filter, form_id=id, js=true, instant=true) -%}
+    {%- call ui.util.call(ui.filters, form_id=id, js=true, instant=true) -%}
         {%- call ui.util.call(ui.facet_section, title="Cool facet", collapsible=true) -%}
             {{ ui.facet("First value", key="cool", form_id=id) }}
             {{ ui.facet("Second value", key="cool", form_id=id) }}
@@ -35,7 +29,7 @@
         {%- set id = ui.util.id() -%}
         &lt;form id="{{ id }}"&gt;&lt;/form&gt;
 
-        {%- call ui.util.call(ui.nds_filter, form_id=id, js=true) -%}
+        {%- call ui.util.call(ui.filters, form_id=id, js=true) -%}
             {%- call ui.util.call(ui.facet_section, title="Cool facet", collapsible=true) -%}
                 {{ ui.facet("First value", key="cool", form_id=id) }}
                 {{ ui.facet("Second value", key="cool", form_id=id) }}
@@ -52,7 +46,7 @@
 
 
 <p>
-    When <code>js</code> is enabled on <code>nds_filter</code>, you can specify
+    When <code>js</code> is enabled on <code>filters</code>, you can specify
     collapse behavior on small screens for the whole filter panel. Set <code>collapse_direction</code> parameter
     to <code>down</code> or <code>right</code>, and filters panel will be
     collapsed initially, expanding according to the specified direction upon
@@ -61,14 +55,14 @@
 </p>
 
 <div>
-    {%- call ui.util.call(ui.nds_filter, collapse_direction="down", js=true) -%}
+    {%- call ui.util.call(ui.filters, collapse_direction="down", js=true) -%}
         {%- call ui.util.call(ui.facet_section, title="Cool facet") -%}
             {{ ui.facet("First value", key="cool", form_id=id) }}
             {{ ui.facet("Second value", key="cool", form_id=id) }}
         {%- endcall %}
     {%- endcall %}
 
-    {%- call ui.util.call(ui.nds_filter, collapse_direction="right", js=true) -%}
+    {%- call ui.util.call(ui.filters, collapse_direction="right", js=true) -%}
         {%- call ui.util.call(ui.facet_section, title="Cool facet") -%}
             {{ ui.facet("First value", key="cool", form_id=id) }}
             {{ ui.facet("Second value", key="cool", form_id=id) }}
@@ -78,14 +72,14 @@
 
 {%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
     {%- raw %}
-        {%- call ui.util.call(ui.nds_filter, collapse_direction="down", js=true) -%}
+        {%- call ui.util.call(ui.filters, collapse_direction="down", js=true) -%}
             {%- call ui.util.call(ui.facet_section, title="Cool facet") -%}
                 {{ ui.facet("First value", key="cool", form_id=id) }}
                 {{ ui.facet("Second value", key="cool", form_id=id) }}
             {%- endcall %}
         {%- endcall %}
 
-        {%- call ui.util.call(ui.nds_filter, collapse_direction="right", js=true) -%}
+        {%- call ui.util.call(ui.filters, collapse_direction="right", js=true) -%}
             {%- call ui.util.call(ui.facet_section, title="Cool facet") -%}
                 {{ ui.facet("First value", key="cool", form_id=id) }}
                 {{ ui.facet("Second value", key="cool", form_id=id) }}
@@ -103,14 +97,14 @@
 </p>
 
 <div>
-    {%- call ui.util.call(ui.nds_filter, collapse_direction="down", js=true) -%}
+    {%- call ui.util.call(ui.filters, collapse_direction="down", js=true) -%}
         {%- call ui.util.call(ui.facet_section, title="Cool facet") -%}
             {{ ui.select(name='select-filter',
                 options=[{"value": ""}, {'value': "A"},{'value': "B"}]) }}
         {%- endcall %}
     {%- endcall %}
 
-    {%- call ui.util.call(ui.nds_filter, collapse_direction="right", js=true) -%}
+    {%- call ui.util.call(ui.filters, collapse_direction="right", js=true) -%}
         {%- call ui.util.call(ui.facet_section, title="Multi-input facet", collapsible=true) -%}
             {{ ui.input(name='select-input', label="Input") }}
             {{ ui.nds_date_input_group(name='date-input', label="Date") }}
@@ -120,14 +114,14 @@
 
 {%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
     {%- raw %}
-        {%- call ui.util.call(ui.nds_filter, collapse_direction="down", js=true) -%}
+        {%- call ui.util.call(ui.filters, collapse_direction="down", js=true) -%}
             {%- call ui.util.call(ui.facet_section, title="Cool facet") -%}
                 {{ ui.select(name='select-filter',
                 options=[{"value": ""}, {'value': "A"},{'value': "B"}]) }}
             {%- endcall %}
         {%- endcall %}
 
-        {%- call ui.util.call(ui.nds_filter, collapse_direction="right", js=true) -%}
+        {%- call ui.util.call(ui.filters, collapse_direction="right", js=true) -%}
             {%- call ui.util.call(ui.facet_section, title="Multi-input facet", collapsible=true) -%}
                 {{ ui.input(name='select-input', label="Input") }}
                 {{ ui.nds_date_input_group(name='date-input', label="Date") }}
