@@ -7,17 +7,49 @@
     </li>
 {%- endmacro %}
 
-{%- macro nav_item(content, href, active) -%}
-    <li>{{ ui.link(content, href=href, **kwargs) }}</li>
+{%- macro _main_nav_submenu(content, title, href, description) -%}
+    {%- set id = ui.util.id(prefix="sub-nav-") -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-main-nav__sub-nav", "id": id, "role": "region", "aria-label": title ~ " Submenu"}) }}>
+        <div class="nsw-main-nav__header">
+            <button class="nsw-icon-button nsw-icon-button--flex js-close-sub-nav" type="button" aria-expanded="true" aria-controls="{{ id }}">
+                {{ ui.icon("keyboard_arrow_left") }}
+                <span>Back<span class="sr-only"> to previous menu</span></span>
+            </button>
+            <button class="nsw-icon-button js-close-nav" type="button" aria-expanded="true">
+                {{ ui.icon("close") }}
+                <span class="sr-only">Close Menu</span>
+            </button>
+        </div>
+
+        <div class="nsw-main-nav__title">
+            <a href="{{ href }}">
+                <span>{{ title }}</span>
+                {{ ui.icon("east") }}
+            </a>
+        </div>
+
+        {%- if description -%}<div class="nsw-main-nav__description">{{ description }}</div>{%- endif %}
+
+        <ul class="nsw-main-nav__sub-list">
+            {{ content }}
+        </ul>
+    </div>
 {%- endmacro %}
 
-{%- macro main_nav_item(content, href, active) -%}
-    {%- set item_kwargs = kwargs -%}
-    {%- call ui.util.call(ui.list_item, attrs={"class": "nav-item" ~ (" active"  if active else "")}) -%}
-        <a {{ ui.util.attrs(item_kwargs, {"class": (" active" if active else "")}) }} href="{{ href }}">
-            {{ content }}
-        </a>
-    {%- endcall %}
+{%- macro main_nav_item(content, href, active, description, submenu) -%}
+    <li {{ 'class="active"' if active }}>
+        {%- call ui.util.call(ui.link, href=href, **kwargs) -%}
+            <span>{{ content }}</span>
+            {{ ui.icon("keyboard_arrow_right") if submenu }}
+        {%- endcall %}
+        {%- if submenu -%}
+            {%- call ui.util.call(_main_nav_submenu, title=content, href=href, description=description) -%}
+                {%- for item in submenu -%}
+                    {{ ui.main_nav_item(item.title, href=item.href, submenu=item.submenu) }}
+                {%- endfor %}
+            {%- endcall %}
+        {%- endif %}
+    </li>
 {%- endmacro %}
 
 {%- macro footer_main_nav_item(content, href) -%}
@@ -28,6 +60,12 @@
     <li>{{ ui.link(content, href=hred, **kwargs) }}</li>
 {%- endmacro %}
 
+
+
+
+{%- macro nav_item(content, href, active) -%}
+    <li>{{ ui.link(content, href=href, **kwargs) }}</li>
+{%- endmacro %}
 
 {%- macro sidebar_nav_item(content, href, active) -%}
     {{ ui.nav_item(content, href, active, **kwargs) }}

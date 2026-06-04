@@ -124,7 +124,6 @@
 {% set footer_main = footer_main | default(meta.footer_main) %}
 {% set footer_secondary = footer_secondary | default(meta.footer_secondary) %}
 {% set header = header | default(meta.header) %}
-{% set header_logo = header_logo | default(meta.header_logo) %}
 {% set subtitle_item = subtitle_item | default(meta.subtitle_item) %}
 
 {% set account_nav_item = account_nav_item | default(_nav.account_nav_item) %}
@@ -156,3 +155,4 @@
 {% set nds_card_carousel_item = nds_card_carousel_item | default(_custom.nds_card_carousel_item) %}
 {% set nds_date_input = nds_date_input | default(_custom.nds_date_input) %}
 {% set nds_date_input_group = nds_date_input_group | default(_custom.nds_date_input_group) %}
+{% set nds_global_alert = nds_global_alert | default(_custom.nds_global_alert) %}

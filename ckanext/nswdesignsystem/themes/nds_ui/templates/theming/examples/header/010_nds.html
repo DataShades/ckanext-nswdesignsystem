@@ -1,0 +1,48 @@
+<h3>NSW Design system</h3>
+
+<p>
+    Use <code>submenu</code> parameter of <code>main_nav_item</code> to render
+    nested menus. The <code>submenu</code> is a list of items:
+
+    <ul>
+        <li><code>title</code>: label shown to user</li>
+        <li><code>href</code>: URL of the link</li>
+        <li><mark><code>submenu</code></mark>: the same <code>submenu</code> structure for the nested menu level</li>
+    </ul>
+</p>
+
+<div>
+    {%- set submenu = [
+            {"title": "Simple", "href": "?simple"},
+            {"title": "Complex", "href": "?complex", "submenu": [
+                {"title": "Level 2", "href": "?level-2"}
+            ]},
+    ] -%}
+
+    {%- call ui.util.call(ui.header, title="Site title") -%}
+        {%- call ui.util.call(ui.main_nav_wrapper) -%}
+            {{ ui.main_nav_item("With submenu", href="", submenu=submenu,
+                    description=lipsum(1)) }}
+            {{ ui.main_nav_item("No submenu", href="") }}
+        {%- endcall %}
+    {%- endcall %}
+</div>
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {%- set submenu = [
+            {"title": "Simple", "href": "?simple"},
+            {"title": "Complex", "href": "?complex", "submenu": [
+                {"title": "Level 2", "href": "?level-2"}
+            ]},
+        ] -%}
+
+        {%- call ui.util.call(ui.header, title="Site title") -%}
+            {%- call ui.util.call(ui.main_nav_wrapper) -%}
+                {{ ui.main_nav_item("With submenu", href="", submenu=submenu,
+                    description=lipsum(1)) }}
+                {{ ui.main_nav_item("No submenu", href="") }}
+            {%- endcall %}
+        {%- endcall %}
+    {%- endraw %}
+{%- endcall %}

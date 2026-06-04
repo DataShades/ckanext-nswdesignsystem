@@ -31,6 +31,19 @@
     </ul>
 {%- endmacro %}
 
+{%- macro main_nav_wrapper(content) -%}
+    <nav {{ ui.util.attrs(kwargs, {"class": "nsw-main-nav js-mega-menu", "id": "main-nav", "aria-label": "Main menu"}) }}>
+        <div class="nsw-main-nav__header">
+            <div class="nsw-main-nav__title">Menu</div>
+            <button class="nsw-icon-button js-close-nav" type="button" aria-expanded="true">
+                {{ ui.icon("close") }}
+                <span class="sr-only">Close Menu</span>
+            </button>
+        </div>
+        <ul class="nsw-main-nav__list">{{ content }}</ul>
+    </nav>
+{%- endmacro %}
+
 
 
 
@@ -52,9 +65,6 @@
     {{ ui.nav_wrapper(content, **ui.util.augment_attrs(kwargs, {"class": "nav nav-tabs"})) }}
 {%- endmacro %}
 
-{%- macro main_nav_wrapper(content) -%}
-    {{ ui.nav_wrapper(content, **ui.util.augment_attrs(kwargs, {"class": "navbar-nav ms-auto mb-2 mb-lg-0"})) }}
-{%- endmacro %}
 
 {%- macro nav_wrapper(content) -%}
     <ul {{ ui.util.attrs(kwargs, {"class": "nav"}) }}>

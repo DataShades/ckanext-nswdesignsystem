@@ -80,7 +80,7 @@
         {%- do kwargs.setdefault("attrs", {}).setdefault("target", "_blank") -%}
         {%- do kwargs.setdefault("attrs", {}).setdefault("rel", "noopener") -%}
     {%- endif %}
-    <a {{ ui.util.attrs(kwargs) }} href="{{ href or content }}">{{ content }}</a>
+    <a {{ ui.util.attrs(kwargs) }} href="{{ href }}">{{ content }}</a>
 {%- endmacro %}
 
 {%- macro tag(content, href) -%}
