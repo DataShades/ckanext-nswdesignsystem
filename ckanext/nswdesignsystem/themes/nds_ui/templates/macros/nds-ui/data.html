@@ -1,3 +1,38 @@
+{%- macro table(content, striped=false, bordered=false) -%}
+    {%- set class = "nsw-table" ~ (" nsw-table--striped" if striped else "") ~ (" nsw-table--bordered" if bordered else "") -%}
+    <div {{ ui.util.attrs(kwargs, {"class": class, "tabindex": 0}) }}>
+        <table>
+            {{ content }}
+        </table>
+    </div>
+{%- endmacro %}
+
+{%- macro table_head(content) -%}
+    <thead {{ ui.util.attrs(kwargs) }}>{{ content }}</thead>
+{%- endmacro %}
+
+{%- macro table_body(content) -%}
+    <tbody {{ ui.util.attrs(kwargs) }}>{{ content }}</tbody>
+{%- endmacro %}
+
+{%- macro table_row(content) -%}
+    <tr {{ ui.util.attrs(kwargs) }}>
+        {{ content }}
+    </tr>
+{%- endmacro %}
+
+{%- macro table_cell(content, scope, header=false) -%}
+    {% set tag = "th" if header else "td" %}
+    <{{ tag }} {{ ui.util.attrs(kwargs) }}>
+    {{ content }}
+    </{{ tag }}>
+{%- endmacro %}
+
+
+
+
+
+
 {%- macro chart(content, type, data, labels) -%}
     {# Documentation: https://chartist.dev/ #}
     {%- if data -%}
@@ -35,33 +70,4 @@
         {%- endif -%}
 
     </code></pre>
-{%- endmacro %}
-
-{%- macro table(content, striped=false, bordered=false, condensed=false, hover=false) -%}
-    <table {{ ui.util.attrs(kwargs) }}
-        class="table {{ 'table-bordered' if bordered }} {{ 'table-striped' if striped }} {{ 'table-sm' if condensed }} {{ 'table-hover' if hover }}"
-    >
-        {{ content }}
-    </table>
-{%- endmacro %}
-
-{%- macro table_head(content) -%}
-    <thead {{ ui.util.attrs(kwargs) }}>{{ content }}</thead>
-{%- endmacro %}
-
-{%- macro table_body(content) -%}
-    <tbody {{ ui.util.attrs(kwargs) }}>{{ content }}</tbody>
-{%- endmacro %}
-
-{%- macro table_row(content) -%}
-    <tr {{ ui.util.attrs(kwargs) }}>
-        {{ content }}
-    </tr>
-{%- endmacro %}
-
-{%- macro table_cell(content, scope, header=false) -%}
-    {% set tag = "th" if header else "td" %}
-    <{{ tag }} {{ ui.util.attrs(kwargs) }}>
-    {{ content }}
-    </{{ tag }}>
 {%- endmacro %}

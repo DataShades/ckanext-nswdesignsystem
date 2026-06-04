@@ -266,3 +266,11 @@
         {%- endcall %}
     </li>
 {%- endmacro %}
+
+
+{%- macro nds_sidebar_nav_item_with_subnav(content, title, href, active) -%}
+    <li {{ ui.util.attrs(kwargs, {"class": "active" if active else ""}) }}>
+        <a href="{{ href }}">{{ title }}</a>
+        <ul>{{ content }}</ul>
+    </li>
+{%- endmacro %}

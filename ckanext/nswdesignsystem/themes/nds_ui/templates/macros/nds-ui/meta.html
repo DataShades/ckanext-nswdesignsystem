@@ -125,12 +125,17 @@
     {%- if not initial %} {{ g.template_title_delimiter }} {% endif %}
 {%- endmacro %}
 
-
-
-
-
-{%- macro account(content, title, subtitle, logo) -%}
-    <div {{ ui.util.attrs(kwargs, {"class": "account-masthead"}) }}>
-        {{ content }}
+{%- macro account(content, color, title=_("A NSW Government website")) -%}
+    {%- set class = "nsw-masthead" -%}
+    {%- if color == "light" -%}
+        {%- set class = class ~ " nsw-masthead--" ~ color -%}
+    {%- else -%}
+        {%- set class = class ~ " nsw-section--invert" -%}
+    {%- endif %}
+    <div {{ ui.util.attrs(kwargs, {"class": class}) }}>
+        <div class="nsw-container nsw-display-flex nsw-justify-content-between">
+            <span>{{ title }}</span>
+            {{ content }}
+        </div>
     </div>
 {%- endmacro %}

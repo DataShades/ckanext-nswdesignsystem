@@ -19,10 +19,18 @@
 
 
 
-{%- macro sidebar_section(content, title) -%}
-    {%- do kwargs.setdefault("narrow", true) -%}
-    {%- do kwargs.setdefault("shallow", true) -%}
-    {{ ui.section(content, title, **kwargs) }}
+{%- macro sidebar_section(content, title, collapsible) -%}
+    <nav {{ ui.util.attrs(kwargs, {"class": "nsw-side-nav js-side-nav"}) }}>
+        <button class="nsw-side-nav__toggle" aria-expanded="false">
+            <span>{{ title }}</span>
+        </button>
+        <div class="nsw-side-nav__header nsw-p-y-xs">
+            <strong>{{ title }}</strong>
+        </div>
+        <ul class="nsw-side-nav__content">
+            {{ content }}
+        </ul>
+    </nav>
 {%- endmacro %}
 
 {%- macro section(content, title, icon, level=2, shallow=false, narrow=false) -%}

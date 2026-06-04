@@ -1,0 +1,48 @@
+<h3>NWS Design System: sidebar navigation</h3>
+
+<p>
+    The <code>nds_sidebar_nav_item_with_subnav</code> can be used to create
+    nested navigation item inside sidebar navigation. Its content consists of
+    <code>sidebar_nav_item</code> and other <code>nds_sidebar_nav_item_with_subnav</code> items.
+</p>
+
+<p>
+    If <code>nds_sidebar_nav_item_with_subnav</code> contains active item, it
+    must be also marked as active.
+</p>
+
+<div>
+    {%- call ui.util.call(ui.sidebar_nav, title="Nested navigation") -%}
+        {{ ui.sidebar_nav_item("Simple link", href="") }}
+        {%- call ui.util.call(ui.nds_sidebar_nav_item_with_subnav,
+            title="Tree", active=true) -%}
+            {{ ui.sidebar_nav_item("Level 1: simple", href="") }}
+            {%- call ui.util.call(ui.nds_sidebar_nav_item_with_subnav,
+                title="Level 1: tree", active=true) -%}
+                {{ ui.sidebar_nav_item("Level 2: simple", href="") }}
+                {{ ui.sidebar_nav_item("Level 2: active", href="", active=true) }}
+            {%- endcall %}
+            {{ ui.sidebar_nav_item("Level 1: tail", href="") }}
+        {%- endcall %}
+        {{ ui.sidebar_nav_item("Tail", href="") }}
+    {%- endcall %}
+</div>
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {%- call ui.util.call(ui.sidebar_nav, title="Nested navigation") -%}
+            {{ ui.sidebar_nav_item("Simple link", href="") }}
+            {%- call ui.util.call(ui.nds_sidebar_nav_item_with_subnav,
+            title="Tree", active=true) -%}
+                {{ ui.sidebar_nav_item("Level 1: simple", href="") }}
+                {%- call ui.util.call(ui.nds_sidebar_nav_item_with_subnav,
+                title="Level 1: tree", active=true) -%}
+                    {{ ui.sidebar_nav_item("Level 2: simple", href="") }}
+                    {{ ui.sidebar_nav_item("Level 2: active", href="", active=true) }}
+                {%- endcall %}
+                {{ ui.sidebar_nav_item("Level 1: tail", href="") }}
+            {%- endcall %}
+            {{ ui.sidebar_nav_item("Tail", href="") }}
+        {%- endcall %}
+    {%- endraw %}
+{%- endcall %}

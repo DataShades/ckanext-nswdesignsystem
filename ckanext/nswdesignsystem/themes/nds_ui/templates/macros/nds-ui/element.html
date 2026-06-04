@@ -45,17 +45,14 @@
         {{ content }}
     </a>
 {%- endmacro %}
-x
-
-
 
 {%- macro badge(content, style="primary") -%}
-    {%- set class = "badge bg-" ~ style ~ ' text-bg-' ~ style -%}
+    {%- set _style_map = {"danger": "error"} -%}
+    {%- set class = "nsw-status-label nsw-status-label--" ~ _style_map.get(style, style) -%}
     <span {{ ui.util.attrs(kwargs, {"class": class}) }}>
         {{- content -}}
     </span>
 {%- endmacro %}
-
 
 {%- macro datetime(dt, date_format, with_hours, relative, empty="") -%}
     <time {{ ui.util.attrs(kwargs) }} datetime="{{ h.render_datetime(dt, date_format='%Y-%m-%dT%H:%M:%S%z') }}">
@@ -76,6 +73,18 @@ x
     <p {{ ui.util.attrs(kwargs, {"class": "nsw-h" ~ level}) }}>{{ content }}</p>
 {%- endmacro %}
 
+{%- macro tag(content, href) -%}
+    {%- set defaults = {"class": "nsw-tag"} -%}
+    {%- if href -%}
+        {%- do defaults.update({"href": href}) -%}
+    {%- endif %}
+    {{ ui.util.tag(content, "a" if href else "span", **ui.util.augment_attrs(kwargs, defaults)) }}
+{%- endmacro %}
+
+
+
+
+
 
 {%- macro image(src, alt, height, width) -%}
     {%- if not alt -%}
@@ -87,14 +96,6 @@ x
     >
 {%- endmacro %}
 
-
-{%- macro tag(content, href) -%}
-    {%- if href -%}
-        <a {{ ui.util.attrs(kwargs, {"class": "tag"}) }} href="{{ href }}">{{ content }}</a>
-    {%- else -%}
-        <span {{ ui.util.attrs(kwargs, {"class": "tag"}) }}>{{ content }}</span>
-    {%- endif %}
-{%- endmacro %}
 
 {%- macro tab(content, active, href, id) -%}
     <li class="nav-item">

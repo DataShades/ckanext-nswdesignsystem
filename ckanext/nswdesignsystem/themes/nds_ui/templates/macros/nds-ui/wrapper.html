@@ -44,15 +44,35 @@
     </nav>
 {%- endmacro %}
 
-
-
-
-
 {%- macro account_nav(content) -%}
-    <ul {{ ui.util.attrs(kwargs) }}>
+    <ul {{ ui.util.attrs(kwargs, {"class": "nsw-m-y-0"}) }}>
         {{ content }}
     </ul>
 {%- endmacro %}
+
+{%- macro pagination_wrapper(content) -%}
+    <nav {{ ui.util.attrs(kwargs, {"class": "nsw-pagination", "aria-label": "Pagination"}) }}>
+        <ul>
+            {{- content -}}
+        </ul>
+    </nav>
+{%- endmacro %}
+
+{%- macro sidebar_nav(content, title) -%}
+    <nav {{ ui.util.attrs(kwargs, {"class": "nsw-side-nav js-side-nav"}) }}>
+        <button class="nsw-side-nav__toggle" aria-expanded="false">
+            <span>{{ title }}</span>
+        </button>
+        <div class="nsw-side-nav__header nsw-p-y-xs">
+            <strong>{{ title }}</strong>
+        </div>
+        <ul class="nsw-side-nav__content">
+            {{ content }}
+        </ul>
+    </nav>
+{%- endmacro %}
+
+
 
 
 {%- macro content_action_wrapper(content) -%}
@@ -81,27 +101,6 @@
 {%- macro tab_wrapper(content) -%}
     <ul {{ ui.util.attrs(kwargs, {"class": "nav nav-tabs"}) }} role="tablist">{{ content }}</ul>
 {%- endmacro %}
-
-{%- macro sidebar_nav(content, title) -%}
-    <section {{ ui.util.attrs(kwargs, {"class": "module module-narrow module-shallow"}) }}>
-        <div class="module-group">
-            {{ ui.heading(title, level=2, attrs={"class": "module-heading"}) if title }}
-
-            <ul class="nav nav-aside">
-                {{ content }}
-            </ul>
-        </div>
-    </section>
-{%- endmacro %}
-
-{%- macro pagination_wrapper(content) -%}
-    <div {{ ui.util.attrs(kwargs, {"class": "pagination-wrapper"}) }}>
-        <ul class="pagination justify-content-center">
-            {{- content -}}
-        </ul>
-    </div>
-{%- endmacro %}
-
 
 {%- macro tab_pane_wrapper(content) -%}
     <div {{ ui.util.attrs(kwargs) }} class="tab-content">
