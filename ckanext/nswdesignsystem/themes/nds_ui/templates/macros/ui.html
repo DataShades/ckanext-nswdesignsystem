@@ -13,16 +13,16 @@
 {% import "macros/nds-ui/custom.html" as _custom%}
 
 {% set accordion_wrapper = accordion_wrapper | default(_wrapper.accordion_wrapper) %}
-{% set account_nav_wrapper = account_nav_wrapper | default(_wrapper.account_nav_wrapper) %}
+{% set account_nav = account_nav | default(_wrapper.account_nav) %}
 {% set breadcrumb_wrapper = breadcrumb_wrapper | default(_wrapper.breadcrumb_wrapper) %}
 {% set content_action_wrapper = content_action_wrapper | default(_wrapper.content_action_wrapper) %}
-{% set content_nav_wrapper = content_nav_wrapper | default(_wrapper.content_nav_wrapper) %}
-{% set footer_secondary_nav_wrapper = footer_secondary_nav_wrapper | default(_wrapper.footer_secondary_nav_wrapper) %}
-{% set footer_main_nav_wrapper = footer_main_nav_wrapper | default(_wrapper.footer_main_nav_wrapper) %}
-{% set main_nav_wrapper = main_nav_wrapper | default(_wrapper.main_nav_wrapper) %}
-{% set nav_wrapper = nav_wrapper | default(_wrapper.nav_wrapper) %}
+{% set content_nav = content_nav | default(_wrapper.content_nav) %}
+{% set footer_secondary_nav = footer_secondary_nav | default(_wrapper.footer_secondary_nav) %}
+{% set footer_main_nav = footer_main_nav | default(_wrapper.footer_main_nav) %}
+{% set main_nav = main_nav | default(_wrapper.main_nav) %}
+{% set nav = nav | default(_wrapper.nav) %}
 {% set page_action_wrapper = page_action_wrapper | default(_wrapper.page_action_wrapper) %}
-{% set sidebar_nav_wrapper = sidebar_nav_wrapper | default(_wrapper.sidebar_nav_wrapper) %}
+{% set sidebar_nav = sidebar_nav | default(_wrapper.sidebar_nav) %}
 {% set tab_wrapper = tab_wrapper | default(_wrapper.tab_wrapper) %}
 {% set tab_pane_wrapper = tab_pane_wrapper | default(_wrapper.tab_pane_wrapper) %}
 {% set pagination_wrapper = pagination_wrapper | default(_wrapper.pagination_wrapper) %}

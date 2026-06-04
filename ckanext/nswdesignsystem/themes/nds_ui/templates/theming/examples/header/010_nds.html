@@ -29,7 +29,7 @@
     ] -%}
 
     {%- call ui.util.call(ui.header, title="Site title") -%}
-        {%- call ui.util.call(ui.main_nav_wrapper) -%}
+        {%- call ui.util.call(ui.main_nav) -%}
             {{ ui.main_nav_item("With submenu", href="", submenu=submenu,
                     description=lipsum(1)) }}
             {{ ui.main_nav_item("No submenu", href="") }}
@@ -47,7 +47,7 @@
         ] -%}
 
         {%- call ui.util.call(ui.header, title="Site title") -%}
-            {%- call ui.util.call(ui.main_nav_wrapper) -%}
+            {%- call ui.util.call(ui.main_nav) -%}
                 {{ ui.main_nav_item("With submenu", href="", submenu=submenu,
                     description=lipsum(1)) }}
                 {{ ui.main_nav_item("No submenu", href="") }}

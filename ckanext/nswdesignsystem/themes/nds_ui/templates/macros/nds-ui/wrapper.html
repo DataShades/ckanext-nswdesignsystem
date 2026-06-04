@@ -16,7 +16,7 @@
     </nav>
 {%- endmacro %}
 
-{%- macro footer_main_nav_wrapper(content, title) -%}
+{%- macro footer_main_nav(content, title) -%}
     <div {{ ui.util.attrs(kwargs, {"class": "nsw-footer__group"}) }}>
         {%- if title -%}
             <div class="nsw-footer__heading">{{ title }}</div>
@@ -25,13 +25,13 @@
     </div>
 {%- endmacro %}
 
-{%- macro footer_secondary_nav_wrapper(content) -%}
+{%- macro footer_secondary_nav(content) -%}
     <ul {{ ui.util.attrs(kwargs) }}>
         {{ content }}
     </ul>
 {%- endmacro %}
 
-{%- macro main_nav_wrapper(content) -%}
+{%- macro main_nav(content) -%}
     <nav {{ ui.util.attrs(kwargs, {"class": "nsw-main-nav js-mega-menu", "id": "main-nav", "aria-label": "Main menu"}) }}>
         <div class="nsw-main-nav__header">
             <div class="nsw-main-nav__title">Menu</div>
@@ -48,7 +48,7 @@
 
 
 
-{%- macro account_nav_wrapper(content) -%}
+{%- macro account_nav(content) -%}
     <ul {{ ui.util.attrs(kwargs) }}>
         {{ content }}
     </ul>
@@ -61,12 +61,12 @@
     </div>
 {%- endmacro %}
 
-{%- macro content_nav_wrapper(content) -%}
-    {{ ui.nav_wrapper(content, **ui.util.augment_attrs(kwargs, {"class": "nav nav-tabs"})) }}
+{%- macro content_nav(content) -%}
+    {{ ui.nav(content, **ui.util.augment_attrs(kwargs, {"class": "nav nav-tabs"})) }}
 {%- endmacro %}
 
 
-{%- macro nav_wrapper(content) -%}
+{%- macro nav(content) -%}
     <ul {{ ui.util.attrs(kwargs, {"class": "nav"}) }}>
         {{ content }}
     </ul>
@@ -82,7 +82,7 @@
     <ul {{ ui.util.attrs(kwargs, {"class": "nav nav-tabs"}) }} role="tablist">{{ content }}</ul>
 {%- endmacro %}
 
-{%- macro sidebar_nav_wrapper(content, title) -%}
+{%- macro sidebar_nav(content, title) -%}
     <section {{ ui.util.attrs(kwargs, {"class": "module module-narrow module-shallow"}) }}>
         <div class="module-group">
             {{ ui.heading(title, level=2, attrs={"class": "module-heading"}) if title }}
