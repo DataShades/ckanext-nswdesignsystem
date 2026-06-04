@@ -25,6 +25,28 @@
     {%- endif %}
 {%- endmacro %}
 
+{%- macro icon(name, symbol, style) -%}
+    {%- set defaults = {
+         "class": "nsw-material-icons material-" ~ ("symbols" if symbols else "icons") ~ ("-" ~ style if style else ""),
+         "focusable": "false",
+         "aria-hidden": "true",
+    } -%}
+
+    {%- set base_class = "fa-{}".format(style) if style else "fa" -%}
+    <span {{ ui.util.attrs(kwargs, defaults) }}>{{ ui.util.icon(name) }}</span>
+{%- endmacro %}
+
+{%- macro link(content, href, blank) -%}
+    {%- set defaults = {"class": "nsw-link nsw-link--icon"} -%}
+    {%- if blank -%}
+        {%- do defaults.update({"target": "_blank", "rel": "noopener"}) -%}
+    {%- endif %}
+    <a {{ ui.util.attrs(kwargs, defaults) }} href="{{ href }}">
+        {{ content }}
+    </a>
+{%- endmacro %}
+x
+
 
 
 {%- macro badge(content, style="primary") -%}
@@ -54,16 +76,6 @@
     <p {{ ui.util.attrs(kwargs, {"class": "nsw-h" ~ level}) }}>{{ content }}</p>
 {%- endmacro %}
 
-{%- macro icon(name, symbol, style) -%}
-    {%- set defaults = {
-         "class": "nsw-material-icons material-" ~ ("symbols" if symbols else "icons") ~ ("-" ~ style if style else ""),
-         "focusable": "false",
-         "aria-hidden": "true",
-    } -%}
-
-    {%- set base_class = "fa-{}".format(style) if style else "fa" -%}
-    <span {{ ui.util.attrs(kwargs, defaults) }}>{{ ui.util.icon(name) }}</span>
-{%- endmacro %}
 
 {%- macro image(src, alt, height, width) -%}
     {%- if not alt -%}
@@ -75,13 +87,6 @@
     >
 {%- endmacro %}
 
-{%- macro link(content, href, blank) -%}
-    {%- if blank -%}
-        {%- do kwargs.setdefault("attrs", {}).setdefault("target", "_blank") -%}
-        {%- do kwargs.setdefault("attrs", {}).setdefault("rel", "noopener") -%}
-    {%- endif %}
-    <a {{ ui.util.attrs(kwargs) }} href="{{ href }}">{{ content }}</a>
-{%- endmacro %}
 
 {%- macro tag(content, href) -%}
     {%- if href -%}

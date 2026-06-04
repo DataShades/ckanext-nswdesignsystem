@@ -1,0 +1,16 @@
+<h3>Lines</h3>
+
+<p>
+    The <code>lines</code> parameter enables line patter on the right side of
+    the banner. It cannot be compined with an image.
+</p>
+
+<div>
+    {{ ui.nds_hero_banner(ui.heading("Lines", level=1), lines=true) }}
+</div>
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {{ ui.nds_hero_banner(ui.heading("Lines", level=1), lines=true) }}
+    {%- endraw %}
+{%- endcall %}

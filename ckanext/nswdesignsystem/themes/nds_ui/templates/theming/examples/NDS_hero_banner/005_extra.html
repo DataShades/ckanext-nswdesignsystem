@@ -1,0 +1,21 @@
+<h3>Extra content</h3>
+
+<p>
+    Additional content can be added to the right side of the banner. Use <code>subtitle</code> paramter
+    to specify heading of the additional content. Pass the content itself
+    inside <code>extra_content</code> parameter
+</p>
+
+<div>
+    {{ ui.nds_hero_banner(ui.heading("Extra content", level=1),
+            subtitle="Side",
+            extra_content=lipsum(1)) }}
+</div>
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {{ ui.nds_hero_banner(ui.heading("Extra content", level=1),
+            subtitle="Side",
+            extra_content=lipsum(1)) }}
+    {%- endraw %}
+{%- endcall %}

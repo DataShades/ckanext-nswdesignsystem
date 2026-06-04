@@ -1,5 +1,14 @@
 <h3>NSW Design system</h3>
 
+{%- if request.endpoint == "theming.component" -%}
+    {%- call ui.util.call(ui.alert, style="warning") -%}
+        NSW Design sytem allows only one header on the page and does not initialize
+        menus on subsequent headers. Open example in a new tab to see mega-menu in
+        action.
+    {%- endcall %}
+{%- endif %}
+
+
 <p>
     Use <code>submenu</code> parameter of <code>main_nav_item</code> to render
     nested menus. The <code>submenu</code> is a list of items:

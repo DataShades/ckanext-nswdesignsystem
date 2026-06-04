@@ -5,15 +5,8 @@
 {%- endmacro %}
 
 {%- macro footer_main(content) -%}
-    <div class="nsw-footer__upper">
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-footer__upper"}) }}>
         <div class="nsw-container">
-            {#<div class="nsw-footer__group">
-            <div class="nsw-footer__heading"><a href="#">Popular</a></div>
-            <ul>
-                <li><a href="#">Contact the Premier</a></li>
-                <li><a href="#">Contact a Minister</a></li>
-            </ul>
-            </div>#}
             {{ content }}
         </div>
     </div>

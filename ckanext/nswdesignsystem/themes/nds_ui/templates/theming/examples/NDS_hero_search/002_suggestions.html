@@ -1,0 +1,27 @@
+<h3>Suggestions</h3>
+
+<p>
+    Add a list of suggested results using content of the component. It accepts
+    arbitrary content, but it's recommended to provide list of links to popular
+    search results here.
+</p>
+
+<div>
+    {%- call ui.util.call(ui.nds_hero_search) -%}
+        <ul>
+            <li><a href="">First</a></li>
+            <li><a href="">Second</a></li>
+        </ul>
+    {%- endcall %}
+</div>
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {%- call ui.util.call(ui.nds_hero_search) -%}
+            &lt;ul&gt;
+            &lt;li&gt;&lt;a href=""&gt;First&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href=""&gt;Second&lt;/a&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        {%- endcall %}
+    {%- endraw %}
+{%- endcall %}

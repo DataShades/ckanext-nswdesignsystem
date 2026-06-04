@@ -99,17 +99,10 @@
 {%- endmacro %}
 
 {%- macro spinner(content, style, size, variant="border") -%}
-    {%- set class = "spinner-" ~ variant -%}
-    {%- if size -%}
-        {%- set class = "{} {}-{}".format(class, class, size) -%}
-    {%- endif %}
-
-    {%- if style -%}
-        {%- set class = class ~ " text-" ~style -%}
-    {%- endif %}
-    <span {{ ui.util.attrs(kwargs, {"class": class, "role": "status"}) }}>
-        <span class="visually-hidden">{{ content or _("Loading...") }}</span>
-    </span>
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-loader"}) }}>
+        <span aria-hidden="true" class="nsw-loader__circle {{ 'nsw-loader__circle--' ~ size if size }}"></span>
+        <span role="status" class="nsw-loader__label">{{ content or _("Loading") }}</span>
+    </div>
 {%- endmacro %}
 
 {%- macro toast(content, title, style, dismissible) -%}

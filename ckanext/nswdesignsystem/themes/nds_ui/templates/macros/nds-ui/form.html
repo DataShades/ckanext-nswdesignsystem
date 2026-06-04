@@ -26,14 +26,16 @@
 {%- endmacro %}
 
 {%- macro form_errors(errors) -%}
-    {%- call ui.util.call(ui.alert, **ui.util.augment_attrs(kwargs, {"style": "danger"}, key=none)) -%}
-        <strong>{{ _("The form contains invalid entries:") }}</strong>
-        <ul>
-            {%- for field, error in errors.items() -%}
-                <li>{{ field }}: {{ error }}</li>
-            {%- endfor %}
-        </ul>
-    {%- endcall %}
+    {%- if errors -%}
+        {%- call ui.util.call(ui.alert, **ui.util.augment_attrs(kwargs, {"style": "danger"}, key=none)) -%}
+            <strong>{{ _("The form contains invalid entries:") }}</strong>
+            <ul>
+                {%- for field, error in errors.items() -%}
+                    <li>{{ field }}: {{ error }}</li>
+                {%- endfor %}
+            </ul>
+        {%- endcall %}
+    {%- endif %}
 {%- endmacro %}
 
 {%- macro form_annotation(content=_("Required field")) -%}
@@ -45,7 +47,7 @@
 
 {%- macro field_errors(errors) -%}
     {%- if errors -%}
-        <span class="nsw-form__helper nsw-form__helper--error"><span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">cancel</span>{{ errors|join(", ") }}</span>
+        <span {{ ui.util.attrs(kwargs, {"class": "nsw-form__helper nsw-form__helper--error"}) }}><span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">cancel</span>{{ errors|join(", ") }}</span>
     {%- endif %}
 {%- endmacro %}
 

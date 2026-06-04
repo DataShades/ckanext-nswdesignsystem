@@ -1,0 +1,28 @@
+<h3>Standard</h3>
+
+<p>
+    The <code>nds_hero_search</code> renders component with dataset search
+    form. It accepts optional <code>img</code> parameter that adds an image to
+    background of the container
+</p>
+
+<p>
+    <code>title</code> and <code>intro</code> can be used to specify heading
+    and short introduction above the form.
+</p>
+
+<div>
+    {{ ui.nds_hero_search(
+            img="https://picsum.photos/500/300",
+            title="Hero search",
+            intro=lipsum(1)) }}
+</div>
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {%- call ui.util.call(ui.nds_hero_banner) -%}
+            {{ ui.heading("Hero banner", level=1) }}
+            &lt;div class="nsw-intro"&gt;{{ lipsum(1) }}&lt;/div&gt;
+        {%- endcall %}
+    {%- endraw %}
+{%- endcall %}

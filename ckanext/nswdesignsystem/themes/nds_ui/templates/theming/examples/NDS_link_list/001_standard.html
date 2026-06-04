@@ -1,0 +1,24 @@
+<h3>Standard</h3>
+
+<p>
+    The <code>nds_link_list</code> component is a wrapper, that expects a
+    series of <code>nds_link_list_item</code> components as a content.
+</p>
+
+<div>
+    {%- call ui.util.call(ui.nds_link_list) -%}
+        {{ ui.nds_link_list_item("First", href="") }}
+        {{ ui.nds_link_list_item("Second", href="") }}
+        {{ ui.nds_link_list_item("Third", href="", blank=true) }}
+    {%- endcall %}
+</div>
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {%- call ui.util.call(ui.nds_callout) -%}
+            {{ ui.heading("Title", level=4) }}
+            &lt;p&gt;{{ lipsum(1) }}&lt;/p&gt;
+        {%- endcall %}
+
+    {%- endraw %}
+{%- endcall %}

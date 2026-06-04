@@ -1,0 +1,15 @@
+<h3>Image</h3>
+
+<p>
+    The <code>img</code> parameter adds an image to the right side of the banner.
+</p>
+
+<div>
+    {{ ui.nds_hero_banner(ui.heading("Image", level=1), img="https://picsum.photos/200/300") }}
+</div>
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {{ ui.nds_hero_banner(ui.heading("Image", level=1), img="https://picsum.photos/200/300") }}
+    {%- endraw %}
+{%- endcall %}
