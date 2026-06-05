@@ -81,6 +81,11 @@
     {{ ui.util.tag(content, "a" if href else "span", **ui.util.augment_attrs(kwargs, defaults)) }}
 {%- endmacro %}
 
+{%- macro tab(content, active, href, id) -%}
+    {%- set defaults = {"class": "active" if active else "", "href": (id and '#' ~ id) or href} -%}
+    <li><a {{ ui.util.attrs(kwargs, defaults) }}>{{ content }}</a></li>
+{%- endmacro %}
+
 
 
 
@@ -96,16 +101,6 @@
     >
 {%- endmacro %}
 
-
-{%- macro tab(content, active, href, id) -%}
-    <li class="nav-item">
-        {%- if href is defined -%}
-            <a {{ ui.util.attrs(kwargs, {"class": "nav-link" ~ (" active" if active else "")}) }} href="{{ href }}">{{ content }}</a>
-        {%- else -%}
-            <button {{ ui.util.attrs(kwargs, {"class": "nav-link" ~ (" active" if active else ""), }) }} data-bs-toggle="tab" data-bs-target="#{{ id }}" type="button" role="tab" aria-controls="{{ id }}">{{ content }}</button>
-        {%- endif %}
-    </li>
-{%- endmacro %}
 
 {%- macro video(src, controls, autoplay) -%}
     <video {{ ui.util.attrs(kwargs) }} src="{{ src }}" {{ "controls" if controls }} {{ "autoplay" if autoplay }}></video>

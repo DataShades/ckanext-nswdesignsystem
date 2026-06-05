@@ -253,7 +253,7 @@
 
 
 {%- macro nds_link_list(content) -%}
-    <div class="nsw-link-list">
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-link-list"}) }}>
         <ul>{{ content }}</ul>
     </div>
 {%- endmacro %}

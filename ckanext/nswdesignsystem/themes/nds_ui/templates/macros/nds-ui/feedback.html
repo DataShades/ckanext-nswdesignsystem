@@ -83,6 +83,18 @@
     </div>
 {%- endmacro %}
 
+{%- macro tooltip(content, tooltip, toggle, theme="dark") -%}
+    <span {{ ui.util.attrs(kwargs, {"class": "nsw-tooltip js-tooltip", "title": tooltip, "data-theme": theme}) }}>
+        {{- content -}}
+    </span>
+{%- endmacro %}
+
+{%- macro spinner(content, style, size, variant="border") -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-loader"}) }}>
+        <span aria-hidden="true" class="nsw-loader__circle {{ 'nsw-loader__circle--' ~ size if size }}"></span>
+        <span role="status" class="nsw-loader__label">{{ content or _("Loading") }}</span>
+    </div>
+{%- endmacro %}
 
 
 
@@ -95,13 +107,6 @@
         <div class="progress-bar" style="width: {{ (value / max) * 100 }}%" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0" aria-valuemax="{{ max }}">
             {%- if content %}{{ content }}{% else %}{{ value }} / {{ max }}{% endif %}
         </div>
-    </div>
-{%- endmacro %}
-
-{%- macro spinner(content, style, size, variant="border") -%}
-    <div {{ ui.util.attrs(kwargs, {"class": "nsw-loader"}) }}>
-        <span aria-hidden="true" class="nsw-loader__circle {{ 'nsw-loader__circle--' ~ size if size }}"></span>
-        <span role="status" class="nsw-loader__label">{{ content or _("Loading") }}</span>
     </div>
 {%- endmacro %}
 
@@ -125,10 +130,4 @@
             {{ content }}
         </div>
     </div>
-{%- endmacro %}
-
-{%- macro tooltip(content, tooltip, position) -%}
-    <span {{ ui.util.attrs(kwargs, {"data-bs-title": tooltip, "data-bs-toggle": "tooltip", "data-bs-placement": position or "auto"}) }}>
-        {{- content -}}
-    </span>
 {%- endmacro %}

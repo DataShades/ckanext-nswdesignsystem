@@ -1,0 +1,26 @@
+<h3>NSW Design System</h3>
+
+<p>
+    The design system includes only interactive tabs that work in conjunction
+    with tab panes. To render navigation tabs with links to other pages, do not
+    use <code>tabbed_content</code> wrapper and instead add <code>as_nav</code> parameter
+    to the <code>tab_wrapper</code>.
+</p>
+
+<div>
+    {%- call ui.util.call(ui.tab_wrapper, as_nav=true) -%}
+        {{ ui.tab("Link 1", href="") }}
+        {{ ui.tab("Link 2", href="", active=true) }}
+        {{ ui.tab("Link 3", href="") }}
+    {%- endcall %}
+</div>
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {%- call ui.util.call(ui.tab_wrapper) -%}
+            {{ ui.tab("Link 1", href="") }}
+            {{ ui.tab("Link 2", href="", active=true) }}
+            {{ ui.tab("Link 3", href=) }}
+        {%- endcall %}
+    {%- endraw %}
+{%- endcall %}

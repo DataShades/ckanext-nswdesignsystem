@@ -98,12 +98,14 @@
     </div>
 {%- endmacro %}
 
-{%- macro tab_wrapper(content) -%}
-    <ul {{ ui.util.attrs(kwargs, {"class": "nav nav-tabs"}) }} role="tablist">{{ content }}</ul>
+{%- macro tab_wrapper(content, as_nav) -%}
+    {%- set item_kwargs = kwargs -%}
+    {%- call ui.util.call(ui.util.tag, "div" if as_nav else "", attrs={"class": "nsw-tabs__list-wrapper"}) -%}
+        <ul {{ ui.util.attrs(item_kwargs, {"class": "nsw-tabs__list"}) }}>{{ content }}</ul>
+    {%- endcall %}
 {%- endmacro %}
 
 {%- macro tab_pane_wrapper(content) -%}
-    <div {{ ui.util.attrs(kwargs) }} class="tab-content">
-        {{ content }}
-    </div>
+    {%- do kwargs -%}
+    {{ content }}
 {%- endmacro %}

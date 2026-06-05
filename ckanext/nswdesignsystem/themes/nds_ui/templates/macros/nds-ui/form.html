@@ -227,19 +227,26 @@
     {%- endcall %}
 {%- endmacro %}
 
-{%- macro select_box(content, nested_content, name, id, label, multiple, required, autocomplete, errors=[], group_class="form-group") -%}
+{%- macro select_box(content, nested_content, name, id, label, multiple, required, autocomplete, placeholder, multi_select_text, n_multi_select, errors=[], group_class="form-group") -%}
     {%- set id = id or (name and "field-" ~ name) or (label and ui.util.id()) or "" -%}
     {%- set defaults = {
             "id": id, "name": name, "class": "nsw-form__select", "multiple": multiple,
             "aria-invalid": "true" if errors else "false",
     } -%}
     {%- set input_kwargs = kwargs -%}
-
+    {%- set multi_attrs = {
+            "class": "nsw-multi-select js-multi-select",
+            "data-select-text": placeholder,
+            "data-multi-select-text": multi_select_text,
+            "data-n-multi-select": n_multi_select
+    } -%}
     {%- call ui.util.call(_input_block, label=label, required=required, id=id) -%}
         {{ nested_content }}
-        <select {{ ui.util.attrs(input_kwargs, defaults) }}>
-            {{ content }}
-        </select>
+        {%- call ui.util.call(ui.util.tag, "div" if multiple else "", attrs=multi_attrs) -%}
+            <select {{ ui.util.attrs(input_kwargs, defaults) }}>
+                {{ content }}
+            </select>
+        {%- endcall %}
         {{ ui.field_errors(errors) }}
     {%- endcall %}
 {%- endmacro %}

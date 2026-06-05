@@ -160,10 +160,16 @@
     </div>
 {%- endmacro %}
 
-{%- macro tab_pane(content, active, id) -%}
-    <div {{ ui.util.attrs(kwargs, {"class": "tab-pane fade" ~(" show active" if active else ""), "id": id}) }} role="tabpanel" tabindex="0">
+{%- macro tabbed_content(content) -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-tabs js-tabs"}) }}>
         {{ content }}
     </div>
+{%- endmacro %}
+
+{%- macro tab_pane(content, active, id) -%}
+    <section {{ ui.util.attrs(kwargs, {"class": "nsw-tabs__content", "id": id}) }}>
+        {{- content -}}
+    </section>
 {%- endmacro %}
 
 {#
