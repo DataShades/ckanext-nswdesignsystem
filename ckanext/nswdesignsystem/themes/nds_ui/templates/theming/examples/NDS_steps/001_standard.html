@@ -1,0 +1,28 @@
+<h3>Standard</h3>
+
+<p>
+    Steps widget consist of a wrapper <code>nds_steps</code> and collection of
+    multiple <code>nds_step_item</code> components. Items have <code>content</code> and
+    <code>title</code>, and can be marked as filled with <code>fill</code> parameter.
+</p>
+
+<p>
+    By default, step items render title as a level-2 heading. Level can be
+    changed via <code>level</code> parameter.
+</p>
+
+<div>
+    {%- call ui.util.call(ui.nds_steps) -%}
+        {{ ui.nds_step_item(lipsum(1), title="First", fill=true) }}
+        {{ ui.nds_step_item(lipsum(1), title="Second", level=4) }}
+    {%- endcall %}
+</div>
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {%- call ui.util.call(ui.nds_steps) -%}
+            {{ ui.nds_step_item(lipsum(1), title="First", fill=true) }}
+            {{ ui.nds_step_item(lipsum(1), title="Second", level=4) }}
+        {%- endcall %}
+    {%- endraw %}
+{%- endcall %}

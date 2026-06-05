@@ -274,3 +274,50 @@
         <ul>{{ content }}</ul>
     </li>
 {%- endmacro %}
+
+
+{%- macro nds_progress_indicator(content, step=0, total=0) -%}
+    <div {{ ui.util.attrs(kwargs) }} class="nsw-progress-indicator">
+        {%- if content -%}
+            <div class="nsw-progress-indicator__count">{{ content }}</div>
+        {%- endif %}
+        {%- if total -%}
+            <div class="nsw-progress-indicator__bar">
+                {%- for i in range(total) -%}
+                    <div {%- if i < step %} class="active"{%- endif %}></div>
+                {%- endfor %}
+            </div>
+        {%- endif %}
+    </div>
+{%- endmacro %}
+
+
+{%- macro nds_steps(content, variant, counter, size) -%}
+    {#supplementary,light,dark#}
+    {%- set class = "nsw-steps" -%}
+    {%- if variant -%}
+        {%- set class = class ~ " nsw-steps--" ~ variant -%}
+    {%- endif %}
+    {%- if counter -%}
+        {%- set class = class ~ " nsw-steps--counters" ~ variant -%}
+    {%- endif %}
+    {%- if size -%}
+        {%- set _size_map = {"sm": "small", "md": "medium"} -%}
+        {%- set class = class ~ " nsw-steps--" ~ _size_map.get(size, size) -%}
+    {%- endif %}
+
+    <div {{ ui.util.attrs(kwargs, {"class": class}) }}>
+        {{- content -}}
+    </div>
+
+{%- endmacro %}
+
+{%- macro nds_step_item(content, title, fill, level=2) -%}
+    {%- set class = "nsw-steps__item" ~ (" nsw-steps__item--fill" if fill else "") -%}
+    <div {{ ui.util.attrs(kwargs, {"class": class}) }}>
+        <div class="nsw-steps__content">
+            {{ ui.heading(title, level=level) if title }}
+            {{ content }}
+        </div>
+    </div>
+{%- endmacro %}

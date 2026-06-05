@@ -71,6 +71,9 @@
     <li {{ ui.util.attrs(kwargs, {"class": class}) }}>{{ ui.link(content, href=href) }}</li>
 {%- endmacro %}
 
+{%- macro content_nav_item(content, href, active) -%}
+    {{ ui.tab(content, href=href, active=active, **kwargs) }}
+{%- endmacro %}
 
 
 
@@ -82,10 +85,6 @@
 
 
 
-{%- macro content_nav_item(content, href, active, icon) -%}
-    {%- set prefix = (ui.icon(icon) ~ " ") if icon else "" -%}
-    {{ ui.nav_item(prefix ~ content, href=href, active=active, **kwargs) }}
-{%- endmacro %}
 
 {%- macro page_action(content, href) -%}
     {{ ui.button(content, href=href, **kwargs) }}

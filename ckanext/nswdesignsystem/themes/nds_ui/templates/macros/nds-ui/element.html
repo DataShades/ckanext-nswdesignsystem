@@ -37,7 +37,7 @@
 {%- endmacro %}
 
 {%- macro link(content, href, blank) -%}
-    {%- set defaults = {"class": "nsw-link nsw-link--icon"} -%}
+    {%- set defaults = {"class": "nsw-link"} -%}
     {%- if blank -%}
         {%- do defaults.update({"target": "_blank", "rel": "noopener"}) -%}
     {%- endif %}

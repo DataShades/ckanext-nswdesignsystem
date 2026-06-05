@@ -72,6 +72,24 @@
     </nav>
 {%- endmacro %}
 
+{%- macro tab_wrapper(content, as_nav) -%}
+    {%- set item_kwargs = kwargs -%}
+    {%- call ui.util.call(ui.util.tag, "div" if as_nav else "", attrs={"class": "nsw-tabs__list-wrapper"}) -%}
+        <ul {{ ui.util.attrs(item_kwargs, {"class": "nsw-tabs__list"}) }}>{{ content }}</ul>
+    {%- endcall %}
+{%- endmacro %}
+
+{%- macro tab_pane_wrapper(content) -%}
+    {%- do kwargs -%}
+    {{ content }}
+{%- endmacro %}
+
+{%- macro content_nav(content) -%}
+    {{ ui.tab_wrapper(content, **ui.util.augment_attrs(kwargs, {"as_nav": true}, key=none)) }}
+{%- endmacro %}
+
+
+
 
 
 
@@ -80,11 +98,6 @@
         {{- content -}}
     </div>
 {%- endmacro %}
-
-{%- macro content_nav(content) -%}
-    {{ ui.nav(content, **ui.util.augment_attrs(kwargs, {"class": "nav nav-tabs"})) }}
-{%- endmacro %}
-
 
 {%- macro nav(content) -%}
     <ul {{ ui.util.attrs(kwargs, {"class": "nav"}) }}>
@@ -96,16 +109,4 @@
     <div {{ ui.util.attrs(kwargs, {"class": "page_primary_action"}) }}>
         {{- content -}}
     </div>
-{%- endmacro %}
-
-{%- macro tab_wrapper(content, as_nav) -%}
-    {%- set item_kwargs = kwargs -%}
-    {%- call ui.util.call(ui.util.tag, "div" if as_nav else "", attrs={"class": "nsw-tabs__list-wrapper"}) -%}
-        <ul {{ ui.util.attrs(item_kwargs, {"class": "nsw-tabs__list"}) }}>{{ content }}</ul>
-    {%- endcall %}
-{%- endmacro %}
-
-{%- macro tab_pane_wrapper(content) -%}
-    {%- do kwargs -%}
-    {{ content }}
 {%- endmacro %}

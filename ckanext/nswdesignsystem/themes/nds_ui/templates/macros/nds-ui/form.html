@@ -59,13 +59,18 @@
     <input {{ ui.util.attrs(kwargs, {"name": name, "value": value}) }} type="hidden"/>
 {%- endmacro %}
 
-{%- macro fieldset(content, legend) -%}
-    <fieldset {{ ui.util.attrs(kwargs) }}>
+{%- macro fieldset(content, legend, description) -%}
+    <div class="nsw-form__group">
+        <fieldset {{ ui.util.attrs(kwargs, {"class": "nsw-form__fieldset"}) }}>
         {%- if legend -%}
-            <legend>{{ legend }}</legend>
+            <legend>
+                <span class="nsw-form__legend">{{ legend }}</span>
+                {{ description }}
+            </legend>
         {%- endif %}
         {{ content }}
-    </fieldset>
+        </fieldset>
+    </div>
 {%- endmacro %}
 
 {%- macro file_input(content, name, label, id, errors, required, accept, capture, multiple, button_label=_("Select file")) -%}

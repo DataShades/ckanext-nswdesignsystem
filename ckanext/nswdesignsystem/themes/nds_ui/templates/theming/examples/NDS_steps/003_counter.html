@@ -1,0 +1,23 @@
+<h3>Counter</h3>
+
+<p>
+    Enable <code>counter</code> parameter to show step's number.
+</p>
+
+<div>
+    {%- call ui.util.call(ui.nds_steps, counter=true) -%}
+        {{ ui.nds_step_item(lipsum(1), title="First", fill=true) }}
+        {{ ui.nds_step_item(lipsum(1), title="Second") }}
+        {{ ui.nds_step_item(lipsum(1), title="Third") }}
+    {%- endcall %}
+</div>
+
+{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+    {%- raw %}
+        {%- call ui.util.call(ui.nds_steps, counter=true) -%}
+            {{ ui.nds_step_item(lipsum(1), title="First", fill=true) }}
+            {{ ui.nds_step_item(lipsum(1), title="Second") }}
+            {{ ui.nds_step_item(lipsum(1), title="Third") }}
+        {%- endcall %}
+    {%- endraw %}
+{%- endcall %}
