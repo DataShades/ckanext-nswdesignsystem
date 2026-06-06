@@ -86,11 +86,6 @@
     <li><a {{ ui.util.attrs(kwargs, defaults) }}>{{ content }}</a></li>
 {%- endmacro %}
 
-
-
-
-
-
 {%- macro image(src, alt, height, width) -%}
     {%- if not alt -%}
         {%- do kwargs.setdefault("attrs", {}).setdefault("role", "presentation") -%}
@@ -107,5 +102,5 @@
 {%- endmacro %}
 
 {%- macro empty(content) -%}
-    <p {{ ui.util.attrs(kwargs, {"class": "empty"}) }}>{{ content }}</p>
+    <p {{ ui.util.attrs(kwargs, {"class": "nsw-text-italic"}) }}>{{ content }}</p>
 {%- endmacro %}

@@ -260,7 +260,6 @@
     <option {{ ui.util.attrs(kwargs) }} value="{{ value }}" {{ "selected" if selected }}>{{ content }}</option>
 {%- endmacro %}
 
-
 {%- macro checkbox(content, name, id, checked, label, required, value, errors=[]) -%}
     {%- set id = id or (name and "field-" ~ name) or (label and ui.util.id()) or "" -%}
     {%- set defaults = {
@@ -320,19 +319,44 @@
 
 {%- import "macros/form.html" as _form -%}
 
+
 {%- macro extra_field(content, index=0, data={}, errors={}, name_template='extras__{index}__') -%}
-    {%- do kwargs -%}
     {%- set prefix = name_template.format(index=index) -%}
-    {%- set params =  {
-          "names": (prefix ~ 'key', prefix ~ 'value', prefix ~ 'deleted'),
-          "id": 'field-extras-%d' % (index+1),
-          "label": _('Custom Field'),
-          "values": (data.key, data.value, data.deleted),
-          "error": errors[prefix ~ 'key'] or errors[prefix ~ 'value']
-    } -%}
-    {{ _form.custom(**params) }}
+    {%- set id = 'field-extras-{}'.format(index+1) -%}
+    {%- set error_list = errors[prefix~'key'] or errors[prefix~'value'] -%}
+
+    {# control-custom class is is used by custom-fields module #}
+    <div class="form-group control-custom">
+        {{ ui.input(name=prefix~"key", label="Key", value=data.key) }}
+        {{ ui.input(name=prefix~"value", label="Value", value=data.value) }}
+
+        {% if data.key or data.value or error_list %}
+            <label class="checkbox pull-right" for="{{ id }}-remove">
+                <input type="checkbox" id="{{ id }}-remove" name="{{ prefix ~ 'deleted' }}"{% if data.deleted %} checked{% endif %} />
+                <span class="nsw-button nsw-button--flex nsw-button--danger" title="Remove">
+                    {{ ui.icon("trash") }}
+                </span>
+            </label>
+        {% endif %}
+
+        {{ content }}
+        {{ ui.field_errors(error_list) if error_list }}
+    </div>
 {%- endmacro %}
 
 {%- macro extra_fields_collection(extras=[], errors={}, limit=3) -%}
-    {{ h.snippet('snippets/custom_form_fields.html', extras=extras, errors=errors, limit=limit, **kwargs) }}
+    <div  {{ ui.util.attrs(kwargs) }} data-module="custom-fields">
+        {% for extra in extras %}
+            {{ ui.extra_field(index=loop.index0, data=extra, errors=errors) }}
+        {% endfor %}
+
+        {# Add a max of 3 empty columns #}
+        {% set total_extras = extras|count %}
+        {% set empty_extras = (limit or 3) - total_extras %}
+        {% if empty_extras <= 0 %}{% set empty_extras = 1 %}{% endif %}
+
+        {% for extra in range(total_extras, total_extras + empty_extras) %}
+            {{ ui.extra_field(index=loop.index0 + (extras|count), data=extra, errors=errors) }}
+        {% endfor %}
+    </div>
 {%- endmacro %}

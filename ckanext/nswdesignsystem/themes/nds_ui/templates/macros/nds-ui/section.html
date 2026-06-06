@@ -16,9 +16,6 @@
     </div>
 {%- endmacro %}
 
-
-
-
 {%- macro sidebar_section(content, title, collapsible) -%}
     <nav {{ ui.util.attrs(kwargs, {"class": "nsw-side-nav js-side-nav"}) }}>
         <button class="nsw-side-nav__toggle" aria-expanded="false">
@@ -27,22 +24,16 @@
         <div class="nsw-side-nav__header nsw-p-y-xs">
             <strong>{{ title }}</strong>
         </div>
-        <ul class="nsw-side-nav__content">
+        <div class="nsw-side-nav__content">
             {{ content }}
-        </ul>
+        </div>
     </nav>
 {%- endmacro %}
 
-{%- macro section(content, title, icon, level=2, shallow=false, narrow=false) -%}
-    {%- if icon -%}
-        {%- set title = ui.icon(icon) ~ " " ~ title -%}
-    {%- endif %}
-    <section {{ ui.util.attrs(kwargs, {"class": "module" ~ (' module-narrow' if narrow else "") ~ (' module-shallow' if shallow else "")}) }}>
-        <div class="module-group">
-            {{ ui.heading(title, level=level, attrs={"class": "module-heading"}) if title }}
-            <div class="module-content">
-                {{ content }}
-            </div>
-        </div>
+{%- macro section(content, title, level=2) -%}
+    {%- set class = "nsw-section" -%}
+    <section {{ ui.util.attrs(kwargs, {"class": class}) }}>
+        {{ ui.heading(title, level=level) if title }}
+        <div>{{ content }}</div>
     </section>
 {%- endmacro %}
