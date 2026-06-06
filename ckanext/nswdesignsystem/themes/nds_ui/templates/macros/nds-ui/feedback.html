@@ -89,23 +89,26 @@
     </span>
 {%- endmacro %}
 
-{%- macro spinner(content, style, size, variant="border") -%}
+{%- macro spinner(content, style, size) -%}
     <div {{ ui.util.attrs(kwargs, {"class": "nsw-loader"}) }}>
         <span aria-hidden="true" class="nsw-loader__circle {{ 'nsw-loader__circle--' ~ size if size }}"></span>
         <span role="status" class="nsw-loader__label">{{ content or _("Loading") }}</span>
     </div>
 {%- endmacro %}
 
-
-
-
-
-
-
 {%- macro progress(content, value=0, max=100) -%}
-    <div {{ ui.util.attrs(kwargs, {"class": "progress"}) }}>
-        <div class="progress-bar" style="width: {{ (value / max) * 100 }}%" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0" aria-valuemax="{{ max }}">
-            {%- if content %}{{ content }}{% else %}{{ value }} / {{ max }}{% endif %}
+    {%- set pct = ((value / max) * 100) | round(1) if max > 0 else 0 -%}
+    {%- set class = "nsw-progress-bar" ~ (" nsw-progress-bar--" ~ color if color else "")-%}
+    <div {{ ui.util.attrs(kwargs, {"class": class}) }}>
+        {%- if content is not none -%}
+            <label class="nsw-progress-bar__label">
+                {{- content -}}
+                <progress value="{{ value }}" max="{{ max }}">{{ pct }}%</progress>
+            </label>
+        {%- endif -%}
+        <div class="nsw-progress-bar__track" role="presentation" aria-hidden="true" >
+            <div class="nsw-progress-bar__track_progress" style="width: {{ pct }}%;">
+            </div>
         </div>
     </div>
 {%- endmacro %}
@@ -130,4 +133,58 @@
             {{ content }}
         </div>
     </div>
+{%- endmacro %}
+
+
+{%- macro toast(content, title, style="info", dismissible=true, position="static", duration_ms=0) -%}
+    {# postion: {top,bottom}-{left,center,right} #}
+    {%- set _live = {
+        "info":    {"role": "status", "live": "polite"},
+        "success": {"role": "status", "live": "polite"},
+        "warning": {"role": "alert",  "live": "assertive"},
+        "danger":   {"role": "alert",  "live": "assertive"}
+    } -%}
+    {%- set _icon = {
+        "info":    "info",
+        "success": "check_circle",
+        "warning": "warning",
+        "danger":   "cancel"
+    } -%}
+    {%- set aria = _live.get(style, _live["info"]) -%}
+    {%- set icon_name = _icon.get(style, "info") -%}
+    {%- set class = "js-toast nsw-toast nsw-toast--" ~ style -%}
+    {%- set defaults = {
+        "class": class,
+        "role": aria.role,
+        "aria-live": aria.live,
+        "aria-atomic": "true",
+        "data-toast-position": position,
+        "data-toast-duration": duration_ms,
+        "data-toast-dismissible": "true" if dismissible else "false",
+    } -%}
+
+    <div {{ ui.util.attrs(kwargs, defaults) }}>
+        {{ ui.icon(icon_name, _extra_class="nsw-toast__icon") }}
+        <div class="nsw-toast__content">
+            {%- if title %}
+                <p class="nsw-toast__title">{{ title }}</p>
+            {%- endif %}
+            <p class="nsw-toast__message">{{ content }}</p>
+        </div>
+
+        {%- if dismissible %}
+            <button class="nsw-icon-button nsw-toast__close js-toast-close" aria-label="Close notification">
+                {{ ui.icon("close") }}
+            </button>
+        {%- endif %}
+    </div>
+{%- endmacro %}
+
+{%- macro toast_stack(content, position="bottom-right") -%}
+    {%- set class = "nsw-toast-stack" -%}
+    {%- set vertical, horizontal = position.split("-") -%}
+    {%- set class = class ~ " nsw-toast-stack--" ~ vertical -%}
+    {%- set class = class ~ " nsw-toast-stack--" ~ horizontal -%}
+
+    <div {{ ui.util.attrs(kwargs, {"class": class }) }}>{{ content }}</div>
 {%- endmacro %}

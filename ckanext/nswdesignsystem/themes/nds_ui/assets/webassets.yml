@@ -2,3 +2,12 @@ nds-ui-css:
   output: ckanext-nswdesignsystem/%(version)s-nds-ui.css
   contents:
     - styles.css
+
+nds-ui-js:
+  output: ckanext-nswdesignsystem/%(version)s-nds-ui.js
+  extra:
+    preload:
+      - nswdesignsystem/nswdesignsystem-js
+  contents:
+    - dropdown.js
+    - toast.js

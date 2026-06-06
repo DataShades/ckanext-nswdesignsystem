@@ -110,8 +110,39 @@
     <div {{ ui.util.attrs(kwargs, {"class": "" if fluid else "nsw-container"}) }}>{{ content }}</div>
 {%- endmacro %}
 
+{%- macro dropdown(content, title, disabled, position="bottom-start", style="secondary", color="dark") -%}
+    {%- set _style_map = {
+        "primary": color,
+        "secondary": color ~ "-outline",
+        "warning": "danger",
+        "danger": "danger",
+    } -%}
 
 
+    {%- set trigger_id = ui.util.id(prefix="trigger-") -%}
+    {%- set panel_id   = ui.util.id(prefix="panel-") -%}
+
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-dropdown"}) }}>
+        <button
+            id="{{ trigger_id }}"
+            type="button"
+            class="nsw-button nsw-button--{{ _style_map.get(style, style) }} js-dropdown"
+            aria-controls="{{ panel_id }}"
+            aria-expanded="false"
+            aria-haspopup="menu"
+            data-dropdown-position="{{ position }}"
+            {%- if disabled %} disabled aria-disabled="true"{% endif %}>
+            {{- title -}}
+            {{ ui.icon("expand_more") }}
+        </button>
+
+        <div id="{{ panel_id }}" class="nsw-dropdown__panel" role="menu" aria-labelledby="{{ trigger_id }}" tabindex="-1" hidden>
+            <ul class="nsw-dropdown__menu" role="presentation">
+                {{- content -}}
+            </ul>
+        </div>
+    </div>
+{%- endmacro %}
 
 
 
@@ -163,20 +194,6 @@
         {{ content }}
     </li>
 {%- endmacro %}
-
-{%- macro dropdown(content, title, inline, id, style="primary") -%}
-    {%- do kwargs.setdefault("data", {}).setdefault("bs-toggle", "dropdown") -%}
-    {%- do kwargs.setdefault("attrs", {}).setdefault("id", ui.util.id()) -%}
-    {%- do kwargs.setdefault("aria", {}).setdefault("expanded", "false") -%}
-
-    <div class="dropdown {{ 'btn-group' if inline }}">
-        {{ ui.button(title, style=style ~ " dropdown-toggle", **kwargs) }}
-        <ul class="dropdown-menu" aria-labelledby="{{ kwargs.attrs.id }}">
-            {{ content }}
-        </ul>
-    </div>
-{%- endmacro %}
-
 
 {#
 NSW Design System v3 implementation

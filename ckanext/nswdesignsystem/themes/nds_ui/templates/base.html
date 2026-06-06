@@ -4,3 +4,8 @@
     {{ super() }}
     {%- asset "theming/nds-ui/nds-ui-css" -%}
 {%- endblock %}
+
+{%- block scripts -%}
+    {{ super() }}
+    {%- asset "theming/nds-ui/nds-ui-js" -%}
+{%- endblock %}

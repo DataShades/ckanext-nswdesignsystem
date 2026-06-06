@@ -75,25 +75,6 @@
     {{ ui.tab(content, href=href, active=active, **kwargs) }}
 {%- endmacro %}
 
-
-
-
-
-{%- macro nav_item(content, href, active) -%}
-    <li>{{ ui.link(content, href=href, **kwargs) }}</li>
-{%- endmacro %}
-
-
-
-
-{%- macro page_action(content, href) -%}
-    {{ ui.button(content, href=href, **kwargs) }}
-{%- endmacro %}
-
-{%- macro content_action(content, href) -%}
-    {{ ui.button(content, href=href, **kwargs) }}
-{%- endmacro %}
-
 {%- macro pagination(page=1, total=1, url_generator=h.pager_url, padding=2, hide_edges=false, hide_siblings=false, start_label=null, end_label=null, previous_label=ui.icon("chevron-left"), next_label=ui.icon("chevron-right"), padding_label="...", url_params={}) -%}
     {%- if total > 1 %}
         {%- call ui.util.call(ui.pagination_wrapper, **kwargs) -%}
@@ -121,7 +102,35 @@
     <li><a {{ ui.util.attrs(kwargs, {"class": "nsw-icon-button" ~ (" active" if active else "")}) }} href="{{ href }}">{{ content }}</a></li>
 {%- endmacro %}
 
-{%- macro dropdown_item(content) -%}
-    {%- do kwargs.setdefault("attrs", {}).setdefault("class", "dropdown-item") -%}
-    <li>{{ ui.button(content, **kwargs) }}</li>
+{%- macro dropdown_item(content, append_divider) -%}
+    {%- set class = "nsw-dropdown__item nsw-dropdown__item--" ~ ("link" if kwargs.href else "action") -%}
+
+    <li role="none">
+        {{ ui.button(content, **ui.util.augment_attrs(kwargs, {"class": class, "role": "menuitem"})) }}
+    </li>
+    {%- if append_divider %}
+        <li role="separator" class="nsw-dropdown__divider" aria-hidden="true"></li>
+    {%- endif -%}
+{%- endmacro %}
+
+
+
+
+
+
+
+
+{%- macro nav_item(content, href, active) -%}
+    <li>{{ ui.link(content, href=href, **kwargs) }}</li>
+{%- endmacro %}
+
+
+
+
+{%- macro page_action(content, href) -%}
+    {{ ui.button(content, href=href, **kwargs) }}
+{%- endmacro %}
+
+{%- macro content_action(content, href) -%}
+    {{ ui.button(content, href=href, **kwargs) }}
 {%- endmacro %}
