@@ -385,67 +385,71 @@ For responsive order, we use nsw-order-{bp}-{v}.
     </div>
 {%- endmacro %}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{%- macro activity_list(content) -%}
-    <ul {{ ui.util.attrs(kwargs, {"class": "activity"}) }}>
-        {{ content }}
-    </ul>
-{%- endmacro %}
-
 {%- macro facet_list(content) -%}
-    <ul {{ ui.util.attrs(kwargs, {"class": "list-unstyled nav nav-simple nav-facet"}) }}>{{ content }}</ul>
+    <div {{ ui.util.attrs(kwargs) }}>{{ content }}</div>
 {%- endmacro %}
 
 {%- macro group_list(content) -%}
-    <ul {{ ui.util.attrs(kwargs, {"class": "media-grid", "data-module": "media-grid"}) }}>
-        {{ content }}
-    </ul>
+    {{ ui.list(content, **kwargs) }}
 {%- endmacro %}
 
 {%- macro organization_list(content) -%}
-    {{ ui.group_list(content, **kwargs) }}
+    {{ ui.list(content, **kwargs) }}
 {%- endmacro %}
 
 {%- macro package_list(content) -%}
-    <ul {{ ui.util.attrs(kwargs, {"class": "dataset-list list-unstyled"}) }}>
-        {{ content }}
-    </ul>
+    {{ ui.list(content, **kwargs) }}
 {%- endmacro %}
 
 {%- macro resource_list(content) -%}
-    <ul {{ ui.util.attrs(kwargs, {"class": "resource-list"}) }}>
-        {{ content }}
-    </ul>
+    {{ ui.list(content, **kwargs) }}
 {%- endmacro %}
 
 {%- macro user_list(content) -%}
-    <ul {{ ui.util.attrs(kwargs, {"class": "user-list"}) }}>{{ content }}</ul>
+    {{ ui.list(content, **kwargs) }}
 {%- endmacro %}
 
 {%- macro list(content) -%}
-    <ul {{ ui.util.attrs(kwargs, {"class": "list-unstyled"}) }}>
-        {{ content }}
-    </ul>
+    <div {{ ui.util.attrs(kwargs) }}>
+        {{- content -}}
+    </div>
 {%- endmacro %}
 
-{%- macro list_item(content) -%}
-    <li {{ ui.util.attrs(kwargs) }}>
-        {{ content }}
-    </li>
+{%- macro list_item(content, title, block_link, label, info, subtitle, tags, img, reversed) -%}
+    {%- set class = "nsw-list-item" -%}
+    {%- if block -%}
+        {%- set class = class ~ " nsw-list-item--block" -%}
+    {%- endif %}
+    {%- if reversed -%}
+        {%- set class = class ~ " nsw-list-item--reversed" -%}
+    {%- endif %}
+    <div {{ ui.util.attrs(kwargs, {"class": class}) }}>
+        <div class="nsw-list-item__content">
+            {%- if label -%}
+                <div class="nsw-list-item__label">{{ label }}</div>
+            {%- endif %}
+            {%- if info -%}
+                <div class="nsw-list-item__info">{{ info }}</div>
+            {%- endif %}
+
+            {%- if title -%}
+                <div class="nsw-list-item__title">{{ title }}</div>
+            {%- endif %}
+            {%- if subtitle -%}
+                <div class="nsw-list-item__info">{{ subtitle }}</div>
+            {%- endif %}
+
+            <div class="nsw-list-item__copy">
+                {{- content -}}
+            </div>
+            {%- if tags -%}
+                <div class="nsw-list-item__tags">{{ tags }}</div>
+            {%- endif %}
+        </div>
+        {%- if img -%}
+            <div class="nsw-list-item__image">
+                <img src="{{ img }}" alt="">
+            </div>
+        {%- endif %}
+    </div>
 {%- endmacro %}

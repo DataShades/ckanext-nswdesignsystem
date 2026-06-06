@@ -32,23 +32,13 @@
 <p>
     The carousel component can be configured via:
 
-    {%- call ui.util.call(ui.list) -%}
-        {%- call ui.util.call(ui.list_item) -%}
-            <strong>title</strong>: add a heading above the list of tiles
-        {%- endcall %}
-        {%- call ui.util.call(ui.list_item) -%}
-            <strong>drag</strong>: make carousel draggable
-        {%- endcall %}
-        {%- call ui.util.call(ui.list_item) -%}
-            <strong>navigation</strong>: expose navigation for tiles.
-        {%- endcall %}
-        {%- call ui.util.call(ui.list_item) -%}
-            <strong>loop</strong>: allow infinite loop of tiles. Cannot be used with <code>navigation</code>
-        {%- endcall %}
-        {%- call ui.util.call(ui.list_item) -%}
-            <strong>pagination</strong>: render pager instead of dots under the list of tiles
-        {%- endcall %}
-    {%- endcall %}
+    <ul>
+        <li><strong>title</strong>: add a heading above the list of tiles</li>
+        <li><strong>drag</strong>: make carousel draggable</li>
+        <li><strong>navigation</strong>: expose navigation for tiles.</li>
+        <li><strong>loop</strong>: allow infinite loop of tiles. Cannot be used with <code>navigation</code></li>
+        <li><strong>pagination</strong>: render pager instead of dots under the list of tiles</li>
+    </ul>
 </p>
 
 <div>

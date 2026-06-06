@@ -118,7 +118,7 @@
     </div>
 {%- endmacro %}
 
-{%- macro input(content, name, id, label, value, required, placeholder, type="text", errors=[], button=none) -%}
+{%- macro input(content, name, id, label, value, required, placeholder, button, icon_button, type="text", errors=[]) -%}
     {%- set id = id or (name and "field-" ~ name) or (label and ui.util.id()) or "" -%}
     {%- set defaults = {
             "class": "nsw-form__input",
@@ -131,14 +131,14 @@
     } -%}
     {%- set input_kwargs = kwargs -%}
 
-    {%- if button is mapping -%}
+    {%- if button or icon_button -%}
         <div class="nsw-form__group">
-            <div class="nsw-form__input-group {{ 'nsw-form__input-group--icon' if button.icon }}">
+            <div class="nsw-form__input-group {{ 'nsw-form__input-group--icon' if icon_button }}">
                 {%- if label -%}
                     <label class="sr-only" for="{{ id }}">{{ label }}</label>
                 {%- endif %}
                 <input {{ ui.util.attrs(input_kwargs, defaults) }}>
-                {{ ui.button(**ui.util.augment_attrs(button, {"type": "submit"}, key=none, extra_class="nsw-button--flex")) }}
+                {{ button or icon_button }}
             </div>
             {{ ui.field_errors(errors) }}
         </div>
@@ -322,7 +322,7 @@
     {%- set error_list = errors[prefix~'key'] or errors[prefix~'value'] -%}
 
     {# control-custom class is is used by custom-fields module #}
-    <div class="form-group control-custom">
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-form__group control-custom"}) }}>
         {{ ui.input(name=prefix~"key", label="Key", value=data.key) }}
         {{ ui.input(name=prefix~"value", label="Value", value=data.value) }}
 

@@ -13,43 +13,58 @@
     <label class="nsw-form__checkbox-label" for="{{ id }}">{{ content }}</label>
 {%- endmacro %}
 
-
-
-
-
-
-
-
-
-
-
-
-{%- macro group(content, group) -%}
-    {%- do kwargs.setdefault("position", 0) -%}
-    {{ h.snippet("group/snippets/group_item.html", group=group, **kwargs) }}
-{%- endmacro %}
-
-{%- macro organization(content, organization) -%}
-    {%- do kwargs.setdefault("position", 0) -%}
-    {{ h.snippet("organization/snippets/organization_item.html", organization=organization, **kwargs) }}
-{%- endmacro %}
-
 {%- macro package(content, package) -%}
-    {{ h.snippet("snippets/package_item.html", package=package, **kwargs) }}
+    {%- if package.tags -%}
+        {%- set tags -%}
+        <div class="nsw-list nsw-list--8">
+            {%- for tag in package.tags -%}
+                {{ ui.tag(tag.name) }}
+            {%- endfor %}
+        </div>
+        {%- endset -%}
+
+    {%- endif %}
+
+    {{ ui.list_item(package.notes|truncate(300),
+        title=ui.link(package.title, href=h.url_for(package.type ~ ".read", id=package.name)),
+        label=package.organization.title,
+        info=ui.datetime(package.metadata_modified),
+        tags=tags,
+        **kwargs,
+    ) }}
 {%- endmacro %}
 
 {%- macro resource(content, resource, package) -%}
-    {{ h.snippet('package/snippets/resource_item.html', res=resource, pkg=package, **kwargs) }}
+    {{ ui.list_item(resource.description|truncate(300),
+        label=resource.format,
+        title=ui.link(package.title, href=h.url_for(package.type ~ "_resource.read", id=package.name, resource_id=resource.id)),
+        subtitle=resource.url,
+        info=ui.datetime(resource.metadata_modified or resource.created),
+        **kwargs,
+    ) }}
 {%- endmacro %}
 
 {%- macro user(content, user) -%}
-    <li {{ ui.util.attrs(kwargs) }}>{{ h.linked_user(user.name, maxlength=20) }}</li>
+    {{ ui.list_item(h.linked_user(user.name), **kwargs) }}
 {%- endmacro %}
 
-{%- macro activity(content, activity) -%}
-    {{ h.snippet([
-           "snippets/activities/{}.html".format(activity.activity_type.replace(' ', '_')),
-           "snippets/activities/fallback.html"
-        ], activity=activity, **kwargs) }}
 
+{%- macro group(content, group) -%}
+    {{ ui.list_item(group.notes|truncate(300),
+        title=ui.link(group.title, href=h.url_for(group.type ~ ".read", id=group.name)),
+        subtitle=ungettext("{count} Dataset", "{count} Datasets", group.package_count).format(count=group.package_count),
+        img=group.image_display_url,
+        reversed=true,
+        **kwargs,
+    ) }}
+{%- endmacro %}
+
+{%- macro organization(content, organization) -%}
+    {{ ui.list_item(organization.notes|truncate(300),
+        title=ui.link(organization.title, href=h.url_for(organization.type ~ ".read", id=organization.name)),
+        subtitle=ungettext("{count} Dataset", "{count} Datasets", organization.package_count).format(count=organization.package_count),
+        img=organization.image_display_url,
+        reversed=true,
+        **kwargs,
+    ) }}
 {%- endmacro %}
