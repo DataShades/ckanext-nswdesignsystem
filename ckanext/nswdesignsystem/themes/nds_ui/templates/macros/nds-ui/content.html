@@ -1,3 +1,29 @@
+{%- macro facet(content, key, value, active, form_id) -%}
+    {%- set value = value or content -%}
+    {%- set id = id or ui.util.id() -%}
+    {%- set defaults = {
+            "class": "nsw-form__checkbox-input",
+            "name": key,
+            "value": value,
+            "id": id,
+            "checked": active,
+            "form": form_id,
+    } -%}
+    <input {{ ui.util.attrs(kwargs, defaults) }} type="checkbox">
+    <label class="nsw-form__checkbox-label" for="{{ id }}">{{ content }}</label>
+{%- endmacro %}
+
+
+
+
+
+
+
+
+
+
+
+
 {%- macro group(content, group) -%}
     {%- do kwargs.setdefault("position", 0) -%}
     {{ h.snippet("group/snippets/group_item.html", group=group, **kwargs) }}
@@ -19,22 +45,6 @@
 {%- macro user(content, user) -%}
     <li {{ ui.util.attrs(kwargs) }}>{{ h.linked_user(user.name, maxlength=20) }}</li>
 {%- endmacro %}
-
-{%- macro facet(content, key, value, active, form_id) -%}
-    {%- set value = value or content -%}
-    {%- set id = id or ui.util.id() -%}
-    {%- set defaults = {
-            "class": "nsw-form__checkbox-input",
-            "name": key,
-            "value": value,
-            "id": id,
-            "checked": active,
-            "form": form_id,
-    } -%}
-    <input {{ ui.util.attrs(kwargs, defaults) }} type="checkbox">
-    <label class="nsw-form__checkbox-label" for="{{ id }}">{{ content }}</label>
-{%- endmacro %}
-
 
 {%- macro activity(content, activity) -%}
     {{ h.snippet([

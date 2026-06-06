@@ -316,10 +316,6 @@
     {{ ui.input(content, type="range", **kwargs) }}
 {%- endmacro %}
 
-
-{%- import "macros/form.html" as _form -%}
-
-
 {%- macro extra_field(content, index=0, data={}, errors={}, name_template='extras__{index}__') -%}
     {%- set prefix = name_template.format(index=index) -%}
     {%- set id = 'field-extras-{}'.format(index+1) -%}

@@ -144,57 +144,6 @@
     </div>
 {%- endmacro %}
 
-
-
-
-{%- macro activity_list(content) -%}
-    <ul {{ ui.util.attrs(kwargs, {"class": "activity"}) }}>
-        {{ content }}
-    </ul>
-{%- endmacro %}
-
-{%- macro facet_list(content) -%}
-    <ul {{ ui.util.attrs(kwargs, {"class": "list-unstyled nav nav-simple nav-facet"}) }}>{{ content }}</ul>
-{%- endmacro %}
-
-{%- macro group_list(content) -%}
-    <ul {{ ui.util.attrs(kwargs, {"class": "media-grid", "data-module": "media-grid"}) }}>
-        {{ content }}
-    </ul>
-{%- endmacro %}
-
-{%- macro organization_list(content) -%}
-    {{ ui.group_list(content, **kwargs) }}
-{%- endmacro %}
-
-{%- macro package_list(content) -%}
-    <ul {{ ui.util.attrs(kwargs, {"class": "dataset-list list-unstyled"}) }}>
-        {{ content }}
-    </ul>
-{%- endmacro %}
-
-{%- macro resource_list(content) -%}
-    <ul {{ ui.util.attrs(kwargs, {"class": "resource-list"}) }}>
-        {{ content }}
-    </ul>
-{%- endmacro %}
-
-{%- macro user_list(content) -%}
-    <ul {{ ui.util.attrs(kwargs, {"class": "user-list"}) }}>{{ content }}</ul>
-{%- endmacro %}
-
-{%- macro list(content) -%}
-    <ul {{ ui.util.attrs(kwargs, {"class": "list-unstyled"}) }}>
-        {{ content }}
-    </ul>
-{%- endmacro %}
-
-{%- macro list_item(content) -%}
-    <li {{ ui.util.attrs(kwargs) }}>
-        {{ content }}
-    </li>
-{%- endmacro %}
-
 {#
 NSW Design System v3 implementation
 ===========================================================
@@ -434,4 +383,69 @@ For responsive order, we use nsw-order-{bp}-{v}.
     <div {{ ui.util.attrs(kwargs, {"class": ns.class}) }}>
         {{- content -}}
     </div>
+{%- endmacro %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{%- macro activity_list(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "activity"}) }}>
+        {{ content }}
+    </ul>
+{%- endmacro %}
+
+{%- macro facet_list(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "list-unstyled nav nav-simple nav-facet"}) }}>{{ content }}</ul>
+{%- endmacro %}
+
+{%- macro group_list(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "media-grid", "data-module": "media-grid"}) }}>
+        {{ content }}
+    </ul>
+{%- endmacro %}
+
+{%- macro organization_list(content) -%}
+    {{ ui.group_list(content, **kwargs) }}
+{%- endmacro %}
+
+{%- macro package_list(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "dataset-list list-unstyled"}) }}>
+        {{ content }}
+    </ul>
+{%- endmacro %}
+
+{%- macro resource_list(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "resource-list"}) }}>
+        {{ content }}
+    </ul>
+{%- endmacro %}
+
+{%- macro user_list(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "user-list"}) }}>{{ content }}</ul>
+{%- endmacro %}
+
+{%- macro list(content) -%}
+    <ul {{ ui.util.attrs(kwargs, {"class": "list-unstyled"}) }}>
+        {{ content }}
+    </ul>
+{%- endmacro %}
+
+{%- macro list_item(content) -%}
+    <li {{ ui.util.attrs(kwargs) }}>
+        {{ content }}
+    </li>
 {%- endmacro %}

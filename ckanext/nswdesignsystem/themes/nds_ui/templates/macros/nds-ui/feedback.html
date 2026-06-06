@@ -113,29 +113,6 @@
     </div>
 {%- endmacro %}
 
-{%- macro toast(content, title, style, dismissible) -%}
-    {%- set class = "toast fade show" -%}
-    {%- if style -%}
-        {%- set class = class ~ " text-bg-" ~ style -%}
-
-    {%- endif %}
-    <div {{ ui.util.attrs(kwargs, {"class": class, "role": "alert", "aria-live": "assertive", "aria-atomic": "true"}) }} >
-        {%- if title or dismissible -%}
-            <div class="toast-header">
-                {{ title }}
-                {%- if dismissible -%}
-                    <button type="button" class="ms-auto btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                {%- endif %}
-            </div>
-
-        {%- endif %}
-        <div class="toast-body">
-            {{ content }}
-        </div>
-    </div>
-{%- endmacro %}
-
-
 {%- macro toast(content, title, style="info", dismissible=true, position="static", duration_ms=0) -%}
     {# postion: {top,bottom}-{left,center,right} #}
     {%- set _live = {
