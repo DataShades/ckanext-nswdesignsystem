@@ -11,3 +11,7 @@ nds-ui-js:
   contents:
     - dropdown.js
     - toast.js
+    - dialog.js
+    - popover.js
+    - tooltip.js
+    - ui.js

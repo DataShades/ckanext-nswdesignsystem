@@ -1,0 +1,21 @@
+{
+    "exclude": ["node_modules"],
+    "include": [
+        "assets/*.ts"
+    ],
+    "compilerOptions": {
+        "typeRoots": ["../../../../../node_modules/nsw-design-system"],
+        "module": "preserve",
+        "target": "es2020",
+
+        "sourceMap": false,
+
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": true,
+        "strict": true,
+        "verbatimModuleSyntax": true,
+        "isolatedModules": true,
+        "moduleDetection": "force",
+        "skipLibCheck": false
+    }
+}

@@ -44,6 +44,8 @@
 
     static _stacks = {};
 
+      static _instances = new WeakMap();
+
     // ── Constructor ──────────────────────────────────────────────────────────
 
     constructor(element) {
@@ -61,8 +63,8 @@
     // ── Lifecycle ────────────────────────────────────────────────────────────
 
     init() {
-      if (this.element.nswToast) return this.element.nswToast;
-      this.element.nswToast = this;
+      const existing = Toast._instances.get(this.element);
+      if (existing) return;
 
       // Move element into the correct stack container (idempotent)
       if (this.position !== "static") {
@@ -92,8 +94,20 @@
       if (this.duration > 0) {
         this._timer = setTimeout(() => this.dismiss(), this.duration);
       }
+
+      Toast._instances.set(this.element, this)
       return this;
     }
+
+    static getOrCreateInstance(el) {
+      const existing = Toast._instances.get(this.element);
+      if (existing) return existing;
+
+      const toast = new Toast(el);
+      toast.init();
+      return toast;
+    }
+
 
     dismiss() {
       if (this._timer) clearTimeout(this._timer);
@@ -146,7 +160,6 @@
       stack.setAttribute("aria-live", "off"); // individual toasts have their own live region
       stack.setAttribute("aria-relevant", "additions");
       stack.dataset.toastStack = position;
-      console.log(stack);
       document.body.appendChild(stack);
       Toast._stacks[position] = stack;
       return stack;
