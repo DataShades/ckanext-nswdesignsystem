@@ -56,10 +56,6 @@
     {%- endif %}
 {%- endmacro %}
 
-{%- macro search_advanced_controls() -%}
-    {%- do kwargs -%}
-{%- endmacro %}
-
 {%- macro search_form_box(content, use_htmx) -%}
     {%- if use_htmx -%}
         {%- do kwargs.setdefault("hx", {"boost": "true", "disinherit": "hx-boost", "trigger": "change, submit"}) -%}

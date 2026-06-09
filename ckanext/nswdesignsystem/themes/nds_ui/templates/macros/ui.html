@@ -60,7 +60,6 @@
 {% set sidebar_section = sidebar_section | default(_section.sidebar_section) %}
 
 {% set alert = alert | default(feedback.alert) %}
-{% set confirm_modal = confirm_modal | default(feedback.confirm_modal) %}
 {% set modal = modal | default(feedback.modal) %}
 {% set popover = popover | default(feedback.popover) %}
 {% set progress = progress | default(feedback.progress) %}
@@ -72,24 +71,14 @@
 {% set badge = badge | default(element.badge) %}
 {% set empty = empty | default(element.empty) %}
 {% set button = button | default(element.button) %}
-{% set datetime = datetime | default(element.datetime) %}
-{% set divider = divider | default(element.divider) %}
 {% set heading = heading | default(element.heading) %}
 {% set icon = icon | default(element.icon) %}
-{% set image = image | default(element.image) %}
 {% set link = link | default(element.link) %}
 {% set tag = tag | default(element.tag) %}
 {% set tab = tab | default(element.tab) %}
-{% set video = video | default(element.video) %}
-{% set breadcrumb_divider = breadcrumb_divider | default(element.breadcrumb_divider) %}
 
 {% set chart = chart | default(data.chart) %}
-{% set code = code | default(data.code) %}
 {% set table = table | default(data.table) %}
-{% set table_body = table_body | default(data.table_body) %}
-{% set table_cell = table_cell | default(data.table_cell) %}
-{% set table_head = table_head | default(data.table_head) %}
-{% set table_row = table_row | default(data.table_row) %}
 
 {% set checkbox = checkbox | default(_form.checkbox) %}
 {% set extra_field = extra_field | default(_form.extra_field) %}
@@ -97,20 +86,15 @@
 {% set field_errors = field_errors | default(_form.field_errors) %}
 {% set file_input = file_input | default(_form.file_input) %}
 {% set field_info = field_info | default(_form.field_info) %}
-{% set form = form | default(_form.form) %}
-{% set form_actions = form_actions | default(_form.form_actions) %}
-{% set form_end = form_end | default(_form.form_end) %}
 {% set form_errors = form_errors | default(_form.form_errors) %}
 {% set form_annotation = form_annotation | default(_form.form_annotation) %}
 {% set form_start = form_start | default(_form.form_start) %}
-{% set hidden_input = hidden_input | default(_form.hidden_input) %}
 {% set input = input | default(_form.input) %}
 {% set markdown = markdown | default(_form.markdown) %}
 {% set radio = radio | default(_form.radio) %}
 {% set range_input = range_input | default(_form.range_input) %}
 {% set select = select | default(_form.select) %}
 {% set select_box = select_box | default(_form.select_box) %}
-{% set select_option = select_option | default(_form.select_option) %}
 {% set textarea = textarea | default(_form.textarea) %}
 {% set fieldset = fieldset | default(_form.fieldset) %}
 
@@ -123,7 +107,6 @@
 {% set footer_main = footer_main | default(meta.footer_main) %}
 {% set footer_secondary = footer_secondary | default(meta.footer_secondary) %}
 {% set header = header | default(meta.header) %}
-{% set subtitle_item = subtitle_item | default(meta.subtitle_item) %}
 
 {% set account_nav_item = account_nav_item | default(_nav.account_nav_item) %}
 {% set breadcrumb = breadcrumb | default(_nav.breadcrumb) %}
@@ -140,7 +123,6 @@
 {% set pagination_item = pagination_item | default(_nav.pagination_item) %}
 
 {% set search_active_filters = search_active_filters | default(_search.search_active_filters) %}
-{% set search_advanced_controls = search_advanced_controls | default(_search.search_advanced_controls) %}
 {% set search_form_box = search_form_box | default(_search.search_form_box) %}
 {% set search_form = search_form | default(_search.search_form) %}
 {% set search_input = search_input | default(_search.search_input) %}

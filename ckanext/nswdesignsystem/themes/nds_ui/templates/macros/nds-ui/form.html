@@ -1,9 +1,3 @@
-{%- macro form(content, method, action, enctype, include_csrf=true) -%}
-    {{ ui.form_start(method=method, action=action, enctype=enctype, **kwargs) }}
-    {{ h.csrf_input() if include_csrf and method and method|upper != "GET" }}
-    {{ content }}
-    {{ ui.form_end() }}
-{%- endmacro %}
 
 {%- macro form_start(content, method, action, enctype) -%}
     <form
@@ -13,16 +7,6 @@
         {%- if enctype %} enctype="{{ enctype }}"{%- endif -%}
     >
         {{ content }}
-{%- endmacro %}
-
-{%- macro form_end(content) -%}
-    {%- do kwargs -%}
-    {{ content }}
-    </form>
-{%- endmacro %}
-
-{%- macro form_actions(content) -%}
-    <div {{ ui.util.attrs(kwargs, {"class": "form-actions"}) }}>{{ content }}</div>
 {%- endmacro %}
 
 {%- macro form_errors(errors) -%}
@@ -53,10 +37,6 @@
 
 {%- macro field_info(content) -%}
     <span {{ ui.util.attrs(kwargs, {"class": "nsw-form__helper"}) }} >{{ content }}</span>
-{%- endmacro %}
-
-{%- macro hidden_input(name, value) -%}
-    <input {{ ui.util.attrs(kwargs, {"name": name, "value": value}) }} type="hidden"/>
 {%- endmacro %}
 
 {%- macro fieldset(content, legend, description) -%}
@@ -254,10 +234,6 @@
         {%- endcall %}
         {{ ui.field_errors(errors) }}
     {%- endcall %}
-{%- endmacro %}
-
-{%- macro select_option(content, value, selected) -%}
-    <option {{ ui.util.attrs(kwargs) }} value="{{ value }}" {{ "selected" if selected }}>{{ content }}</option>
 {%- endmacro %}
 
 {%- macro checkbox(content, name, id, checked, label, required, value, errors=[]) -%}

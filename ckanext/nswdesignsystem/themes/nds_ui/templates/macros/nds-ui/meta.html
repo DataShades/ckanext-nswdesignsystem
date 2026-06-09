@@ -119,12 +119,6 @@
     {{ content }}
 {%- endmacro %}
 
-{%- macro subtitle_item(content, initial) -%}
-    {%- do kwargs -%}
-    {{ content }}
-    {%- if not initial %} {{ g.template_title_delimiter }} {% endif %}
-{%- endmacro %}
-
 {%- macro account(content, color, title=_("A NSW Government website")) -%}
     {%- set class = "nsw-masthead" -%}
     {%- if color == "light" -%}

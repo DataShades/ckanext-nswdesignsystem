@@ -7,27 +7,6 @@
     </div>
 {%- endmacro %}
 
-{%- macro table_head(content) -%}
-    <thead {{ ui.util.attrs(kwargs) }}>{{ content }}</thead>
-{%- endmacro %}
-
-{%- macro table_body(content) -%}
-    <tbody {{ ui.util.attrs(kwargs) }}>{{ content }}</tbody>
-{%- endmacro %}
-
-{%- macro table_row(content) -%}
-    <tr {{ ui.util.attrs(kwargs) }}>
-        {{ content }}
-    </tr>
-{%- endmacro %}
-
-{%- macro table_cell(content, scope, header=false) -%}
-    {% set tag = "th" if header else "td" %}
-    <{{ tag }} {{ ui.util.attrs(kwargs) }}>
-    {{ content }}
-    </{{ tag }}>
-{%- endmacro %}
-
 {%- macro chart(content, type, data, labels) -%}
     {# Documentation: https://chartist.dev/ #}
     {%- if data -%}
@@ -48,21 +27,4 @@
     {%- else -%}
         <div>{{ _("No data provided") }}</div>
     {%- endif %}
-{%- endmacro %}
-
-{%- macro code(content, language, dedent) -%}
-    <pre {{ ui.util.attrs(kwargs, {"class": "code"})}}><code class="language-{{ language or 'text' }}">
-        {%- if dedent -%}
-            {%- set ns = namespace(skip=none) -%}
-            {%- for line in content.splitlines() -%}
-                {%- if ns.skip is none and loop.index < 3 and line -%}
-                    {%- set ns.skip = line|length - line.lstrip(" ")|length -%}
-                {%- endif -%}
-                {{ line[ns.skip or 0:] ~ "\n" if line or not loop.first}}
-            {%- endfor -%}
-        {%- else -%}
-            {{ content }}
-        {%- endif -%}
-
-    </code></pre>
 {%- endmacro %}

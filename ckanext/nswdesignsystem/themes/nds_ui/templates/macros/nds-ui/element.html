@@ -1,5 +1,3 @@
-{%- macro breadcrumb_divider(content) -%}{%- do kwargs -%}{%- endmacro %}
-
 {%- macro button(content, href, size, flex, icon, type="button", style="primary", color="dark") -%}
     {%- set _style_map = {
         "primary": color,
@@ -54,21 +52,6 @@
     </span>
 {%- endmacro %}
 
-{%- macro datetime(dt, date_format, with_hours, relative, empty="") -%}
-    <time {{ ui.util.attrs(kwargs) }} datetime="{{ h.render_datetime(dt, date_format='%Y-%m-%dT%H:%M:%S%z') }}">
-        {%- if relative -%}
-            {%- set value = h.time_ago_from_timestamp(dt) -%}
-            {{  value if value != "Unknown" else empty }}
-        {%- else -%}
-            {{ h.render_datetime(dt, date_format=date_format, with_hours=with_hours) or empty }}
-        {%- endif -%}
-    </time>
-{%- endmacro %}
-
-{%- macro divider(content) -%}
-    <hr {{ ui.util.attrs(kwargs) }} class="divider">
-{%- endmacro %}
-
 {%- macro heading(content, level) -%}
     <p {{ ui.util.attrs(kwargs, {"class": "nsw-h" ~ level}) }}>{{ content }}</p>
 {%- endmacro %}
@@ -84,21 +67,6 @@
 {%- macro tab(content, active, href, id) -%}
     {%- set defaults = {"class": "active" if active else "", "href": (id and '#' ~ id) or href} -%}
     <li><a {{ ui.util.attrs(kwargs, defaults) }}>{{ content }}</a></li>
-{%- endmacro %}
-
-{%- macro image(src, alt, height, width) -%}
-    {%- if not alt -%}
-        {%- do kwargs.setdefault("attrs", {}).setdefault("role", "presentation") -%}
-    {%- endif -%}
-    <img {{ ui.util.attrs(kwargs) }} src="{{ src }}" alt="{{ alt }}"
-                                     {%- if height %} height="{{ height }}"{% endif %}
-                                     {%- if width %} width="{{ width }}"{% endif %}
-    >
-{%- endmacro %}
-
-
-{%- macro video(src, controls, autoplay) -%}
-    <video {{ ui.util.attrs(kwargs) }} src="{{ src }}" {{ "controls" if controls }} {{ "autoplay" if autoplay }}></video>
 {%- endmacro %}
 
 {%- macro empty(content) -%}

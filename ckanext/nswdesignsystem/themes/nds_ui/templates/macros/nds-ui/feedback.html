@@ -60,20 +60,6 @@
     </div>
 {%- endmacro %}
 
-{%- macro confirm_modal(content, title, id, form_id, cancel_label, confirm_label, href) -%}
-    {%- if not form_id -%}
-        {% set form_id = ui.util.id() %}
-        {{ ui.form(method="POST", attrs={"id": form_id}, action=href) }}
-    {%- endif %}
-
-    {%- set close_button = ui.modal_close_handle(cancel_label or _("Close"), id=id, style="secondary") %}
-    {%- set confirm_button = ui.modal_close_handle(confirm_label or _("Confirm"), id=id, type="submit", attrs={"form": form_id}) %}
-
-    {%- call ui.util.call(ui.modal, title=title or _("Confirm"), id=id, footer=close_button ~ confirm_button, **kwargs) -%}
-        {{ content }}
-    {%- endcall %}
-{%- endmacro %}
-
 {%- macro popover(content, title, id) -%}
     <div {{ ui.util.attrs(kwargs, {"id": id, "class": "nsw-popover"}) }}>
         <div class="nsw-p-sm">
