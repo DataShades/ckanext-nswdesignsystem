@@ -1,151 +1,17 @@
-//#region assets/src/util.ts
-function e(e, t) {
-	Object.entries(t).forEach(([t, n]) => e.setAttribute(t, n));
-}
-function t(e, t) {
-	Object.entries(t).forEach(([t, n]) => e[t] = n);
-}
-function n(e, t) {
-	Object.entries(t).forEach(([t, n]) => {
-		typeof n == "function" ? e.addEventListener(t, n) : e.addEventListener(t, n.listener, n.options);
-	});
-}
-function r(r, a = {}) {
-	let o = document.createElement("button");
-	return o.append(r), o.classList.add("nsw-button", `nsw-button--${i(a.style, a.color)}`), a.type && (o.type = a.type), a.attrs && e(o, a.attrs), a.props && t(o, a.props), a.on && n(o, a.on), o;
-}
-function i(e, t) {
-	switch (t ||= "dark", e) {
-		case "secondary": return t + "-outline";
-		case "warning": return "danger";
-		case "danger": return "danger";
-		default: return t;
-	}
-}
-//#endregion
-//#region assets/src/modal.ts
-var a = class e {
-	#e;
-	constructor(e) {
-		this.el = e, this.#e = NSW.Dialog.getOrCreateInstance(e);
-	}
-	destroy() {
-		this.close(), this.#e.element.remove();
-	}
-	show() {
-		this.#e.openDialog();
-	}
-	close() {
-		this.#e.closeDialog();
-	}
-	static create(t, n = {}) {
-		document.body.insertAdjacentHTML("beforeend", "\n        <div class=\"nsw-dialog\" role=\"dialog\">\n          <div class=\"nsw-dialog__wrapper\">\n            <div class=\"nsw-dialog__container\">\n              <div class=\"nsw-dialog__top\">\n                <div class=\"nsw-dialog__title\"></div>\n                </div>\n              <div class=\"nsw-dialog__content\"></div>\n            </div>\n            <div class=\"nsw-dialog__bottom\"></div>\n          </div>\n        </div>");
-		let i = document.body.lastElementChild;
-		if (n.title) {
-			let e = document.createElement("h2");
-			e.append(n.title), i.querySelector(".nsw-dialog__title")?.appendChild(e);
-		}
-		n.dismissible && (i.classList.add("js-dialog-dismiss"), i.querySelector(".nsw-dialog__top")?.insertAdjacentHTML("beforeend", "<div class=\"nsw-dialog__close\">\n             <button class=\"nsw-icon-button js-close-dialog\">\n               <span class=\"material-icons nsw-material-icons\" focusable=\"false\" aria-hidden=\"true\">close</span>\n               <span class=\"sr-only\">Close</span>\n             </button>\n           </div>")), i.querySelector(".nsw-dialog__content")?.append(t);
-		let a = n.actions || [];
-		n.dismissLabel && a.unshift(r(n.dismissLabel, {
-			props: { onclick: () => o.close() },
-			style: "secondary"
-		})), a.length && i.querySelector(".nsw-dialog__bottom")?.append(...a);
-		let o = new e(i);
-		return o;
-	}
-	static byId(t) {
-		let n = document.getElementById(t);
-		return n ? new e(n) : null;
-	}
-}, o = class e {
-	#e;
-	constructor(e) {
-		this.el = e, this.#e = NSW.Toast.getOrCreateInstance(e), this.close();
-	}
-	destroy() {
-		this.#e.dismiss(), this.#e.element.remove();
-	}
-	show() {
-		this.#e.element.hidden = !1;
-	}
-	close() {
-		this.#e.element.hidden = !0;
-	}
-	static create(t, n = {}) {
-		return new e(NSW.Toast.create({
-			message: typeof t == "string" ? t : t instanceof HTMLElement ? t.innerHTML : t.textContent,
-			title: n.title,
-			variant: n.style || "info",
-			duration: n.timeout || 0,
-			dismissible: n.dismissible
-		}).element);
-	}
-	static byId(t) {
-		let n = document.getElementById(t);
-		return n ? new e(n) : null;
-	}
-}, s = class e {
-	#e;
-	constructor(e) {
-		this.el = e, this.#e = NSW.Tooltip.getOrCreateInstance(e);
-	}
-	close() {
-		this.#e.hideTooltip();
-	}
-	show() {
-		this.#e.showTooltip();
-	}
-	destroy() {
-		this.#e.hideTooltip();
-	}
-	static create(t, n = { target: document.body }) {
-		if (typeof t != "string") throw "Only string tooltips are supported";
-		return n.target.classList.add("nsw-tooltip"), n.target.setAttribute("title", t), new e(n.target);
-	}
-	static byId(t) {
-		let n = document.getElementById(t);
-		return n ? new e(n) : null;
-	}
-}, c = class e {
-	#e;
-	constructor(e) {
-		this.el = e, this.#e = NSW.Popover.getOrCreateInstance(e);
-	}
-	close() {
-		this.#e.hidePopover();
-	}
-	show() {
-		this.#e.showPopover();
-	}
-	destroy() {
-		this.#e.element.remove();
-	}
-	static create(t, n = { target: document.body }) {
-		let r = n.title ? `<h2>${n.title}</h2>` : "", i = typeof t == "string" ? t : t instanceof HTMLElement ? t.innerHTML : t.textContent, a = `popover-${(Math.random() * 1e4).toFixed(0)}`, o = `<div id="${a}" class="nsw-popover"><div class="nsw-p-sm">${r} ${i}</div></div>`;
-		return document.body.insertAdjacentHTML("beforeend", o), n.target.setAttribute("aria-controls", a), new e(n.target);
-	}
-	static byId(t) {
-		let n = document.getElementById(t);
-		return n ? new e(n) : null;
-	}
-};
-//#endregion
-//#region assets/src/main.ts
-((e) => {
-	let t = {
-		button: r,
-		modal: a.create,
-		getModal: a.byId,
-		notification: o.create,
-		getNotification: o.byId,
-		tooltip: s.create,
-		getTooltip: s.byId,
-		popover: c.create,
-		getPopover: c.byId
-	};
-	e.sandbox.setup((e) => {
-		e.ui = e.ui || {}, Object.assign(e.ui, t);
-	});
-})(window.ckan);
-//#endregion
+(function(){function e(e,t){Object.entries(t).forEach(([t,n])=>e.setAttribute(t,n))}function t(e,t){Object.entries(t).forEach(([t,n])=>e[t]=n)}function n(e,t){Object.entries(t).forEach(([t,n])=>{typeof n==`function`?e.addEventListener(t,n):e.addEventListener(t,n.listener,n.options)})}function r(r,a={}){let o=document.createElement(`button`);return o.append(r),o.classList.add(`nsw-button`,`nsw-button--${i(a.style,a.color)}`),a.type&&(o.type=a.type),a.attrs&&e(o,a.attrs),a.props&&t(o,a.props),a.on&&n(o,a.on),o}function i(e,t){switch(t||=`dark`,e){case`secondary`:return t+`-outline`;case`warning`:return`danger`;case`danger`:return`danger`;default:return t}}var a=class e{#e;constructor(e){this.el=e,this.#e=NSW.Dialog.getOrCreateInstance(e)}destroy(){this.close(),this.#e.element.remove()}show(){this.#e.openDialog()}close(){this.#e.closeDialog()}static create(t,n={}){document.body.insertAdjacentHTML(`beforeend`,`
+        <div class="nsw-dialog" role="dialog">
+          <div class="nsw-dialog__wrapper">
+            <div class="nsw-dialog__container">
+              <div class="nsw-dialog__top">
+                <div class="nsw-dialog__title"></div>
+                </div>
+              <div class="nsw-dialog__content"></div>
+            </div>
+            <div class="nsw-dialog__bottom"></div>
+          </div>
+        </div>`);let i=document.body.lastElementChild;if(n.title){let e=document.createElement(`h2`);e.append(n.title),i.querySelector(`.nsw-dialog__title`)?.appendChild(e)}n.dismissible&&(i.classList.add(`js-dialog-dismiss`),i.querySelector(`.nsw-dialog__top`)?.insertAdjacentHTML(`beforeend`,`<div class="nsw-dialog__close">
+             <button class="nsw-icon-button js-close-dialog">
+               <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">close</span>
+               <span class="sr-only">Close</span>
+             </button>
+           </div>`)),i.querySelector(`.nsw-dialog__content`)?.append(t);let a=n.actions||[];n.dismissLabel&&a.unshift(r(n.dismissLabel,{props:{onclick:()=>o.close()},style:`secondary`})),a.length&&i.querySelector(`.nsw-dialog__bottom`)?.append(...a);let o=new e(i);return o}static byId(t){let n=document.getElementById(t);return n?new e(n):null}},o=class e{#e;constructor(e){this.el=e,this.#e=NSW.Toast.getOrCreateInstance(e),this.close()}destroy(){this.#e.dismiss(),this.#e.element.remove()}show(){this.#e.element.hidden=!1}close(){this.#e.element.hidden=!0}static create(t,n={}){return new e(NSW.Toast.create({message:typeof t==`string`?t:t instanceof HTMLElement?t.innerHTML:t.textContent,title:n.title,variant:n.style||`info`,duration:n.timeout||0,dismissible:n.dismissible}).element)}static byId(t){let n=document.getElementById(t);return n?new e(n):null}},s=class e{#e;constructor(e){this.el=e,this.#e=NSW.Tooltip.getOrCreateInstance(e)}close(){this.#e.hideTooltip()}show(){this.#e.showTooltip()}destroy(){this.#e.hideTooltip()}static create(t,n={target:document.body}){if(typeof t!=`string`)throw`Only string tooltips are supported`;return n.target.classList.add(`nsw-tooltip`),n.target.setAttribute(`title`,t),new e(n.target)}static byId(t){let n=document.getElementById(t);return n?new e(n):null}},c=class e{#e;constructor(e){this.el=e,this.#e=NSW.Popover.getOrCreateInstance(e)}close(){this.#e.hidePopover()}show(){this.#e.showPopover()}destroy(){this.#e.element.remove()}static create(t,n={target:document.body}){let r=n.title?`<h2>${n.title}</h2>`:``,i=typeof t==`string`?t:t instanceof HTMLElement?t.innerHTML:t.textContent,a=`popover-${(Math.random()*1e4).toFixed(0)}`,o=`<div id="${a}" class="nsw-popover"><div class="nsw-p-sm">${r} ${i}</div></div>`;return document.body.insertAdjacentHTML(`beforeend`,o),n.target.setAttribute(`aria-controls`,a),new e(n.target)}static byId(t){let n=document.getElementById(t);return n?new e(n):null}};(e=>{let t={button:r,modal:a.create,getModal:a.byId,notification:o.create,getNotification:o.byId,tooltip:s.create,getTooltip:s.byId,popover:c.create,getPopover:c.byId};e.sandbox.setup(e=>{e.ui=e.ui||{},Object.assign(e.ui,t)})})(window.ckan)})();

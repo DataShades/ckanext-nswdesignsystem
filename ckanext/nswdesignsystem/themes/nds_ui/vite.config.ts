@@ -2,17 +2,13 @@ import { defineConfig } from "vite";
 import { resolve } from "path";
 
 export default defineConfig({
-    // plugins: [
-    //     checker({
-    //         typescript: true,
-    //     }),
-    // ],
     publicDir: false,
     build: {
         lib: {
             entry: resolve(__dirname, "assets/src/main.ts"),
-            formats: ["es"],
+            formats: ["iife"],
             fileName: (format) => `ui.js`,
+            name: "ThemingUI",
         },
         outDir: "assets",
         emptyOutDir: false,
