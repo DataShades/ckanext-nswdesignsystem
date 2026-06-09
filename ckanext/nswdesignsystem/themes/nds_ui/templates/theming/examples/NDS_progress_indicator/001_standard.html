@@ -6,11 +6,7 @@
     current step is controlled by the <code>step</code> parameter.
 </p>
 
-<div>
-    {{ ui.nds_progress_indicator("Step 2 of 5", step=2, total=5) }}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {{ ui.nds_progress_indicator("Step 2 of 5", step=2, total=5) }}
     {%- endraw %}

@@ -1,0 +1,27 @@
+<h3>NSW Design System: Date input</h3>
+
+<p>
+    A date input allows users to enter a date. It can be rendered as a group of
+    fields using <code>nds_date_input_group</code>. To enable date picker, add
+    parameter <code>datepicker</code> with value <code>true</code>.
+</p>
+
+{%- call ui.util.call(show_example) -%}
+    {%- raw %}
+        {{ ui.nds_date_input_group("help text", label="Required field", name="date", required=true) }}
+        {{ ui.nds_date_input_group(label="Invalid field", errors=["Invalid date"], value=["2020", "01", "10"]) }}
+        {{ ui.nds_date_input_group(label="Datepicker", datepicker=true) }}
+    {%- endraw %}
+{%- endcall %}
+
+<p>
+    There is also a single-field version of component - <code>nds_date_input</code>. Unlike
+    the group, it always rendered with datepicker.
+</p>
+
+{%- call ui.util.call(show_example) -%}
+    {%- raw %}
+        {{ ui.nds_date_input("help text", label="Required field", name="date", required=true) }}
+        {{ ui.nds_date_input(label="Invalid field", errors=["Invalid date"]) }}
+    {%- endraw %}
+{%- endcall %}

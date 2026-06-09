@@ -5,20 +5,12 @@
     series of <code>nds_link_list_item</code> components as a content.
 </p>
 
-<div>
-    {%- call ui.util.call(ui.nds_link_list) -%}
-        {{ ui.nds_link_list_item("First", href="") }}
-        {{ ui.nds_link_list_item("Second", href="") }}
-        {{ ui.nds_link_list_item("Third", href="", blank=true) }}
-    {%- endcall %}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
-        {%- call ui.util.call(ui.nds_callout) -%}
-            {{ ui.heading("Title", level=4) }}
-            &lt;p&gt;{{ lipsum(1) }}&lt;/p&gt;
+        {%- call ui.util.call(ui.nds_link_list) -%}
+            {{ ui.nds_link_list_item("First", href="") }}
+            {{ ui.nds_link_list_item("Second", href="") }}
+            {{ ui.nds_link_list_item("Third", href="", blank=true) }}
         {%- endcall %}
-
     {%- endraw %}
 {%- endcall %}

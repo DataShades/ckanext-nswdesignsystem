@@ -6,16 +6,9 @@
     required information.
 </p>
 
-<div>
-    {%- call ui.util.call(ui.accordion_wrapper, toggle_all=true) -%}
-        {{ ui.accordion(lipsum(1), title="Accordion 1") }}
-        {{ ui.accordion(lipsum(1), title="Accordion 2") }}
-    {%- endcall %}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
-        {%- call ui.util.call(ui.accordion_wrapper, toggle_all=true) -%}
+        {% call ui.util.call(ui.accordion_wrapper, toggle_all=true) -%}
             {{ ui.accordion(lipsum(1), title="Accordion 1") }}
             {{ ui.accordion(lipsum(1), title="Accordion 2") }}
         {%- endcall %}

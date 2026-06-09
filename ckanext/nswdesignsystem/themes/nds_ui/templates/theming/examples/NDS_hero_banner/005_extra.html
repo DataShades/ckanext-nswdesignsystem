@@ -6,13 +6,7 @@
     inside <code>extra_content</code> parameter
 </p>
 
-<div>
-    {{ ui.nds_hero_banner(ui.heading("Extra content", level=1),
-            subtitle="Side",
-            extra_content=lipsum(1)) }}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {{ ui.nds_hero_banner(ui.heading("Extra content", level=1),
             subtitle="Side",

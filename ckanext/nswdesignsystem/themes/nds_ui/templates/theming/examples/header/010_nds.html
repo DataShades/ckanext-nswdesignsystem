@@ -20,24 +20,7 @@
     </ul>
 </p>
 
-<div>
-    {%- set submenu = [
-            {"title": "Simple", "href": "?simple"},
-            {"title": "Complex", "href": "?complex", "submenu": [
-                {"title": "Level 2", "href": "?level-2"}
-            ]},
-    ] -%}
-
-    {%- call ui.util.call(ui.header, title="Site title") -%}
-        {%- call ui.util.call(ui.main_nav) -%}
-            {{ ui.main_nav_item("With submenu", href="", submenu=submenu,
-                    description=lipsum(1)) }}
-            {{ ui.main_nav_item("No submenu", href="") }}
-        {%- endcall %}
-    {%- endcall %}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {%- set submenu = [
             {"title": "Simple", "href": "?simple"},

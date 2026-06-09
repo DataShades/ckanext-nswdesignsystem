@@ -7,20 +7,12 @@
     to the <code>tab_wrapper</code>.
 </p>
 
-<div>
-    {%- call ui.util.call(ui.tab_wrapper, as_nav=true) -%}
-        {{ ui.tab("Link 1", href="") }}
-        {{ ui.tab("Link 2", href="", active=true) }}
-        {{ ui.tab("Link 3", href="") }}
-    {%- endcall %}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
-        {%- call ui.util.call(ui.tab_wrapper) -%}
+        {%- call ui.util.call(ui.tab_wrapper, as_nav=true) -%}
             {{ ui.tab("Link 1", href="") }}
             {{ ui.tab("Link 2", href="", active=true) }}
-            {{ ui.tab("Link 3", href=) }}
+            {{ ui.tab("Link 3", href="") }}
         {%- endcall %}
     {%- endraw %}
 {%- endcall %}

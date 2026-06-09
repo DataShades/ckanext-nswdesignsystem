@@ -4,13 +4,7 @@
     <em>Scroll down a bit and then start scrolling to top to see the button.</em>
 </p>
 
-<div>
-    {{ ui.nds_back_to_top() }}
-
-    {{ lipsum(20) }}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {{ ui.nds_back_to_top() }}
 

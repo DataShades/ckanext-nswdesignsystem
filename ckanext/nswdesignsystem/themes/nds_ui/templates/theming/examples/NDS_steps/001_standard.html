@@ -11,14 +11,7 @@
     changed via <code>level</code> parameter.
 </p>
 
-<div>
-    {%- call ui.util.call(ui.nds_steps) -%}
-        {{ ui.nds_step_item(lipsum(1), title="First", fill=true) }}
-        {{ ui.nds_step_item(lipsum(1), title="Second", level=4) }}
-    {%- endcall %}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {%- call ui.util.call(ui.nds_steps) -%}
             {{ ui.nds_step_item(lipsum(1), title="First", fill=true) }}

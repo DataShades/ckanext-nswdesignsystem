@@ -5,13 +5,7 @@
     scheme. Allowed values are <code>dark</code>, <code>light</code> and <code>off-white</code>.
 </p>
 
-<div>
-    {{ ui.nds_hero_banner(ui.heading("Dark", level=1), color="dark") }}
-    {{ ui.nds_hero_banner(ui.heading("Light", level=1), color="light") }}
-    {{ ui.nds_hero_banner(ui.heading("Off-white", level=1), color="off-white") }}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {{ ui.nds_hero_banner(ui.heading("Dark", level=1), color="dark") }}
         {{ ui.nds_hero_banner(ui.heading("Light", level=1), color="light") }}

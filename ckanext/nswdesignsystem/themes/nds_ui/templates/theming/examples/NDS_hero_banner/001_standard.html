@@ -5,18 +5,11 @@
     tag with <code>nsw-intro</code> class.
 </p>
 
-<div>
-    {%- call ui.util.call(ui.nds_hero_banner) -%}
-        {{ ui.heading("Hero banner", level=1) }}
-        <div class="nsw-intro">{{ lipsum(1) }}</div>
-    {%- endcall %}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {%- call ui.util.call(ui.nds_hero_banner) -%}
             {{ ui.heading("Hero banner", level=1) }}
-            &lt;div class="nsw-intro"&gt;{{ lipsum(1) }}&lt;/div&gt;
+            <div class="nsw-intro">{{ lipsum(1) }}</div>
         {%- endcall %}
     {%- endraw %}
 {%- endcall %}

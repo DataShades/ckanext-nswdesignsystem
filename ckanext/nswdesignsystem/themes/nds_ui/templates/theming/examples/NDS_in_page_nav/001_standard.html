@@ -4,15 +4,7 @@
 
 </p>
 
-<div>
-    {%- call ui.util.call(ui.nds_in_page_nav, title="On this page") -%}
-        {{ ui.nds_in_page_nav_item("First") }}
-        {{ ui.nds_in_page_nav_item("Second") }}
-        {{ ui.nds_in_page_nav_item("Third") }}
-    {%- endcall %}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {%- call ui.util.call(ui.nds_in_page_nav, title="On this page") -%}
             {{ ui.nds_in_page_nav_item("First") }}

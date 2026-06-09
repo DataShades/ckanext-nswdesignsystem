@@ -24,31 +24,9 @@
     and <code>highlight</code>
 </p>
 
-<div>
-    {%- call ui.util.call(ui.grid) -%}
-        {%- call ui.util.call(ui.row, wrap=true, gap="lg") -%}
-            {%- call ui.util.call(ui.column, span={"xs": 6}) -%}
-                {{ ui.card(lipsum(1), title="Standard", href="") }}
-            {%- endcall %}
-
-            {%- call ui.util.call(ui.column, span={"xs": 6}) -%}
-                {{ ui.card(lipsum(1), title="Dark", href="", variant="dark") }}
-            {%- endcall %}
-
-            {%- call ui.util.call(ui.column, span={"xs": 6}) -%}
-                {{ ui.card(lipsum(1), title="Light", href="", variant="light") }}
-            {%- endcall %}
-
-            {%- call ui.util.call(ui.column, span={"xs": 6}) -%}
-                {{ ui.card(lipsum(1), title="Highlight", href="", variant="highlight") }}
-            {%- endcall %}
-        {%- endcall %}
-    {%- endcall %}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
-        {%- call ui.util.call(ui.grid) -%}
+        {% call ui.util.call(ui.grid) -%}
             {%- call ui.util.call(ui.row, wrap=true, gap="lg") -%}
                 {%- call ui.util.call(ui.column, span={"xs": 6}) -%}
                     {{ ui.card(lipsum(1), title="Standard", href="") }}
@@ -78,14 +56,7 @@
     for it.
 </p>
 
-<div>
-    {{ ui.card(lipsum(1),
-            title="Rich card",
-            tag="Hello, World",
-            date=ui.datetime(ui.util.now())) }}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {{ ui.card(lipsum(1),
             title="Rich card",
@@ -99,18 +70,11 @@
     Cards can be rendered horizontally using <code>horizontal</code> parameter.
 </p>
 
-<div>
-    {{ ui.card(lipsum(1),
-            title="Horizontal card",
-            img="https://placehold.co/100x100",
-            horizontal=true) }}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {{ ui.card(lipsum(1),
             title="Horizontal card",
-            img="https://placehold.co/300x200",
+            img="https://placehold.co/100x100",
             horizontal=true) }}
     {%- endraw %}
 {%- endcall %}

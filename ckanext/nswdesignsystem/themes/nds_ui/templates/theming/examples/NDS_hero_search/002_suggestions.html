@@ -6,22 +6,13 @@
     search results here.
 </p>
 
-<div>
-    {%- call ui.util.call(ui.nds_hero_search) -%}
-        <ul>
-            <li><a href="">First</a></li>
-            <li><a href="">Second</a></li>
-        </ul>
-    {%- endcall %}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {%- call ui.util.call(ui.nds_hero_search) -%}
-            &lt;ul&gt;
-            &lt;li&gt;&lt;a href=""&gt;First&lt;/a&gt;&lt;/li&gt;
-            &lt;li&gt;&lt;a href=""&gt;Second&lt;/a&gt;&lt;/li&gt;
-            &lt;/ul&gt;
+            <ul>
+                <li><a href="">First</a></li>
+                <li><a href="">Second</a></li>
+            </ul>
         {%- endcall %}
     {%- endraw %}
 {%- endcall %}

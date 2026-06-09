@@ -5,11 +5,7 @@
     the banner. It cannot be compined with an image.
 </p>
 
-<div>
-    {{ ui.nds_hero_banner(ui.heading("Lines", level=1), lines=true) }}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {{ ui.nds_hero_banner(ui.heading("Lines", level=1), lines=true) }}
     {%- endraw %}

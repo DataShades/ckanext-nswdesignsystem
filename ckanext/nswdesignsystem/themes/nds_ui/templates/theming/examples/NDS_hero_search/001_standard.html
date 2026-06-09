@@ -11,18 +11,11 @@
     and short introduction above the form.
 </p>
 
-<div>
-    {{ ui.nds_hero_search(
+{%- call ui.util.call(show_example) -%}
+    {%- raw %}
+        {{ ui.nds_hero_search(
             img="https://picsum.photos/500/300",
             title="Hero search",
             intro=lipsum(1)) }}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
-    {%- raw %}
-        {%- call ui.util.call(ui.nds_hero_banner) -%}
-            {{ ui.heading("Hero banner", level=1) }}
-            &lt;div class="nsw-intro"&gt;{{ lipsum(1) }}&lt;/div&gt;
-        {%- endcall %}
     {%- endraw %}
 {%- endcall %}

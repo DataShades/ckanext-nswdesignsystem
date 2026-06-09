@@ -6,30 +6,19 @@
     hours.
 </p>
 
-<div>
-    {{ ui.nds_global_alert(lipsum(1), title="Always shown") }}
-    {{ ui.nds_global_alert(lipsum(1), title="Hidden for 24 hours", cookie_name="example_global_aler") }}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {{ ui.nds_global_alert(lipsum(1), title="Always shown") }}
         {{ ui.nds_global_alert(lipsum(1), title="Hidden for 24 hours", cookie_name="example_global_aler") }}
     {%- endraw %}
 {%- endcall %}
 
-
 <p>
     The <code>variant</code> parameter of global alert can be set to <code>light</code> or
     <code>critical</code> to change alert's appearance.
 </p>
 
-<div>
-    {{ ui.nds_global_alert(lipsum(1), variant="light") }}
-    {{ ui.nds_global_alert(lipsum(1), variant="critical") }}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {{ ui.nds_global_alert(lipsum(1), variant="light") }}
         {{ ui.nds_global_alert(lipsum(1), variant="critical") }}

@@ -8,28 +8,12 @@
     least one facet from the section is active.
 </p>
 
-<div>
-    {%- set id = ui.util.id() -%}
-    <form id="{{ id }}"></form>
-    {%- call ui.util.call(ui.filters, form_id=id, js=true, instant=true) -%}
-        {%- call ui.util.call(ui.facet_section, title="Cool facet", collapsible=true) -%}
-            {{ ui.facet("First value", key="cool", form_id=id) }}
-            {{ ui.facet("Second value", key="cool", form_id=id) }}
-        {%- endcall %}
-
-        {%- call ui.util.call(ui.facet_section, title="Non-collapsible") -%}
-            {{ ui.facet("First value", key="not-cool", form_id=id) }}
-            {{ ui.facet("Second value", key="not-cool", form_id=id) }}
-        {%- endcall %}
-    {%- endcall %}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
-        {%- set id = ui.util.id() -%}
-        &lt;form id="{{ id }}"&gt;&lt;/form&gt;
+        {% set id = ui.util.id() -%}
+        <form id="{{ id }}"></form>
 
-        {%- call ui.util.call(ui.filters, form_id=id, js=true) -%}
+        {%- call ui.util.call(ui.filters, form_id=id, js=true, instant=true) -%}
             {%- call ui.util.call(ui.facet_section, title="Cool facet", collapsible=true) -%}
                 {{ ui.facet("First value", key="cool", form_id=id) }}
                 {{ ui.facet("Second value", key="cool", form_id=id) }}
@@ -39,11 +23,9 @@
                 {{ ui.facet("First value", key="not-cool", form_id=id) }}
                 {{ ui.facet("Second value", key="not-cool", form_id=id) }}
             {%- endcall %}
-
         {%- endcall %}
     {%- endraw %}
 {%- endcall %}
-
 
 <p>
     When <code>js</code> is enabled on <code>filters</code>, you can specify
@@ -54,25 +36,9 @@
     will remain visible.
 </p>
 
-<div>
-    {%- call ui.util.call(ui.filters, collapse_direction="down", js=true) -%}
-        {%- call ui.util.call(ui.facet_section, title="Cool facet") -%}
-            {{ ui.facet("First value", key="cool", form_id=id) }}
-            {{ ui.facet("Second value", key="cool", form_id=id) }}
-        {%- endcall %}
-    {%- endcall %}
-
-    {%- call ui.util.call(ui.filters, collapse_direction="right", js=true) -%}
-        {%- call ui.util.call(ui.facet_section, title="Cool facet") -%}
-            {{ ui.facet("First value", key="cool", form_id=id) }}
-            {{ ui.facet("Second value", key="cool", form_id=id) }}
-        {%- endcall %}
-    {%- endcall %}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
-        {%- call ui.util.call(ui.filters, collapse_direction="down", js=true) -%}
+        {% call ui.util.call(ui.filters, collapse_direction="down", js=true) -%}
             {%- call ui.util.call(ui.facet_section, title="Cool facet") -%}
                 {{ ui.facet("First value", key="cool", form_id=id) }}
                 {{ ui.facet("Second value", key="cool", form_id=id) }}
@@ -89,32 +55,15 @@
 {%- endcall %}
 
 
-
 <p>
     You can use arbitrary inputs inside facet section. Put them directly into <code>facet_section</code>.
     If facet section contains a single field leave the <code>label</code> empty
     because facet section already has title that identifies the field.
 </p>
 
-<div>
-    {%- call ui.util.call(ui.filters, collapse_direction="down", js=true) -%}
-        {%- call ui.util.call(ui.facet_section, title="Cool facet") -%}
-            {{ ui.select(name='select-filter',
-                options=[{"value": ""}, {'value': "A"},{'value': "B"}]) }}
-        {%- endcall %}
-    {%- endcall %}
-
-    {%- call ui.util.call(ui.filters, collapse_direction="right", js=true) -%}
-        {%- call ui.util.call(ui.facet_section, title="Multi-input facet", collapsible=true) -%}
-            {{ ui.input(name='select-input', label="Input") }}
-            {{ ui.nds_date_input_group(name='date-input', label="Date") }}
-        {%- endcall %}
-    {%- endcall %}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
-        {%- call ui.util.call(ui.filters, collapse_direction="down", js=true) -%}
+        {% call ui.util.call(ui.filters, collapse_direction="down", js=true) -%}
             {%- call ui.util.call(ui.facet_section, title="Cool facet") -%}
                 {{ ui.select(name='select-filter',
                 options=[{"value": ""}, {'value': "A"},{'value': "B"}]) }}

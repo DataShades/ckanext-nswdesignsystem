@@ -7,7 +7,7 @@
         "typeRoots": ["../../../../../node_modules/nsw-design-system"],
         "module": "preserve",
         "target": "es2020",
-
+        "types": ["node"],
         "sourceMap": false,
 
         "noUncheckedIndexedAccess": true,

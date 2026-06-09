@@ -5,14 +5,7 @@
     outlined button as <code>secondary</code> and danger button as <code>danger/warning</code>.
 </p>
 
-<div>
-    {{ ui.button("Primary", style="primary") }}
-    {{ ui.button("Secondary", style="secondary") }}
-    {{ ui.button("Danger", style="danger") }}
-</div>
-
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {{ ui.button("Primary", style="primary") }}
         {{ ui.button("Secondary", style="secondary") }}
@@ -36,17 +29,7 @@
     the light background.
 </p>
 
-<div>
-    {{ ui.button("Primary dark", style="primary", color="dark") }}
-    {{ ui.button("Secondary dark", style="secondary", color="dark") }}
-    {{ ui.button("Primary light", style="primary", color="light") }}
-    {{ ui.button("Secondary light", style="secondary", color="light") }}
-    {{ ui.button("Primary white", style="primary", color="white") }}
-    {{ ui.button("Secondary white", style="secondary", color="white") }}
-</div>
-
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {{ ui.button("Primary dark", style="primary", color="dark") }}
         {{ ui.button("Secondary dark", style="secondary", color="dark") }}
@@ -57,45 +40,24 @@
     {%- endraw %}
 {%- endcall %}
 
-
 <p>
     Icons can be placed before and after the text. It's recommended to wrap the
     text into separate <code>span</code> when it's combined with icon.
 </p>
 
-<div>
-    {% call ui.util.call(ui.button) -%}
-        {{ ui.icon("home") }}
-        <span>Text</span>
-    {%- endcall %}
-    {% call ui.util.call(ui.button) -%}
-        <span>Text</span>
-        {{ ui.icon("heart") }}
-    {%- endcall %}
-    {% call ui.util.call(ui.button) -%}
-        {{ ui.icon("star") }}
-        <span>Text</span>
-        {{ ui.icon("cog") }}
-    {%- endcall %}
-
-</div>
-
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {% call ui.util.call(ui.button) -%}
             {{ ui.icon("home") }}
-            &lt;span&gt;Text&lt;/span&gt;
+            <span>Text</span>
         {%- endcall %}
-
         {% call ui.util.call(ui.button) -%}
-            &lt;span&gt;Text&lt;/span&gt;
+            <span>Text</span>
             {{ ui.icon("heart") }}
         {%- endcall %}
-
         {% call ui.util.call(ui.button) -%}
             {{ ui.icon("star") }}
-            &lt;span&gt;Text&lt;/span&gt;
+            <span>Text</span>
             {{ ui.icon("cog") }}
         {%- endcall %}
     {%- endraw %}

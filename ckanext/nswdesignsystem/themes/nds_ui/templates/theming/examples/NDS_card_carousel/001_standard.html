@@ -6,17 +6,7 @@
     by carousel.
 </p>
 
-<div>
-    {%- call ui.util.call(ui.nds_card_carousel) -%}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-    {%- endcall %}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {%- call ui.util.call(ui.nds_card_carousel) -%}
             {{ ui.nds_card_carousel_item(lipsum(1)) }}
@@ -27,7 +17,6 @@
         {%- endcall %}
     {%- endraw %}
 {%- endcall %}
-
 
 <p>
     The carousel component can be configured via:
@@ -41,17 +30,7 @@
     </ul>
 </p>
 
-<div>
-    {%- call ui.util.call(ui.nds_card_carousel, title="Title", drag=true, loop=true) -%}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-    {%- endcall %}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {%- call ui.util.call(ui.nds_card_carousel, title="Title", drag=true, loop=true) -%}
             {{ ui.nds_card_carousel_item(lipsum(1)) }}
@@ -68,17 +47,8 @@
     quick page selection. The <code>loop</code> parameter has no effect when
     navigation enabled.
 </p>
-<div>
-    {%- call ui.util.call(ui.nds_card_carousel, navigation=true) -%}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-    {%- endcall %}
-</div>
 
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {%- call ui.util.call(ui.nds_card_carousel, navigation=true) -%}
             {{ ui.nds_card_carousel_item(lipsum(1)) }}
@@ -94,17 +64,7 @@
     The <code>pagination</code> parameter replaces dot-navigation with numbered items.
 </p>
 
-<div>
-    {%- call ui.util.call(ui.nds_card_carousel, pagination=true) -%}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-        {{ ui.nds_card_carousel_item(lipsum(1)) }}
-    {%- endcall %}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {%- call ui.util.call(ui.nds_card_carousel, pagination=true) -%}
             {{ ui.nds_card_carousel_item(lipsum(1)) }}

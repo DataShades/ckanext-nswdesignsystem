@@ -5,18 +5,7 @@
     values that make markers smaller: <code>sm</code> and <code>md</code>.
 </p>
 
-<div>
-    {%- call ui.util.call(ui.nds_steps, counter=true, size="sm") -%}
-        {{ ui.nds_step_item(lipsum(1), title="First", fill=true) }}
-        {{ ui.nds_step_item(lipsum(1), title="Second") }}
-    {%- endcall %}
-    {%- call ui.util.call(ui.nds_steps, size="md") -%}
-        {{ ui.nds_step_item(lipsum(1), title="First", fill=true) }}
-        {{ ui.nds_step_item(lipsum(1), title="Second") }}
-    {%- endcall %}
-</div>
-
-{%- call ui.util.call(ui.code, language="jinja2", dedent=true) -%}
+{%- call ui.util.call(show_example) -%}
     {%- raw %}
         {%- call ui.util.call(ui.nds_steps, counter=true, size="sm") -%}
             {{ ui.nds_step_item(lipsum(1), title="First", fill=true) }}
