@@ -1,0 +1,51 @@
+{#
+Displays a sidebar module with information for given package
+
+pkg          - The package dict that owns the resources.
+am_following - True if the user is following the package.
+
+Example:
+
+{% snippet "package/snippets/info.html", pkg=pkg, am_following=am_following %}
+
+#}
+{% block package_info %}
+    {% if pkg %}
+        <section id="package-info" class="module module-narrow">
+            <div class="module context-info">
+                <div>
+                    <div class="module-heading">
+                        {% block heading %}
+                            <h2 class="heading">{{ h.dataset_display_name(pkg) }}</h2>
+                        {% endblock %}
+                    </div>
+                </div>
+                <div class="package-info">
+                    {% block package_info_inner %}
+                        {% block nums %}
+                            {% set num_followers = h.follow_count('dataset', pkg.id) %}
+                            <div class="nums">
+                                <dl>
+                                    <dt>{{ _('Followers') }}</dt>
+                                    <dd>{{ h.SI_number_span(num_followers) }}</dd>
+                                </dl>
+                            </div>
+                        {% endblock %}
+                        {% block follow_button %}
+                            {% if current_user.is_authenticated %}
+                                {{ ui.alert(error_message, style="danger") if error_message }}
+
+                                {% if am_following %}
+                                    {{ ui.button(ui.icon("remove") ~ _("Unfollow"), style="danger", hx={"target": "#package-info", "post": h.url_for('dataset.unfollow', id=pkg.id)}) }}
+                                {% else %}
+                                    {{ ui.button(ui.icon("add") ~ _("Follow"), style="success", hx={"target": "#package-info", "post": h.url_for('dataset.follow', id=pkg.id)}) }}
+
+                                {% endif %}
+                            {% endif %}
+                        {% endblock %}
+                    {% endblock %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}

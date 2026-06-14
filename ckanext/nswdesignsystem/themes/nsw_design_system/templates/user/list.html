@@ -1,0 +1,37 @@
+{% extends "page.html" %}
+
+{% block subtitle -%}
+    {{ ui.subtitle_item(_('All Users')) }}
+    {{- super() }}
+{%- endblock %}
+
+{% block breadcrumb_content -%}
+    {{ ui.breadcrumb(_('Users'), href=h.url_for('user.index'), active=true) }}
+{%- endblock %}
+
+{% block primary_content %}
+    <article class="module">
+        <div class="module-content">
+            <h1 class="page-heading">
+                {% block page_heading %}{{ _('Users') }}{% endblock %}
+            </h1>
+            {% block users_list %}
+                {%- call ui.util.call(ui.user_list) -%}
+                    {% block users_list_inner %}
+                        {% for user in page.items %}
+                            {{ ui.user(user=user) }}
+                        {% endfor %}
+                    {% endblock %}
+                {%- endcall %}
+            {% endblock %}
+        </div>
+        {% block page_pagination %}
+            {{ ui.pagination(page=page.page, total=page.last_page, url_generator=page._url_generator, url_params={"q": q, "order_by": order_by}) }}
+
+        {% endblock %}
+    </article>
+{% endblock %}
+
+{% block secondary_content %}
+    {% snippet 'user/snippets/user_search.html', q=q %}
+{% endblock %}

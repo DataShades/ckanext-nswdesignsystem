@@ -1,0 +1,22 @@
+{% extends "group/read_base.html" %}
+
+{% block subtitle -%}
+    {{ ui.subtitle_item(_('About')) }}
+    {{- super() }}
+{%- endblock %}
+
+{% block primary_content_inner %}
+    {%- call ui.util.call(ui.heading, level=1) -%}
+        {% block page_heading %}{{ group_dict.display_name }}{% endblock %}
+    {%- endcall %}
+
+    {% block group_description %}
+        {% if group_dict.description %}
+            {{ h.render_markdown(group_dict.description) }}
+  	{% endif %}
+    {% endblock %}
+
+    {% block group_extras %}
+        {% snippet 'snippets/additional_info.html', extras = h.sorted_extras(group_dict.extras) %}
+    {% endblock %}
+{% endblock %}

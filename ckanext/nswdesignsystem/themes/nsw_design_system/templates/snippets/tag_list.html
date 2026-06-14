@@ -1,0 +1,10 @@
+{% set _class = _class or 'tag-list' %}
+{% block tag_list %}
+  <ul class="{{ _class }}">
+    {% for tag in tags %}
+      <li>
+        {{ ui.tag(tag.display_name|truncate(22), href=h.url_for('dataset.search', tags=tag.name), aria={"label": _('Search datasets with the tag: {name}').format(name=tag.display_name)}) }}
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

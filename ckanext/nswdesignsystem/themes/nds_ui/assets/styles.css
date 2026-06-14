@@ -1,3 +1,21 @@
+.ckan-account-nav {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+
+    li {
+        margin: 0px;
+    }
+}
+.ckan-lang-select {
+    .nsw-form__group {
+        display: inline-flex;
+        margin: 0px;
+        gap: 0.5rem;
+        align-items: center;
+    }
+}
+
 @scope (.nsw-button-group) {
   display: inline-flex;
 

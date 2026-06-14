@@ -1,0 +1,57 @@
+{%- set form_id = ui.util.id() -%}
+{%- set modal_id = ui.util.id() -%}
+
+{%- set title = _("Deleted records") -%}
+{%- set icon = "close" -%}
+
+{% if ent_type == 'package' %}
+    {%- set title = _('Deleted datasets') -%}
+    {%- set icon = "sitemap" -%}
+
+{% elif ent_type == 'organization' %}
+    {%- set title = _('Deleted organizations') -%}
+    {%- set icon = "building" -%}
+
+{% elif ent_type == 'group' %}
+    {%- set title = _('Deleted groups') -%}
+    {%- set icon = "users" -%}
+
+{% endif %}
+
+<div class="mb-3">
+    {%- call ui.util.call(ui.accordion_wrapper) -%}
+        {%- call ui.util.call(ui.accordion, title=ui.icon(icon) ~ title, open=true) -%}
+
+            {# entities list can be of different types #}
+            {% set items = [] %}
+
+            <!-- expanded by default to prevent problems with disabled js -->
+            <ul class="{{ ent_type }}-list">
+                {% for entity in entities %}
+                    {% set title = entity.title or entity.name %}
+                    {% do items.append(title) %}
+                    <li>
+                        {%- with title=title|truncate(80) -%}
+                            {{ ui.link(title, href=h.url_for(entity.type + '.read', id=entity.name), aria={"label": _('Navigate to dataset: {title}').format(title=title)}) }}
+                        {%- endwith %}
+                    </li>
+                {% else %}
+                    {{ ui.empty(_(messages.empty[ent_type])) }}
+                {% endfor %}
+            </ul>
+
+            <!-- show button only if there is entity to purge -->
+            {% if items|length > 0 %}
+                {%- call ui.util.call(ui.form, method="POST", action=h.url_for('admin.trash'), attrs={"id": form_id}) -%}
+                    <input type="hidden" name="action" value="{{ ent_type }}">
+                {%- endcall %}
+
+                {{ ui.confirm_modal(_(messages.confirm[ent_type]), id=modal_id, form_id=form_id) }}
+
+                {%- call ui.util.call(ui.form_actions) -%}
+                    {{ ui.modal_handle(_('Purge'), id=modal_id, style="danger") }}
+                {%- endcall %}
+            {% endif %}
+        {%- endcall %}
+    {%- endcall %}
+</div>

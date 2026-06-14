@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+
+{%- block page %}
+   {{ h.rendered_resource_view(resource_view, resource, package) }}
+{% endblock -%}

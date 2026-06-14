@@ -1,0 +1,24 @@
+{% extends "user/login.html" %}
+
+{% block subtitle -%}
+    {{ ui.subtitle_item(_('Register')) }}
+    {{- super() }}
+{%- endblock %}
+
+{% block breadcrumb_content -%}
+    {{ ui.breadcrumb(_('Registration'), href=h.url_for('user.register'), active=true) }}
+{%- endblock %}
+
+{% block page_heading %}{{ _('Register for an Account') }}{% endblock %}
+
+{% block form %}
+    {{ form | safe }}
+{% endblock %}
+
+{% block primary_content_inner %}
+    {% block help %}
+        {% block help_inner %}
+            <p>{{ _("Create datasets, groups and other exciting things") }}</p>
+        {% endblock %}
+    {% endblock %}
+{% endblock %}

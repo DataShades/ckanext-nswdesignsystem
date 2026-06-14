@@ -1,0 +1,9 @@
+{% extends "group/base_form_page.html" %}
+
+{% block breadcrumb_content_inner -%}
+    {{ ui.breadcrumb(group.display_name|truncate(35), href=h.url_for(group_type+'.read', id=group.name), attrs={"title": group.display_name}) }}
+    {{ ui.breadcrumb(_('Manage'), href=h.url_for(group_type+'.edit', id=group.name), active=true) }}
+{%- endblock %}
+
+{% block page_heading_class %}hide-heading{% endblock %}
+{% block page_heading %}{{ h.humanize_entity_type('group', group_type, 'edit label') or _('Edit Group') }}{% endblock %}

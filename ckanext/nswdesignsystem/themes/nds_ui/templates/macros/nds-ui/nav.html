@@ -66,9 +66,10 @@
     </li>
 {%- endmacro %}
 
-{%- macro account_nav_item(content, href, active) -%}
-    {%- set class = "nsw-display-inline-flex nsw-m-y-0 nsw-m-left-xs" -%}
-    <li {{ ui.util.attrs(kwargs, {"class": class}) }}>{{ ui.link(content, href=href) }}</li>
+{%- macro account_nav_item(content, href, active, icon) -%}
+    <li {{ ui.util.attrs(kwargs) }}>
+        {{ ui.link((ui.icon(icon) if icon else "") ~ content, href=href, _extra_class="nsw-link--icon" if icon else "") }}
+    </li>
 {%- endmacro %}
 
 {%- macro content_nav_item(content, href, active) -%}

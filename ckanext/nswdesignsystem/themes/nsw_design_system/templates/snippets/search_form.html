@@ -1,0 +1,63 @@
+{%- set placeholder -%}
+{% block header_site_search_label %}{{ placeholder if placeholder else _('Search datasets...') }}{% endblock %}
+{%- endset %}
+{% set sorting = sorting if sorting else [(_('Name Ascending'), 'name asc'), (_('Name Descending'), 'name desc')] %}
+{% set search_class = search_class if search_class else 'search-giant' %}
+{% set no_bottom_border = no_bottom_border if no_bottom_border else false %}
+{% set form_id = form_id if form_id else false %}
+
+
+{# theming bridge #}
+{%- set kwargs = kwargs or {} -%}
+{%- do kwargs.setdefault("attrs", {}) -%}
+{%- if form_id -%}
+    {%- do kwargs["attrs"].update({"id": form_id}) -%}
+{%- endif %}
+
+{%- call ui.util.call(ui.search_form_box, use_htmx=use_htmx or true, **kwargs) -%}
+    {% block search_input %}
+        <div class="input-group search-input-group">
+            {{ ui.search_input(name="q", label=none, value=query, placeholder=placeholder, attrs={"autocomplete": "off"}) }}
+            {% block search_input_button %}
+                <span class="input-group-btn">
+                    {{ ui.search_submit_button() }}
+                </span>
+            {% endblock %}
+        </div>
+    {% endblock %}
+
+    {% block search_search_fields %}
+        {%- for name, value in fields -%}
+            {{ ui.hidden_input(name=name, value=value) }}
+        {%- endfor %}
+    {% endblock %}
+
+    {% block search_sortby %}
+        {%- call ui.util.call(ui.search_sort_control, name="sort", options=sorting, selected=sorting_selected) -%}
+            {% block search_sortby_button %}
+                <button class="btn btn-secondary js-hide" type="submit">{{ _('Go') }}</button>
+            {% endblock %}
+        {%- endcall %}
+    {% endblock %}
+
+    {% block search_title %}
+        {{ ui.search_results_text(count=count, error=error, type=type, query=query) }}
+    {% endblock %}
+
+    {% block search_facets %}
+        {{ ui.search_active_filters(active_filters=fields, facet_titles=facets.titles if facets else {}, facets=facets.search if facets else {}, use_htmx=true) }}
+        <a class="show-filters btn btn-secondary">{{ _('Filter Results') }}</a>
+    {% endblock %}
+{%- endcall %}
+
+{% if show_empty and count == 0 and not error %}
+    {% trans %}
+    <p class="extra">Please try another search.</p>
+  {% endtrans %}
+{% endif %}
+
+{% if error %}
+    {% trans %}
+    <p id="search-error"><strong>There was an error while searching.</strong> Please try again.</p>
+  {% endtrans %}
+{% endif %}

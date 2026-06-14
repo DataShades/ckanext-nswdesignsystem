@@ -11,6 +11,7 @@
 {% import "macros/nds-ui/search.html" as _search%}
 {% import "macros/nds-ui/section.html" as _section%}
 {% import "macros/nds-ui/custom.html" as _custom%}
+{% import "macros/form.html" as _ckan_form%}
 
 {% set accordion_wrapper = accordion_wrapper | default(_wrapper.accordion_wrapper) %}
 {% set account_nav = account_nav | default(_wrapper.account_nav) %}
@@ -107,6 +108,8 @@
 {% set footer_main = footer_main | default(meta.footer_main) %}
 {% set footer_secondary = footer_secondary | default(meta.footer_secondary) %}
 {% set header = header | default(meta.header) %}
+{% set language_selector = language_selector | default(meta.language_selector) %}
+
 
 {% set account_nav_item = account_nav_item | default(_nav.account_nav_item) %}
 {% set breadcrumb = breadcrumb | default(_nav.breadcrumb) %}
@@ -147,3 +150,6 @@
 {% set nds_steps = nds_steps | default(_custom.nds_steps) %}
 {% set nds_step_item = nds_step_item | default(_custom.nds_step_item) %}
 {% set nds_progress_indicator = nds_progress_indicator | default(_custom.nds_progress_indicator) %}
+{% set nds_footer_section = nds_footer_section | default(_custom.nds_footer_section) %}
+
+{%- set image_upload = image_upload | default(_ckan_form.image_upload) -%}

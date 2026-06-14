@@ -1,0 +1,60 @@
+{% set dataset_type = h.default_package_type() %}
+
+{% block header_wrapper %}
+    {% block header_account %}
+        {%- call ui.util.call(ui.account) -%}
+            {% block header_account_container_content %}
+                {%- call ui.util.call(ui.account_nav) -%}
+                    {% if current_user.is_authenticated %}
+                        {% block header_account_logged %}
+                            {% block header_account_profile %}
+                                {% block nswdesignsystem_header_demo_link %}
+                                    {% if g.debug and current_user.sysadmin %}
+                                        {%- call ui.util.call(ui.account_nav_item, href=h.url_for('nswdesignsystem.index'), aria={"label": _("NSW Design System Components")}, icon="architecture") -%}
+                                            <span>{{ _("NSW DS") }}</span>
+                                        {%- endcall %}
+                                    {% endif %}
+                                {% endblock %}
+                                {{ ui.account_nav_item(ui.util.tag(current_user.display_name, "span"), href=h.url_for('user.read', id=current_user.name), aria={"label": _('View profile')}, _extra_class="username") }}
+                            {%- endblock %}
+
+                            {%- if current_user.sysadmin -%}
+                                {{ ui.account_nav_item(ui.util.tag(_('Admin'), "span"), href=h.url_for('admin.index'), aria={"label": _('Sysadmin settings')}) }}
+                            {%- endif %}
+
+                            {%- block header_dashboard -%}
+                                {{ ui.account_nav_item(ui.util.tag(_('Dashboard'), "span"), href=h.url_for('dashboard.datasets'), aria={"label": _('View dashboard')}) }}
+                            {%- endblock %}
+
+                            {%- block header_account_log_out_link -%}
+                                {{ ui.account_nav_item(ui.util.tag(_('Log out'), "span"), href=h.url_for('user.logout'), aria={"label": _('Log out')}, method="POST") }}
+                            {%- endblock %}
+                        {%- endblock %}
+                    {% else %}
+                        {% block header_account_notlogged %}
+                            {{ ui.account_nav_item(ui.util.tag(_('Login'), "span"), href=h.url_for('user.login')) }}
+                            {{ ui.account_nav_item(ui.util.tag(_('Register'), "span"), href=h.url_for('user.register')) if h.check_access('user_create') }}
+                        {% endblock %}
+                    {% endif %}
+                {%- endcall %}
+            {% endblock %}
+        {%- endcall %}
+    {% endblock %}
+
+    {%- call ui.util.call(ui.header, logo=g.site_logo, title=g.site_title, subtitle=g.site_description, attrs={"id": "main-nav"}) -%}
+        {% block header_site_navigation %}
+            {%- call ui.util.call(ui.main_nav) -%}
+                {% block header_site_navigation_tabs %}
+                    {% set org_type = h.default_group_type('organization') %}
+                    {% set group_type = h.default_group_type('group') %}
+
+                    {{ ui.main_nav_item(h.humanize_entity_type('package', dataset_type, 'main nav') or _('Datasets'), href=h.url_for(dataset_type ~ '.search'), active=(request.endpoint or "").startswith(dataset_type)) }}
+                    {{ ui.main_nav_item(h.humanize_entity_type('organization', org_type, 'main nav') or _('Organizations'), href=h.url_for(org_type ~ '.index'), active=(request.endpoint or "").startswith(org_type)) }}
+                    {{ ui.main_nav_item(h.humanize_entity_type('group', group_type, 'main nav') or _('Groups'), href=h.url_for(group_type ~ '.index'), active=(request.endpoint or "").startswith(group_type)) }}
+                    {{ ui.main_nav_item(_('About'), href=h.url_for('home.about'), active=request.endpoint=="home.about") }}
+                {% endblock %}
+            {%- endcall %}
+        {% endblock %}
+    {%- endcall %}
+
+{% endblock %}

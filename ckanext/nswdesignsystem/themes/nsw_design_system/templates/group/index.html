@@ -1,0 +1,39 @@
+{% extends "page.html" %}
+
+{% block subtitle -%}
+    {{ ui.subtitle_item(h.humanize_entity_type('group', group_type, 'page title') or _('Groups')) }}
+    {{- super() }}
+{%- endblock %}
+
+{% block breadcrumb_content -%}
+    {{ ui.breadcrumb(h.humanize_entity_type('group', group_type, 'breadcrumb') or _('Groups'), href=h.url_for(group_type+'.index'), active=true) }}
+{%- endblock %}
+
+{% block content_action -%}
+    {{ ui.content_action(h.humanize_entity_type('group', group_type, 'add link') or _('Add Group'), href=h.url_for(group_type ~ '.new'), icon="plus-square") if h.check_access('group_create') }}
+{%- endblock %}
+
+{% block page_header %}{% endblock %}
+{% block page_primary_action -%}{% endblock %}
+
+{% block primary_content_inner %}
+    <h1>{% block page_heading %}{{ h.humanize_entity_type('group', group_type, 'page title') or _('Groups') }}{% endblock %}</h1>
+
+    {% block groups_search_form %}
+        {% snippet 'snippets/search_form.html', form_id='group-search-form', type=group_type, query=q, sorting_selected=sort_by_selected, count=page.item_count, placeholder=h.humanize_entity_type('group', group_type, 'search placeholder') or _('Search groups...'), show_empty=request.args, no_bottom_border=true if page.items, sorting = [(_('Name Ascending'), 'title asc'), (_('Name Descending'), 'title desc')] %}
+    {% endblock %}
+
+    {% block groups_list %}
+        {% if page.items or request.args %}
+            {% if page.items %}
+                {% snippet "group/snippets/group_list.html", groups=page.items %}
+            {% endif %}
+        {% else %}
+            {{ ui.empty(_('There are currently no groups for this site')) }}
+        {% endif %}
+    {% endblock %}
+
+    {% block page_pagination %}
+        {{ ui.pagination(page=page.page, total=page.last_page, url_params={"q": q or "", "sort": sort_by_selected or ''}) }}
+    {% endblock %}
+{% endblock %}

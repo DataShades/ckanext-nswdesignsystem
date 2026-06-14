@@ -1,0 +1,62 @@
+{% extends "admin/base.html" %}
+
+{% block primary_content_inner %}
+    {%- call ui.util.call(ui.heading, level=1) -%}
+        {% block page_heading %}{{ _('Manage Admins') }}{% endblock %}
+    {%- endcall %}
+    {{ ui.heading(_('Current Sysadmins'), level=2) }}
+
+    {%- call ui.util.call(ui.table, hover=true, bordered=true) -%}
+        <thead>
+            <tr>
+                <th>{{ _('User') }}</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in sysadmins %}
+                <tr>
+                    <td>{{ h.linked_user(user) }}</td>
+                    <td>
+                        {%- call ui.util.call(ui.button_group) -%}
+                            {%- call ui.util.call(ui.form, method="POST", action=h.url_for('user.sysadmin')) -%}
+                                <input type="hidden" value="{{ user }}" name="username" />
+                                <input type="hidden" value="0" name="status" />
+                                {{ ui.button(ui.tooltip(ui.icon("close"), tooltip=_('Revoke Sysadmin permission')), type="submit", style="danger", aria={"label": _('Revoke Sysadmin permission')}, size="sm") }}
+                            {%- endcall %}
+                        {%- endcall %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    {%- endcall %}
+
+    {{ ui.heading(_('Promote user to Sysadmin'), level=2) }}
+
+    {%- call ui.util.call(ui.form, method="POST", action=h.url_for('user.sysadmin')) -%}
+
+        <div class="form-group">
+            <input
+                id="promote-username" type="text" name="username" placeholder="Username"
+                value="" class="control-medium" data-module="autocomplete"
+                data-module-source="/api/2/util/user/autocomplete?ignore_self=true&q=?"
+            >
+            <input type="hidden" value="1" name="status" />
+        </div>
+
+        {%- call ui.util.call(ui.form_actions) -%}
+            {{ ui.button(_('Promote'), type="submit", aria={"label": _('Promote user to Sysadmin')}) }}
+        {%- endcall %}
+
+    {%- endcall %}
+{% endblock %}
+
+{% block secondary_content %}
+    {%- call ui.util.call(ui.sidebar_section, icon="info", title=_('Administer CKAN')) -%}
+        {% set docs_url = "https://docs.ckan.org/en/{0}/sysadmin-guide.html".format(g.ckan_doc_version) %}
+        {% trans %}
+        <p>As a sysadmin user you have full control over this CKAN instance. Proceed with care!</p>
+        <p>For guidance on using sysadmin features, see the CKAN <a href="{{ docs_url }}" target="_blank" rel="noreferrer">sysadmin guide</a></p>
+        {% endtrans %}
+    {%- endcall %}
+{% endblock %}

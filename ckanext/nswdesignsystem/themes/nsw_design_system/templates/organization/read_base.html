@@ -1,0 +1,35 @@
+{% extends "page.html" %}
+{% set dataset_type = h.default_package_type() %}
+{% set organization = group_dict %}
+
+{% block subtitle -%}
+    {{ ui.subtitle_item(group_dict.display_name) if group_dict }}
+    {{- ui.subtitle_item(h.humanize_entity_type('organization', group_type, 'page title') or _('Organizations')) }}
+    {{- super() }}
+{%- endblock %}
+
+{% block breadcrumb_content -%}
+    {{ ui.breadcrumb(h.humanize_entity_type('organization', group_type, 'breadcrumb') or _('Organizations'), href=h.url_for(group_type+'.index')) }}
+    {{- ui.breadcrumb(group_dict.display_name|truncate(35), href=h.url_for(group_type+'.read', id=group_dict.name), active=true, attrs={"title": group_dict.display_name}) }}
+{%- endblock %}
+
+{% block content_action -%}
+    {{ ui.content_action(h.humanize_entity_type('package', dataset_type, 'add link') or _("Add Dataset"), href=h.url_for(dataset_type ~ '.new', owner_org=group_dict.id), icon="plus-square") if h.check_access('package_create') }}
+    {{- ui.content_action(_('Manage'), href=h.url_for(group_type+'.edit', id=group_dict.name), icon="wrench", style="secondary") if h.check_access('organization_update', {'id': group_dict.id}) }}
+{%- endblock %}
+
+{% block content_primary_nav -%}
+    {{ ui.content_nav_item(h.humanize_entity_type('package', dataset_type, 'content tab') or _('Datasets'), href=h.url_for(group_type + '.read', id=group_dict.name), icon='sitemap', active=request.endpoint == group_type ~ ".read") }}
+    {{- ui.content_nav_item(_('Members'), href=h.url_for(group_type + '.members', id=group_dict.name), icon='users', active=request.endpoint == group_type ~ ".members") }}
+    {{- ui.content_nav_item(_('About'), href=h.url_for(group_type + '.about', id=group_dict.name), icon='info-circle', active=request.endpoint == group_type ~ ".about") }}
+{%- endblock %}
+
+{% block secondary_content %}
+    {% snippet 'organization/snippets/info.html', organization=group_dict, show_nums=true, group_type=group_type, am_following=am_following %}
+    {% block organization_facets %}{% endblock %}
+{% endblock %}
+
+{% block links %}
+    {{ super() }}
+    {% include "organization/snippets/feeds.html" %}
+{% endblock %}

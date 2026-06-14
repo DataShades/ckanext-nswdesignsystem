@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{%- set PAGE_LAYOUT | trim  -%}
+{%- block page_layout -%}
+    {{ "sidebar-start" if self.secondary()|trim else "no-sidebar" }}
+{%- endblock %}
+{%- endset -%}
+
+{% block main_content %}
+  {{ self.flash() }}
+  {{ self.toolbar() }}
+
+    <div class="row ckan-layout--{{ PAGE_LAYOUT }} {{ self.wrapper_class() }}">
+        {{ self.pre_primary() }}
+
+        {%- if PAGE_LAYOUT == "no-sidebar" -%}
+            {{ self.primary() }}
+
+        {%- elif PAGE_LAYOUT == "sidebar-end" -%}
+            {{ self.primary() }}
+            {{ self.secondary() }}
+
+        {%- else -%}
+            {{ self.secondary() }}
+            {{ self.primary() }}
+
+        {%- endif %}
+    </div>
+{% endblock %}
+
+
+{% block primary %}
+    {%- if PAGE_LAYOUT == "no-sidebar" -%}
+        <div class="primary col" role="main">
+            {{ self.primary_content() }}
+        </div>
+    {%- else -%}
+        {{ super() }}
+    {%- endif %}
+
+{% endblock %}

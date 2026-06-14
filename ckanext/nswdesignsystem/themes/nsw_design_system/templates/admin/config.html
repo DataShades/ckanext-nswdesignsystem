@@ -1,0 +1,59 @@
+{% extends "admin/base.html" %}
+{%- set modal_id = ui.util.id() -%}
+
+
+{% block primary_content_inner %}
+    {%- call ui.util.call(ui.heading, level=1) -%}
+        {% block page_heading %}{{ _('Edit Config') }}{% endblock %}
+    {%- endcall %}
+
+    {{ ui.form_errors(error_summary) }}
+
+    {%- call ui.util.call(ui.form, method="POST", enctype="multipart/form-data") -%}
+        {% block admin_form %}
+            {{ ui.input(name='ckan.site_title', id='field-ckan-site-title', label=_('Site Title'), value=data['ckan.site_title'], errors=errors['ckan.site_title']) }}
+            {{ ui.input(name='ckan.theme', id='field-ckan-main-css', label=_('Custom Stylesheet'), value=data['ckan.theme'], errors=errors['ckan.theme']) }}
+            {{ ui.input(name='ckan.site_description', id='field-ckan-site-description', label=_('Site Tag Line'), value=data['ckan.site_description'], errors=errors['ckan.site_description']) }}
+
+            {% set field_url = 'ckan.site_logo' %}
+            {% set is_upload = data[field_url] and not data[field_url].startswith('http') %}
+            {% set is_url = data[field_url] and data[field_url].startswith('http') %}
+            {{ ui.image_upload(data, errors, is_upload_enabled=h.uploads_enabled("admin"), is_url=is_url, is_upload=is_upload, upload_label = _('Site logo'), url_label=_('Site logo'),  field_url=field_url, field_upload='logo_upload', field_clear='clear_logo_upload' )}}
+            {{ ui.markdown(name='ckan.site_about', id='field-ckan-site-about', label=_('About'), value=data['ckan.site_about'], errors=errors['ckan.site_about'], placeholder=_('About page text')) }}
+            {{ ui.markdown(name='ckan.site_intro_text', id='field-ckan-site-intro-text', label=_('Intro Text'), value=data['ckan.site_intro_text'], errors=errors['ckan.site_intro_text'], placeholder=_('Text on home page')) }}
+            {{ ui.textarea(name='ckan.site_custom_css', id='field-ckan-site-custom-css', label=_('Custom CSS'), value=data['ckan.site_custom_css'], errors=errors['ckan.site_custom_css'], placeholder=_('Customisable css inserted into the page header')) }}
+        {% endblock %}
+
+        {%- call ui.util.call(ui.form_actions) -%}
+            {{ ui.modal_handle(_('Reset'), id=modal_id, style="danger") }}
+            {{ ui.button(_('Update Config'), type="submit", attrs={"name": "save"}) }}
+        {%- endcall %}
+    {%- endcall %}
+
+    {{ ui.confirm_modal(_('Are you sure you want to reset the config?'), id=modal_id, href=h.url_for('admin.reset_config')) }}
+{% endblock %}
+
+{% block secondary_content %}
+    {%- call ui.util.call(ui.sidebar_section, icon="info", title=_('CKAN config options')) -%}
+        {% block admin_form_help %}
+            {% set about_url = h.url_for('home.about') %}
+            {% set home_url = h.url_for('home.index') %}
+            {% set docs_url = "https://docs.ckan.org/en/{0}/theming".format(g.ckan_doc_version) %}
+            {% trans %}
+            <p><strong>Site Title:</strong> This is the title of this CKAN instance
+                It appears in various places throughout CKAN.</p>
+            <p><strong>Custom Stylesheet:</strong> Define an alternative main CSS file.</p>
+            <p><strong>Site Tag Logo:</strong> This is the logo that appears in the
+                header of all the CKAN instance templates.</p>
+            <p><strong>About:</strong> This text will appear on this CKAN instances
+                <a href="{{ about_url }}">about page</a>.</p>
+            <p><strong>Intro Text:</strong> This text will appear on this CKAN instances
+                <a href="{{ home_url }}">home page</a> as a welcome to visitors.</p>
+            <p><strong>Custom CSS:</strong> This is a block of CSS that appears in
+                <code>&lt;head&gt;</code> tag of every page. If you wish to customize
+                the templates more fully we recommend
+                <a href="{{ docs_url }}" target="_blank" rel="noreferrer">reading the documentation</a>.</p>
+          {% endtrans %}
+        {% endblock %}
+    {%- endcall %}
+{% endblock %}

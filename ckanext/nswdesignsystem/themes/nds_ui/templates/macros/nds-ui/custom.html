@@ -321,3 +321,16 @@
         </div>
     </div>
 {%- endmacro %}
+
+{%- macro nds_footer_section(content, title, href) -%}
+    <div class="nsw-footer__group">
+        {%- if title -%}
+            <div class="nsw-footer__heading">
+                {{ ui.util.tag(title, "a" if href else "", href=href) }}
+            </div>
+        {%- endif %}
+        <ul>
+            {{ content }}
+        </ul>
+    </div>
+{%- endmacro %}

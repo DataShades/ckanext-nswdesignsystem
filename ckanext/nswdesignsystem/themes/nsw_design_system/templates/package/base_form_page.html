@@ -1,0 +1,47 @@
+{% extends "package/edit_base.html" %}
+{% set stage = form_vars.get('stage') if form_vars else stage %}
+{% set s1 = stage[0] or 'active' %}
+{% set s2 = stage[1] or 'uncomplete' %}
+{% set s3 = stage[2] or 'uncomplete' %}
+
+
+{% block content_action -%}{% endblock %}
+
+{% block primary_content %}
+    <section class="module">
+        {% block page_header %}{% endblock %}
+        <div class="module-content">
+            {% block primary_content_inner %}
+                {% if self.form_title() %}
+                    <h1>{% block form_title %}{% endblock %}</h1>
+                {% endif %}
+                {% block form %}
+                    {{- h.snippet(form_snippet, pkg_dict=pkg_dict, **form_vars) -}}
+                {% endblock %}
+            {% endblock %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block secondary_content %}
+    {% block info_module %}
+        <div class="module module-shallow">
+            {%- call ui.util.call(ui.accordion_wrapper) -%}
+                {%- call ui.util.call(ui.accordion, title=_('Create Dataset'), open=true, content_class="package-accordion") -%}
+                    {% block stages %}
+                        {% if form_style != 'edit' %}
+                            {% snippet 'package/snippets/stages.html', stages=stage, dataset_type=dataset_type, form_id=form_id %}
+                        {% endif %}
+                    {% endblock %}
+                {%- endcall %}
+            {%- endcall %}
+        </div>
+
+        {% snippet "package/snippets/resources.html", pkg=pkg_dict or (form_vars.data if form_vars and form_vars.data else None), active=data.id if data else None, no_new_res = true %}
+    {% endblock %}
+
+    {% block resources_module %}
+        {# TODO: Pass in a list of previously created resources and the current package dict #}
+        {% snippet "package/snippets/resources.html", pkg={}, action='new_resource' %}
+    {% endblock %}
+{% endblock %}

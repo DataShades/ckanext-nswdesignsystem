@@ -1,0 +1,27 @@
+{% extends "user/read_base.html" %}
+
+{% block page_primary_action -%}
+    {{ ui.page_action(h.humanize_entity_type('package', dataset_type, 'add link') or _("Add Dataset"), href=h.url_for(dataset_type ~ '.new'), icon="plus-square") if h.check_access('package_create') and user.datasets }}
+{%- endblock %}
+
+{% block primary_content_inner %}
+    {%- call ui.util.call(ui.heading, level=1) -%}
+        {% block page_heading %}{{ _('Datasets') }}{% endblock %}
+    {%- endcall %}
+
+    {% block package_list %}
+        {% if user.datasets %}
+            {% snippet 'snippets/package_list.html', packages=user.datasets %}
+        {% else %}
+
+            {%- call ui.util.call(ui.empty) -%}
+                {% if is_myself %}
+                    {{ _('You haven\'t created any datasets.') }}
+                    {{ ui.link(_('Create one now?'), href=h.url_for('dataset.new')) if h.check_access('package_create') }}
+                {% else %}
+                    {{ _('User hasn\'t created any datasets.') }}
+                {% endif %}
+            {%- endcall %}
+        {% endif %}
+    {% endblock %}
+{% endblock %}

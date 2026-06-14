@@ -1,0 +1,11 @@
+{% block package_list %}
+    {% if packages %}
+        {%- call ui.util.call(ui.package_list, attrs={"class": list_class} if list_class else {}) -%}
+    	    {% block package_list_inner %}
+	        {% for package in packages %}
+                    {{ ui.package(package=package, item_class=item_class, hide_resources=hide_resources) }}
+	        {% endfor %}
+	    {% endblock %}
+        {%- endcall %}
+    {% endif %}
+{% endblock %}

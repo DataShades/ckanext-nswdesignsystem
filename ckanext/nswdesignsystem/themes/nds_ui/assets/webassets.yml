@@ -7,7 +7,8 @@ nds-ui-js:
   output: ckanext-nswdesignsystem/%(version)s-nds-ui.js
   extra:
     preload:
-      - nswdesignsystem/nswdesignsystem-js
+      - base/main
+      - base/ckan
   contents:
     - dropdown.js
     - toast.js
@@ -15,3 +16,14 @@ nds-ui-js:
     - popover.js
     - tooltip.js
     - ui.js
+    - init.js
+
+nds-css:
+  output: ckanext-nswdesignsystem/%(version)s-nds.css
+  contents:
+    - https://cdn.jsdelivr.net/npm/nsw-design-system@3.24.9/dist/css/main.min.css
+
+nds-js:
+  output: ckanext-nswdesignsystem/%(version)s-nds.js
+  contents:
+    - https://cdn.jsdelivr.net/npm/nsw-design-system@3.24.9/dist/js/main.min.js

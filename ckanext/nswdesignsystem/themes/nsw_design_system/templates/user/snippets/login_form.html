@@ -1,0 +1,35 @@
+{% set username_error = [""] if error_summary  %}
+{% set password_error = [""] if error_summary %}
+
+{%- call ui.util.call(ui.form, method="POST", action=action) -%}
+    {{ ui.form_errors(errors=error_summary) }}
+
+    {{ ui.input(name='login', label=_("Username or Email"), id='field-login', icon='person', errors=username_error) }}
+
+    {{ ui.input(name='password', label=_("Password"), id='field-password', type="password", icon="lock", errors=password_error) }}
+    <div class="col-12">
+        {{ ui.link(_('Forgotten your password?'), href=h.url_for('user.request_reset')) }}
+    </div>
+
+    <div class="mt-3">
+        {{ ui.checkbox(name='remember', label=_("Remember me"), id='field-remember', checked=true, value="63072000") }}
+    </div>
+
+
+    {% if g.recaptcha_publickey %}
+        {% snippet "user/snippets/recaptcha.html", public_key=g.recaptcha_publickey %}
+    {% endif %}
+
+    {%- call ui.util.call(ui.form_actions) -%}
+        {% if h.check_access('user_create') %}
+            {% block create_account_button %}
+                {{ ui.button(_('Create account'), href=h.url_for('user.register'), style="link") }}
+            {% endblock %}
+        {% endif %}
+        {% block login_button %}
+            {{ ui.button(_('Login'), type="submit") }}
+        {% endblock %}
+    {%- endcall %}
+
+
+{%- endcall %}

@@ -1,0 +1,16 @@
+{% extends "page.html" %}
+
+{% block subtitle -%}
+    {{ ui.subtitle_item(_('Administration')) }}
+    {{- super() }}
+{%- endblock %}
+
+{% block breadcrumb_content -%}
+    {{ ui.breadcrumb(_('Sysadmins settings'), href=h.url_for('admin.index'), active=true) }}
+{%- endblock %}
+
+{% block content_primary_nav -%}
+    {{ ui.content_nav_item(_('Sysadmins'), href=h.url_for('admin.index'), icon='person', active=request.endpoint=='admin.index') }}
+    {{- ui.content_nav_item(_('Config'), href=h.url_for('admin.config'), icon='settings', active=request.endpoint=='admin.config') }}
+    {{- ui.content_nav_item(_('Trash'), href=h.url_for('admin.trash'), icon='delete', active=request.endpoint=='admin.trash') }}
+{%- endblock %}

@@ -1,0 +1,31 @@
+{% extends "admin/base.html" %}
+
+{%- set form_id = ui.util.id() -%}
+{%- set modal_id = ui.util.id() -%}
+
+{% block primary_content_inner %}
+    {%- call ui.util.call(ui.heading, level=1) -%}
+        {% block page_heading %}{{ _('Trash') }}{% endblock %}
+    {%- endcall %}
+
+    {%- call ui.util.call(ui.form, method="POST", action=h.url_for('admin.trash'), attrs={"id": form_id}) -%}
+        <input type="hidden" name="action" value="all">
+    {%- endcall %}
+
+    {{ ui.confirm_modal(_('Are you sure you want to purge everything?'), id=modal_id, form_id=form_id) }}
+
+    <div class="mb-3">
+        {%- call ui.util.call(ui.form_actions) -%}
+            {{ ui.modal_handle(_('Purge all'), style="danger", id=modal_id) }}
+        {%- endcall %}
+    </div>
+
+    {% for ent_type, entities in data.items() %}
+        {% snippet "admin/snippets/data_type.html", ent_type=ent_type, entities=entities, messages=messages %}
+    {% endfor %}
+{% endblock %}
+
+{% block secondary_content %}
+    {{ ui.sidebar_section(_("Purge deleted datasets, organizations or groups forever and irreversibly."), icon="info", title=_("Trash")) }}
+
+{% endblock %}

@@ -10,3 +10,8 @@ groups:
       - key: ckanext.nswdesignsystem.js_enabled
         type: bool
         default: true
+      - key: ckanext.nswdesignsystem.legacy_enabled
+        type: bool
+        default: true
+        description: |
+          Enable templates created before theming integration

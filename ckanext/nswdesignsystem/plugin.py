@@ -16,9 +16,10 @@ class NswdesignsystemPlugin(p.SingletonPlugin):
     # IConfigurer
 
     def update_config(self, config_: types.CKANConfig):
-        tk.add_template_directory(config_, "templates")
-        tk.add_public_directory(config_, "public")
-        tk.add_resource("assets", "nswdesignsystem")
+        if config_["ckanext.nswdesignsystem.legacy_enabled"]:
+            tk.add_template_directory(config_, "templates")
+            tk.add_public_directory(config_, "public")
+            tk.add_resource("assets", "nswdesignsystem")
 
     with contextlib.suppress(ImportError):
         from ckanext.theming.interfaces import ITheme
@@ -27,6 +28,11 @@ class NswdesignsystemPlugin(p.SingletonPlugin):
         p.implements(ITheme, inherit=True)
 
         def register_themes(self) -> Iterable[Theme]:
-            from ckanext.nswdesignsystem.themes.nds_ui.theme import make_theme
+            from ckanext.nswdesignsystem.themes.nds_ui.theme import (
+                make_theme as make_library,
+            )
+            from ckanext.nswdesignsystem.themes.nsw_design_system.theme import (
+                make_theme as make_full_theme,
+            )
 
-            return [make_theme()]
+            return [make_library(), make_full_theme()]

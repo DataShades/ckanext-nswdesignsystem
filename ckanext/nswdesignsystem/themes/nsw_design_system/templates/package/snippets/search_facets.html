@@ -1,0 +1,21 @@
+{% set default_collapsed = h.default_collapse_facets() %}
+{%- set use_htmx = use_htmx | default(true) -%}
+
+<div class="filters" id="search-facets"{% if use_htmx %} hx-swap-oob="true" hx-swap="none"{%- endif %}>
+    <div>
+        {%- block facet_list -%}
+            {%- for facet in facet_titles %}
+                {%- set items = h.get_facet_items_dict(facet, search_facets) -%}
+
+                {%- call ui.util.call(ui.facet_section, title=facet_titles[facet], items=items, key=facet, collapsed=not h.currently_active_facet(facet) and default_collapsed, has_more=h.has_more_facets(facet, search_facets, limit=items|length)) -%}
+                    {%- call ui.util.call(ui.facet_list, hx={"boost": "true"} if use_htmx else {}) -%}
+                        {%- for item in items -%}
+                            {{ ui.facet(item.display_name, key=facet, value=item.name, count=item.count, active=item.active) }}
+                        {%- endfor %}
+                    {%- endcall %}
+                {%- endcall %}
+            {%- endfor %}
+        {%- endblock facet_list %}
+    </div>
+    <a class="close no-text hide-filters"><i class="fa fa-times-circle"></i><span class="text">{{ _('close') }}</span></a>
+</div>

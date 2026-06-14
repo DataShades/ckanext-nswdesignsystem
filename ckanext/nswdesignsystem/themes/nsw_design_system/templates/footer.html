@@ -1,0 +1,48 @@
+{% set dataset_type = h.default_package_type() %}
+{% set org_type = h.default_group_type('organization') %}
+{% set group_type = h.default_group_type('group') %}
+
+{%- call ui.util.call(ui.footer) -%}
+    {%- call ui.util.call(ui.footer_main) -%}
+        {% block footer_content %}
+            {% block footer_nav %}
+                {%- call ui.util.call(ui.nds_footer_section, title="Navigation") -%}
+                    {% block footer_links %}
+                        {{ ui.footer_main_nav_item(_('Home'), h.url_for('home.index')) }}
+                        {{ ui.footer_main_nav_item(h.humanize_entity_type('package', dataset_type, 'footer nav') or _('Datasets'), h.url_for(dataset_type ~ '.search')) }}
+                        {{ ui.footer_main_nav_item(h.humanize_entity_type('organization', org_type, 'footer nav') or _('Organizations'), h.url_for(org_type ~ '.index')) }}
+
+                        {{ ui.footer_main_nav_item(h.humanize_entity_type('group', group_type, 'footer nav') or _('Groups'), h.url_for(group_type ~ '.index')) }}
+                        {{ ui.footer_main_nav_item(_('About'), h.url_for('home.about')) }}
+                    {% endblock %}
+                {%- endcall %}
+
+                {%- call ui.util.call(ui.nds_footer_section, title="Reference") -%}
+                    {% block footer_links_ckan %}
+                        {% set api_url = 'https://docs.ckan.org/en/{0}/api/'.format(g.ckan_doc_version) %}
+                        {{ ui.footer_main_nav_item(_('CKAN API'), href=api_url, blank=true) }}
+                        {{ ui.footer_main_nav_item(_('CKAN Association'), href="https://www.ckan.org", blank=true) }}
+                    {% endblock %}
+                {%- endcall %}
+            {% endblock footer_nav %}
+        {% endblock footer_content %}
+    {%- endcall %}
+
+    {%- call ui.util.call(ui.footer_secondary) -%}
+        <div class="nsw-display-flex nsw-justify-content-between">
+            <ul>
+                <li><a href="#">Accessibility</a></li>
+                <li><a href="#">Copyright</a></li>
+                <li><a href="#">Disclaimer</a></li>
+                <li><a href="#">Privacy</a></li>
+                <li><a href="#">Content sources</a></li>
+                <li><a href="#">RSS</a></li>
+                <li><a href="#">Contact us</a></li>
+            </ul>
+            {% block footer_lang %}
+                {{ ui.language_selector() }}
+            {% endblock %}
+
+        </div>
+    {%- endcall %}
+{%- endcall %}
