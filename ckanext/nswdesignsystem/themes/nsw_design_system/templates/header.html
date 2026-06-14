@@ -8,13 +8,6 @@
                     {% if current_user.is_authenticated %}
                         {% block header_account_logged %}
                             {% block header_account_profile %}
-                                {% block nswdesignsystem_header_demo_link %}
-                                    {% if g.debug and current_user.sysadmin %}
-                                        {%- call ui.util.call(ui.account_nav_item, href=h.url_for('nswdesignsystem.index'), aria={"label": _("NSW Design System Components")}, icon="architecture") -%}
-                                            <span>{{ _("NSW DS") }}</span>
-                                        {%- endcall %}
-                                    {% endif %}
-                                {% endblock %}
                                 {{ ui.account_nav_item(ui.util.tag(current_user.display_name, "span"), href=h.url_for('user.read', id=current_user.name), aria={"label": _('View profile')}, _extra_class="username") }}
                             {%- endblock %}
 

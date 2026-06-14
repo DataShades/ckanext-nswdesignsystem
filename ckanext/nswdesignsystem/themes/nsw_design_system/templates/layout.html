@@ -16,8 +16,24 @@
     {# The content block allows you to replace the content of the page if needed #}
     {%- block content %}
         {% block maintag %}<div class="main">{% endblock %}
-            <div id="content" class="container">
-                {% block main_content %}
+            {% block main_content %}
+                {%- call ui.util.call(ui.container) -%}
+                    {% block toolbar %}
+                        {% block breadcrumb -%}
+                            {%- set breadcrumb_content | trim -%}
+                            {%- block breadcrumb_content -%}{%- endblock %}
+                            {%- endset -%}
+                            {% if breadcrumb_content -%}
+                                {%- call ui.util.call(ui.breadcrumb_wrapper, _extra_class="nsw-p-bottom-xs") -%}
+                                    {{ ui.breadcrumb(_("Home"), h.url_for('home.index'), aria={"label": _("Home")}, initial=true) }}
+                                    {{ breadcrumb_content }}
+                                {%- endcall %}
+                            {% endif %}
+                        {% endblock %}
+                    {% endblock %}
+                {%- endcall %}
+
+                {%- call ui.util.call(ui.container) -%}
                     {% block flash %}
                         <div class="flash-messages">
                             {% block flash_inner %}
@@ -27,98 +43,62 @@
                             {% endblock %}
                         </div>
                     {% endblock %}
+                {%- endcall %}
 
-                    {% block toolbar %}
-                        <div class="toolbar" role="navigation" aria-label="{{ _('Breadcrumb') }}">
-                            {% block breadcrumb -%}
-                                {% if self.breadcrumb_content() | trim -%}
-                                    {%- call ui.util.call(ui.breadcrumb_wrapper) -%}
-                                        {{ ui.breadcrumb(_('Home'), h.url_for('home.index'), aria={"label": _("Home")}, initial=true) }}
-                                        {%- block breadcrumb_content -%}
-                                        {%- endblock %}
-                                    {%- endcall %}
-                                {% endif %}
+
+                {%- block zone_wrapper -%}
+                    <div class="{% block wrapper_class %}nsw-p-bottom-md{% endblock %}">
+
+                        {%- call ui.util.call(ui.container) -%}
+                            {% block pre_primary %}
+                                {%- set content_action | trim -%}
+                                {% block content_action -%}{% endblock %}
+                                {%- endset %}
+                                {{ ui.content_action_wrapper(content_action) if content_action }}
                             {% endblock %}
-                        </div>
-                    {% endblock %}
+                        {%- endcall %}
 
-                    <div class="row {% block wrapper_class %}{% endblock %}">
-                        {#
-                        The pre_primary block can be used to add content to before the
-                        rendering of the main content columns of the page.
-                        #}
-                        {% block pre_primary %}
-                            {% if self.content_action() | trim %}
-                                {%- call ui.util.call(ui.content_action_wrapper) -%}
-                                    {% block content_action -%}{% endblock %}
-                                {%- endcall %}
-                            {% endif %}
-                        {% endblock %}
-
-                        {% block secondary %}
-                            <aside class="secondary col-md-4 col-lg-3">
-                                {#
-                                The secondary_content block can be used to add content to the
-                                sidebar of the page. This is the main block that is likely to be
-                                used within a template.
-
-                                Example:
-
-                                {% block secondary_content %}
-                                <h2>A sidebar item</h2>
-                                <p>Some content for the item</p>
+                        {%- call ui.util.call(ui.container) -%}
+                            <div class="nsw-layout">
+                                {% block secondary %}
+                                    <div class="nsw-layout__sidebar">
+                                        {% block secondary_content %}{% endblock %}
+                                    </div>
                                 {% endblock %}
-                                #}
-                                {% block secondary_content %}{% endblock %}
-                            </aside>
-                        {% endblock %}
 
-                        {% block primary %}
-                            <div class="primary col col-md-8 col-lg-9" role="main">
-                                {#
-                                The primary_content block can be used to add content to the page.
-                                This is the main block that is likely to be used within a template.
-
-                                Example:
-
-                                {% block primary_content %}
-                                <h1>My page content</h1>
-                                <p>Some content for the page</p>
-                                {% endblock %}
-                                #}
-                                {% block primary_content %}
-                                    <article class="module">
-                                        {% block page_header %}
-                                            <header class="module-content page-header">
-                                                {%- call ui.util.call(ui.content_nav) -%}
-                                                    {% block content_primary_nav -%}{% endblock %}
-                                                {%- endcall %}
-                                            </header>
+                                {% block primary %}
+                                    <div class="nsw-layout__main">
+                                        {% block primary_content %}
+                                            <article class="module">
+                                                {% block page_header %}
+                                                    <header class="module-content page-header">
+                                                        {%- call ui.util.call(ui.content_nav) -%}
+                                                            {% block content_primary_nav -%}{% endblock %}
+                                                        {%- endcall %}
+                                                    </header>
+                                                {% endblock %}
+                                                <div class="module-content">
+                                                    {% if self.page_primary_action() | trim %}
+                                                        {%- call ui.util.call(ui.page_action_wrapper, _extra_class="pull-right") -%}
+                                                            {% block page_primary_action -%}{% endblock %}
+                                                        {%- endcall %}
+                                                    {% endif %}
+                                                    {% block primary_content_inner %}
+                                                    {% endblock %}
+                                                </div>
+                                            </article>
                                         {% endblock %}
-                                        <div class="module-content">
-                                            {% if self.page_primary_action() | trim %}
-                                                {%- call ui.util.call(ui.page_action_wrapper, _extra_class="pull-right") -%}
-                                                    {% block page_primary_action -%}{% endblock %}
-                                                {%- endcall %}
-                                            {% endif %}
-                                            {% block primary_content_inner %}
-                                            {% endblock %}
-                                        </div>
-                                    </article>
-                                {% endblock %}
+                                    </div>
+                                {% endblock primary%}
                             </div>
-                        {% endblock %}
+                        {%- endcall %}
                     </div>
-                {% endblock %}
-            </div>
+                {%- endblock zone_wrapper %}
+
+            {% endblock main_content %}
         </div>
     {% endblock -%}
 
-    {#
-        Override the footer on a page by page basis by extending this block. If
-        making sitewide header changes it is preferable to override the footer.html-u
-        file.
-        #}
     {%- block footer %}
         {% include "footer.html" %}
     {% endblock -%}

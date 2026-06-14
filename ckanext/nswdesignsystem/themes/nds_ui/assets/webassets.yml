@@ -8,7 +8,7 @@ nds-ui-js:
   extra:
     preload:
       - base/main
-      - base/ckan
+      - theming/modules
   contents:
     - dropdown.js
     - toast.js

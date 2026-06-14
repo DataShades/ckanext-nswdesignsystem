@@ -6,36 +6,25 @@
 {%- endblock %}
 {%- endset -%}
 
-{% block main_content %}
-  {{ self.flash() }}
-  {{ self.toolbar() }}
+{%- block zone_wrapper -%}
+    <div class="ckan-layout--{{ PAGE_LAYOUT }} {{ self.wrapper_class() }}">
+        {{ ui.container(self.pre_primary()) }}
 
-    <div class="row ckan-layout--{{ PAGE_LAYOUT }} {{ self.wrapper_class() }}">
-        {{ self.pre_primary() }}
+        {%- call ui.util.call(ui.container) -%}
+            <div class="nsw-layout">
+                {%- if PAGE_LAYOUT == "no-sidebar" -%}
+                    {{ self.primary() }}
 
-        {%- if PAGE_LAYOUT == "no-sidebar" -%}
-            {{ self.primary() }}
+                {%- elif PAGE_LAYOUT == "sidebar-end" -%}
+                    {{ self.primary() }}
+                    {{ self.secondary() }}
 
-        {%- elif PAGE_LAYOUT == "sidebar-end" -%}
-            {{ self.primary() }}
-            {{ self.secondary() }}
+                {%- else -%}
+                    {{ self.secondary() }}
+                    {{ self.primary() }}
 
-        {%- else -%}
-            {{ self.secondary() }}
-            {{ self.primary() }}
-
-        {%- endif %}
+                {%- endif %}
+            </div>
+        {%- endcall %}
     </div>
-{% endblock %}
-
-
-{% block primary %}
-    {%- if PAGE_LAYOUT == "no-sidebar" -%}
-        <div class="primary col" role="main">
-            {{ self.primary_content() }}
-        </div>
-    {%- else -%}
-        {{ super() }}
-    {%- endif %}
-
-{% endblock %}
+{%- endblock zone_wrapper %}

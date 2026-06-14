@@ -1,27 +1,31 @@
 {% extends "page.html" %}
 
-{% block primary_content_inner %}
-  {%- call ui.util.call(ui.section, title=_('Welcome to CKAN')) -%}
-    <p>This is a data portal powered by CKAN and the NSW Design System.</p>
-  {%- endcall %}
+{%- block page_layout -%}
+    no-sidebar
+{%- endblock %}
 
-  {%- call ui.util.call(ui.grid) -%}
-    {%- call ui.util.call(ui.row) -%}
-      {%- call ui.util.call(ui.column, span={"md": 4}) -%}
-        {%- call ui.util.call(ui.card, title=_('Datasets'), footer=ui.link(_('Browse Datasets'), href=h.url_for('dataset.search'))) -%}
-          <p>Find and access data from various sources.</p>
-        {%- endcall %}
-      {%- endcall %}
-      {%- call ui.util.call(ui.column, span={"md": 4}) -%}
-        {%- call ui.util.call(ui.card, title=_('Organizations'), footer=ui.link(_('Browse Organizations'), href=h.url_for('organization.index'))) -%}
-          <p>Explore data by the organizations that publish it.</p>
-        {%- endcall %}
-      {%- endcall %}
-      {%- call ui.util.call(ui.column, span={"md": 4}) -%}
-        {%- call ui.util.call(ui.card, title=_('Groups'), footer=ui.link(_('Browse Groups'), href=h.url_for('group.index'))) -%}
-          <p>Browse datasets grouped by topic or theme.</p>
-        {%- endcall %}
-      {%- endcall %}
+{% block primary_content_inner %}
+    {%- call ui.util.call(ui.section, title=_('Welcome to CKAN')) -%}
+        <p>This is a data portal powered by CKAN and the NSW Design System.</p>
     {%- endcall %}
-  {%- endcall %}
+
+    {%- call ui.util.call(ui.grid) -%}
+        {%- call ui.util.call(ui.row) -%}
+            {%- call ui.util.call(ui.column, span={"md": 4}) -%}
+                {%- call ui.util.call(ui.card, title=_('Datasets'), href=h.url_for('dataset.search')) -%}
+                    <p>Find and access data from various sources.</p>
+                {%- endcall %}
+            {%- endcall %}
+            {%- call ui.util.call(ui.column, span={"md": 4}) -%}
+                {%- call ui.util.call(ui.card, title=_('Organizations'), href=h.url_for('organization.index')) -%}
+                    <p>Explore data by the organizations that publish it.</p>
+                {%- endcall %}
+            {%- endcall %}
+            {%- call ui.util.call(ui.column, span={"md": 4}) -%}
+                {%- call ui.util.call(ui.card, title=_('Groups'), href=h.url_for('group.index')) -%}
+                    <p>Browse datasets grouped by topic or theme.</p>
+                {%- endcall %}
+            {%- endcall %}
+        {%- endcall %}
+    {%- endcall %}
 {% endblock %}
