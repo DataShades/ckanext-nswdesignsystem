@@ -1,0 +1,28 @@
+{% extends "package/resource_edit_base.html" %}
+
+{% block subtitle -%}
+    {{ ui.subtitle_item(_('View')) }}
+    {{- ui.subtitle_item(h.resource_display_name(res)) }}
+    {{- super() }}
+{% endblock %}
+
+{% block page_primary_action -%}
+    {% if h.check_access('resource_view_create', {'resource_id': resource.id}) %}
+        {%- call ui.util.call(ui.dropdown, title=ui.icon("plus-square") ~ _('New view'), inline=true) -%}
+            {% for view_type, label, icon in h.get_allowed_view_types(resource, pkg_dict) -%}
+                {{ ui.dropdown_item(" " ~ label, href=h.url_for(pkg_dict.type ~ '_resource.edit_view', id=pkg_dict.name, resource_id=resource.id, view_type=view_type), icon=icon) }}
+            {%- endfor %}
+        {%- endcall %}
+    {%- endif %}
+    {% asset 'vendor/reorder' %}
+{%- endblock %}
+
+{% block primary_content_inner %}
+    {{ ui.heading(_('Edit Views'), level=1) }}
+
+    {% if views %}
+        {% snippet "package/snippets/resource_views_list.html", views=views, pkg=pkg, is_edit=true, extra_attributes='data-module = resource-view-reorder data-module-id=' + resource.id, extra_class='flex-column resource-view-list nav-pills nav-stacked' %}
+    {% else %}
+        {{ ui.empty(_('This resource has no views')) }}
+    {% endif %}
+{% endblock %}

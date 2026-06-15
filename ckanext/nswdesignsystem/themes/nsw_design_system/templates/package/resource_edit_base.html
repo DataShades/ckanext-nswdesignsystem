@@ -1,0 +1,38 @@
+{% extends "package/base.html" %}
+
+{% set logged_in = true if current_user.is_authenticated else false %}
+{% set res = resource %}
+
+{% block breadcrumb_content_selected -%}{% endblock %}
+
+{% block breadcrumb_edit_selected -%} class="active"{% endblock %}
+
+{% block breadcrumb_content -%}
+    {{ super() }}
+    {%- if res -%}
+        {{ ui.breadcrumb(h.resource_display_name(res)|truncate(30), href=h.url_for(pkg.type ~ '_resource.read', id=pkg.name, resource_id=res.id), attrs={"title": h.resource_display_name(res)}) }}
+        {{- ui.breadcrumb(_('Edit'), href="", active=self.breadcrumb_edit_selected()|trim) }}
+    {%- endif %}
+{%- endblock %}
+
+{% block content_action -%}
+    {{ ui.content_action(_('View resource'), href=h.url_for(pkg.type ~ '_resource.read', id=pkg.name, resource_id=res.id), icon='eye', style="secondary") if res }}
+{%- endblock %}
+
+{% block content_primary_nav -%}
+    {{ ui.content_nav_item(_('Edit resource'), href=h.url_for(pkg.type ~ '_resource.edit', id=pkg.name, resource_id=res.id), icon='pencil', active=request.endpoint==pkg.type ~ '_resource.edit') }}
+    {%- block inner_primary_nav %}{% endblock %}
+    {{- ui.content_nav_item(_('Views'), href=h.url_for(pkg.type ~ '_resource.views', id=pkg.name, resource_id=res.id), icon='chart-bar', active=request.endpoint==pkg.type ~ '_resource.views') }}
+{%- endblock %}
+
+{% block primary_content_inner %}
+    {%- call ui.util.call(ui.heading, level=1) -%}
+        {% block form_title %}{{ _('Edit Resource') }}{% endblock %}
+    {%- endcall %}
+    {% block form %}{% endblock %}
+{% endblock %}
+
+{% block secondary_content %}
+    {% snippet 'package/snippets/resource_info.html', res=res %}
+    {% snippet 'package/snippets/resources.html', pkg=pkg, active=res.id %}
+{% endblock %}

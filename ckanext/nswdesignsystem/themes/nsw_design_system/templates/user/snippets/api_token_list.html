@@ -1,0 +1,24 @@
+{% if tokens %}
+    {%- call ui.util.call(ui.table, hover=true) -%}
+        <thead>
+            <tr>
+                <th>{{ _('Name') }}</th>
+                <th>{{ _('Last Used') }}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for token in tokens %}
+                <tr>
+                    <td><strong>{{ token.name }}</strong></td>
+                    <td>{{ ui.datetime(token.last_access) if token.last_access else _('Never') }}</td>
+                    <td class="nsw-text-right">
+                        {% snippet 'user/snippets/api_tokens_revoke.html', token=token, user=user %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    {%- endcall %}
+{% else %}
+    {{ ui.empty(_('You have no API tokens.')) }}
+{% endif %}

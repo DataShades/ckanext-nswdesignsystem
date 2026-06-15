@@ -1,0 +1,10 @@
+{% extends "user/read_base.html" %}
+
+{% block primary_content_inner %}
+  <h1 class="nsw-h2">{{ _('Groups') }}</h1>
+  {% if user_dict.groups %}
+      {% snippet 'group/snippets/group_list.html', groups=user_dict.groups %}
+  {% else %}
+      {{ ui.empty(_('User is not a member of any groups.')) }}
+  {% endif %}
+{% endblock %}

@@ -323,7 +323,7 @@
 {%- endmacro %}
 
 {%- macro nds_footer_section(content, title, href) -%}
-    <div class="nsw-footer__group">
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-footer__group"}) }}>
         {%- if title -%}
             <div class="nsw-footer__heading">
                 {{ ui.util.tag(title, "a" if href else "", href=href) }}

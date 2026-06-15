@@ -70,7 +70,7 @@
 
         {%- call ui.util.call(ui.modal, id="embed-"~resource_view['id'], title=_("Embed resource view"), dismissible=true) -%}
             <p class="embed-content">{{ _("You can copy and paste the embed code into a CMS or blog software that supports raw HTML") }}</p>
-            <div class="row">
+            <div class="nsw-grid">
                 <div class="col-md-6">
                     {{ ui.input(name="width", label=_("Width"), value=700) }}
                 </div>

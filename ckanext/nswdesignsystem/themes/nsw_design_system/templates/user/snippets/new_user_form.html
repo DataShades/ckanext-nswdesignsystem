@@ -1,0 +1,16 @@
+{%- call ui.util.call(ui.form, action=h.url_for('user.register'), method="POST") -%}
+    {% if error_summary %}
+        {{ ui.alert(error_summary, style="danger") }}
+    {% endif %}
+
+    {{ ui.input(name="name", label=_("Username"), placeholder=_("eg. joe-bloggs"), errors=errors.name, required=true) }}
+    {{ ui.input(name="fullname", label=_("Full Name"), placeholder=_("eg. Joe Bloggs"), errors=errors.fullname) }}
+    {{ ui.input(name="email", label=_("Email Address"), type="email", placeholder=_("joe@example.com"), errors=errors.email, required=true) }}
+    
+    {{ ui.input(name="password", label=_("Password"), type="password", errors=errors.password, required=true) }}
+    {{ ui.input(name="password_confirm", label=_("Confirm Password"), type="password", errors=errors.password_confirm, required=true) }}
+
+    <div class="nsw-m-top-md">
+        {{ ui.button(_('Create Account'), type="submit", style="dark") }}
+    </div>
+{%- endcall %}

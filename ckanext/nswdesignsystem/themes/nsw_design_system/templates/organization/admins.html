@@ -1,0 +1,10 @@
+{% extends "group/read_base.html" %}
+
+{% block subtitle %}{{ _('Administrators') }} - {{ super() }}{% endblock %}
+
+{% block primary_content_inner %}
+  <h1 class="nsw-h2">{% block page_heading %}{{ _('Administrators') }}{% endblock %}</h1>
+  {% block admins_list %}
+    {% snippet "user/snippets/followers.html", followers=admins %}
+  {% endblock %}
+{% endblock %}

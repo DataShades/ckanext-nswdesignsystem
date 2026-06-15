@@ -1,16 +1,18 @@
-{% extends "page.html" %}
+{% extends "group/base_form_page.html" %}
 
 {% set label = h.humanize_entity_type('group', group_type, 'create title') or _('Create a Group') %}
 
 {% block subtitle %}{{ label }} - {{ super() }}{% endblock %}
 
-{% block page_heading %}{{ label }}{% endblock %}
-
 {% block breadcrumb_content_inner %}
     {{ ui.breadcrumb(label, href=h.url_for(group_type~'.new'), active=true) }}
 {% endblock %}
 
-{% block page_header %}{% endblock %}
+{% block primary_content_inner %}
+  <h1 class="nsw-h2">{{ label }}</h1>
+  {% block page_header %}{% endblock %}
+  {% snippet 'group/snippets/group_form.html', data=data, errors=errors, error_summary=error_summary, action=action %}
+{% endblock %}
 
 {% block secondary_content %}
     {% snippet "group/snippets/helper.html", group_type=group_type %}

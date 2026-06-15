@@ -1,0 +1,27 @@
+{% extends "page.html" %}
+
+{% block subtitle %}{{ _("Confirm Delete") }} - {{ super() }}{% endblock %}
+
+{% block breadcrumb_content %}
+  {{ super() }}
+  {{ ui.breadcrumb(_('Confirm Delete'), active=true) }}
+{% endblock %}
+
+{% block primary_content_inner %}
+  {%- call ui.util.call(ui.section, title=_('Confirm Delete')) -%}
+    <div class="nsw-content-block">
+        <div class="nsw-content-block__content">
+            <p>{{ _(messages.confirm[ent_type]) }}</p>
+            
+            {%- call ui.util.call(ui.form, method="POST", action=h.url_for('admin.trash')) -%}
+                <div class="nsw-list nsw-list--8">
+                    {{ ui.button(_('Cancel'), style="dark", type="submit", attrs={"name": "cancel"}) }}
+                    {{ ui.button(_('Confirm Delete'), style="danger", type="submit", attrs={"name": "action", "value": ent_type}) }}
+                </div>
+            {%- endcall %}
+        </div>
+    </div>
+  {%- endcall %}
+{% endblock %}
+
+{%- block secondary_content -%}{%- endblock -%}

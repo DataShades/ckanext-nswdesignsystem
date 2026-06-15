@@ -1,0 +1,52 @@
+{% extends "package/resource_edit_base.html" %}
+
+{% set logged_in = true if current_user.is_authenticated else false %}
+{% set res = resource %}
+
+{% block breadcrumb_edit_selected -%}{% endblock %}
+
+{% block content_action -%}
+    {{ ui.content_action( _('All views'), href=h.url_for(pkg.type ~ '_resource.views', id=pkg.name, resource_id=res.id), icon="arrow-left", style="secondary") }}
+    {{- ui.content_action(_('View view'), href=h.url_for(pkg.type ~ '_resource.read', id=pkg.name, resource_id=res.id, view_id=resource_view.id), icon="eye", style="secondary") if res }}
+{%- endblock %}
+
+{% block content_primary_nav -%}{% endblock %}
+
+{% block primary_content_inner %}
+    {% block form %}{% endblock %}
+{% endblock %}
+
+{% block main_content %}
+    {% if h.resource_view_full_page(resource_view) %}
+        {{ self.flash() }}
+        {{ self.toolbar() }}
+        <div class="wrapper">
+            {{ self.primary_content() }}
+        </div>
+    {% else %}
+        {{ super() }}
+    {% endif %}
+
+    {% if to_preview and h.resource_view_display_preview(resource_view) %}
+        <div class="row wrapper view-preview-container">
+            <section class="module module-narrow module-shallow">
+                <h2 class="module-heading">
+                    {{ ui.icon("image") }} {{ _('View preview') }}
+                </h2>
+                <div class="nsw-content-block__content">
+                    {% snippet 'package/snippets/resource_view.html', resource_view=resource_view, resource=resource, package=package, to_preview=True %}
+                </div>
+            </section>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block secondary %}
+    {% if not h.resource_view_full_page(resource_view) %}
+        {{ super() }}
+    {% endif %}
+{% endblock %}
+
+{% block secondary_content %}
+    {% snippet 'package/snippets/view_help.html' %}
+{% endblock %}

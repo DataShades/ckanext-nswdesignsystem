@@ -1,0 +1,16 @@
+{% extends "user/read_base.html" %}
+
+{% block primary_content_inner %}
+  <h1 class="nsw-h2">{{ _('Followers') }}</h1>
+  {% if followers %}
+      <div class="nsw-grid">
+          {% for follower in followers %}
+              <div class="nsw-col nsw-col-md-6 nsw-col-lg-4">
+                  {{ ui.user(user=follower) }}
+              </div>
+          {% endfor %}
+      </div>
+  {% else %}
+      {{ ui.empty(_('No followers found.')) }}
+  {% endif %}
+{% endblock %}

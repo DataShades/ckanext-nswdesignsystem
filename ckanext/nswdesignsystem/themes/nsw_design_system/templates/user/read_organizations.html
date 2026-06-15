@@ -1,0 +1,10 @@
+{% extends "user/read_base.html" %}
+
+{% block primary_content_inner %}
+  <h1 class="nsw-h2">{{ _('Organizations') }}</h1>
+  {% if user_dict.organizations %}
+      {% snippet 'organization/snippets/organization_list.html', organizations=user_dict.organizations %}
+  {% else %}
+      {{ ui.empty(_('User is not a member of any organizations.')) }}
+  {% endif %}
+{% endblock %}

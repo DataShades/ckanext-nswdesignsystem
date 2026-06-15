@@ -1,0 +1,28 @@
+{% extends "page.html" %}
+
+{% block subtitle %}{{ _("Confirm Delete") }} - {{ super() }}{% endblock %}
+
+{% block breadcrumb_content %}
+  {{ ui.breadcrumb(_('Users'), href=h.url_for('user.index')) }}
+  {{ ui.breadcrumb(user_dict.name|truncate(35), href=h.url_for('user.read', id=user_dict.name)) }}
+  {{ ui.breadcrumb(_('Confirm Delete'), active=true) }}
+{% endblock %}
+
+{% block primary_content_inner %}
+  {%- call ui.util.call(ui.section, title=_('Confirm Delete')) -%}
+    <div class="nsw-content-block">
+        <div class="nsw-content-block__content">
+            <p>{{ _('Are you sure you want to delete user - {name}?').format(name=user_dict.name) }}</p>
+            
+            {%- call ui.util.call(ui.form, method="POST", action=h.url_for('user.delete', id=user_dict.id)) -%}
+                <div class="nsw-list nsw-list--8">
+                    {{ ui.button(_('Cancel'), style="dark", type="submit", attrs={"name": "cancel"}) }}
+                    {{ ui.button(_('Confirm Delete'), style="danger", type="submit", attrs={"name": "delete"}) }}
+                </div>
+            {%- endcall %}
+        </div>
+    </div>
+  {%- endcall %}
+{% endblock %}
+
+{%- block secondary_content -%}{%- endblock -%}

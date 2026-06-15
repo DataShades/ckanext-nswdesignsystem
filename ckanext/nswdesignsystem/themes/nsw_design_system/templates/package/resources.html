@@ -1,0 +1,31 @@
+{% extends "package/edit_base.html" %}
+
+{% set has_reorder = pkg_dict and pkg_dict.resources and pkg_dict.resources|length > 0 %}
+
+{% block subtitle -%}
+    {{ ui.subtitle_item(_('Resources')) }}
+    {{- ui.subtitle_item(h.dataset_display_name(pkg)) }}
+    {{- super() }}
+{%- endblock %}
+
+{% block page_primary_action -%}{% endblock %}
+
+{% block primary_content_inner %}
+    {% if pkg.resources %}
+        {%- call ui.util.call(ui.resource_list, data={"module": "resource-reorder", "module-id": pkg.id} if has_reorder else {}) -%}
+            {% set can_edit = h.check_access('package_update', {'id':pkg.id }) %}
+            {% for resource in pkg.resources %}
+                {{ ui.resource(resource=resource, package=pkg, url_is_edit=true, can_edit=can_edit) }}
+            {% endfor %}
+        {%- endcall %}
+    {% else %}
+        {{ ui.empty(_("This dataset has no data.")) }}
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {% if has_reorder %}
+        {% asset 'vendor/reorder' %}
+    {% endif %}
+{% endblock %}

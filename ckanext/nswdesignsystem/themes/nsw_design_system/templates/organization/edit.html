@@ -1,0 +1,7 @@
+{% extends "organization/edit_base.html" %}
+
+{% block primary_content_inner %}
+  {%- call ui.util.call(ui.section, title=_('Edit Organization')) -%}
+    {% snippet 'organization/snippets/organization_form.html', data=data, errors=errors, error_summary=error_summary, action=action %}
+  {%- endcall %}
+{% endblock %}

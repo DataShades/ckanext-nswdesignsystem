@@ -1,0 +1,28 @@
+{% extends "page.html" %}
+
+{% block subtitle %}{{ _("Confirm Delete") }} - {{ super() }}{% endblock %}
+
+{% block breadcrumb_content %}
+  {{ ui.breadcrumb(h.humanize_entity_type('organization', group_type, 'breadcrumb') or _('Organizations'), href=h.url_for(group_type ~ '.index')) }}
+  {{ ui.breadcrumb(group_dict.display_name|truncate(35), href=h.url_for(group_type ~ '.read', id=group_dict.name)) }}
+  {{ ui.breadcrumb(_('Confirm Delete'), active=true) }}
+{% endblock %}
+
+{% block primary_content_inner %}
+  {%- call ui.util.call(ui.section, title=_('Confirm Delete')) -%}
+    <div class="nsw-content-block">
+        <div class="nsw-content-block__content">
+            <p>{{ _('Are you sure you want to delete {name}?').format(name=group_dict.display_name) }}</p>
+            
+            {%- call ui.util.call(ui.form, method="POST", action=h.url_for(group_type ~ '.delete', id=group_dict.id)) -%}
+                <div class="nsw-list nsw-list--8">
+                    {{ ui.button(_('Cancel'), style="dark", type="submit", attrs={"name": "cancel"}) }}
+                    {{ ui.button(_('Confirm Delete'), style="danger", type="submit", attrs={"name": "delete"}) }}
+                </div>
+            {%- endcall %}
+        </div>
+    </div>
+  {%- endcall %}
+{% endblock %}
+
+{%- block secondary_content -%}{%- endblock -%}

@@ -30,8 +30,8 @@
     %}
 
     {% block package_search_results_api %}
-        <section class="module">
-            <div class="module-content">
+        <section class="nsw-content-block">
+            <div class="nsw-content-block__content">
                 {% block package_search_results_api_inner %}
                     <small>
                         {% set api_link = ui.link(_('API'), href=h.url_for('api.get_api', ver=3)) %}

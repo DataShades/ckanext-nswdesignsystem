@@ -1,0 +1,76 @@
+{% extends "organization/read_base.html" %}
+
+{% block subtitle -%}
+    {{ ui.subtitle_item(_('Bulk Process')) }}
+    {{- super() }}
+{%- endblock %}
+
+{% block page_primary_action -%}{% endblock %}
+{% block organization_facets %}{% endblock %}
+
+{% block primary_content_inner %}
+  <h1 class="nsw-h2">{% block page_heading %}{{ _('Bulk Process') }}{% endblock %}</h1>
+
+  {%- call ui.util.call(ui.form, method="POST") -%}
+      {% if packages %}
+          <div class="nsw-table nsw-table--striped">
+              <table>
+                  <thead>
+                      <tr>
+                          <th style="width: 40px">
+                              {{ ui.checkbox(name="bulk_process.select_all", value="all", label="", checked=false) }}
+                          </th>
+                          <th>{{ _('Dataset') }}</th>
+                          <th>{{ _('Status') }}</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for pkg in packages %}
+                          <tr>
+                              <td>
+                                  {{ ui.checkbox(name="dataset_" ~ pkg.id, value="on", label="", checked=false) }}
+                              </td>
+                              <td>
+                                  <a href="{{ h.url_for(pkg.type ~ '.read', id=pkg.name) }}" class="nsw-text-bold">{{ pkg.title or pkg.name }}</a>
+                                  {% if pkg.notes %}
+                                      <p class="nsw-m-top-xs nsw-text-sm">{{ h.markdown_extract(pkg.notes, extract_length=80) }}</p>
+                                  {% endif %}
+                              </td>
+                              <td>
+                                  {% if pkg.state == 'deleted' %}
+                                      <span class="nsw-tag nsw-tag--error">{{ _('Deleted') }}</span>
+                                  {% elif pkg.private %}
+                                      <span class="nsw-tag nsw-tag--warning">{{ _('Private') }}</span>
+                                  {% else %}
+                                      <span class="nsw-tag nsw-tag--success">{{ _('Public') }}</span>
+                                  {% endif %}
+                              </td>
+                          </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+
+          <div class="nsw-grid nsw-m-top-md">
+             <div class="nsw-col nsw-col-md-6 nsw-display-flex nsw-align-items-center">
+                 {{ ui.select(name="bulk_action", label="", options=[
+                     ('public', _('Make public')),
+                     ('private', _('Make private')),
+                     ('delete', _('Delete'))
+                 ], required=true) }}
+             </div>
+             <div class="nsw-col nsw-col-md-6 nsw-display-flex nsw-align-items-center nsw-justify-content-end">
+                 {{ ui.button(_('Apply'), type="submit", style="dark") }}
+             </div>
+          </div>
+      {% else %}
+          {{ ui.empty(_('This organization has no datasets associated to it')) }}
+      {% endif %}
+  {%- endcall %}
+
+  {% if page.items %}
+      <div class="nsw-m-top-md">
+          {{ ui.pagination(page.page, page.last_page, page._url_generator) }}
+      </div>
+  {% endif %}
+{% endblock %}

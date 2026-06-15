@@ -1,0 +1,78 @@
+{% block form %}
+    {%- call ui.util.call(ui.form, method="POST", enctype="multipart/form-data", action=action) -%}
+
+        {%- block form_errors -%}{{ ui.form_errors(error_summary) }}{%- endblock %}
+
+        {%- block core_fields -%}
+            {%- call ui.util.call(ui.fieldset, legend=_('Change details')) -%}
+                {% if current_user.sysadmin %}
+                    {{ ui.input(name='name', label=_('Username'), id='field-username', value=data.name, errors=errors.name, required=true) }}
+                {% else %}
+                    {{ ui.input(name='name', label=_('Username'), id='field-username', value=data.name, errors=errors.name, attrs={'readonly': ''}) }}
+                {% endif %}
+
+                {{ ui.input(name='fullname', label=_('Full name'), id='field-fullname', value=data.fullname, errors=errors.fullname, placeholder=_('eg. Joe Bloggs')) }}
+                {{ ui.input(name='email', label=_('Email'), id='field-email', type='email', value=data.email, errors=errors.email, placeholder=_('eg. joe@example.com'), required=true) }}
+                {{ ui.markdown(name='about', label=_('About'), id='field-about', value=data.about, error=errors.about, placeholder=_('A little information about yourself')) }}
+
+                {% set is_upload = data.image_url and not data.image_url.startswith('http') %}
+                {% set is_url = data.image_url and data.image_url.startswith('http') %}
+                {{ ui.image_upload(data, errors, is_upload_enabled=h.uploads_enabled("user"), is_url=is_url, is_upload=is_upload, upload_label=_('Profile picture'), url_label=_('Profile picture URL') ) }}
+            {%- endcall %}
+
+        {% endblock %}
+
+        {% block extra_fields %}
+            {% if current_user.sysadmin and data.state == 'deleted' %}
+                {% call ui.util.call(ui.checkbox, name='activate_user', label=_('Reactivate User'), id='activate_user', value=True, checked=false) %}
+                    {{ ui.field_info(_('This account is deactivated, if you want to reactivate it, please click on checkbox.')) }}
+                {% endcall %}
+            {% endif %}
+        {% endblock %}
+
+        {% if is_sysadmin and current_user.name != data.name %}
+            {% block sysadmin_password %}
+                {%- call ui.util.call(ui.fieldset, legend=_('Change ' + data.name|capitalize + "'s" + ' password')) -%}
+                    {{ ui.input(name='password1', type='password', label=_('Password'), id='field-password', value=data.password1, errors=errors.password1, attrs={'autocomplete': 'off'} ) }}
+                    {{ ui.input(name='password2', type='password', label=_('Confirm Password'), id='field-password-confirm', value=data.password2, errors=errors.password2, attrs={'autocomplete': 'off'}) }}
+                {%- endcall %}
+            {% endblock %}
+
+            {% block sysadmin_old_password %}
+                {%- call ui.util.call(ui.fieldset, legend=_('Sysadmin password')) -%}
+                    {{ ui.input(name='old_password', type='password', label=_('Sysadmin Password'), id='field-password-old', value=data.oldpassword, errors=errors.oldpassword, attrs={'autocomplete': 'off'}) }}
+                {%- endcall %}
+            {% endblock %}
+
+        {% else %}
+            {% block change_password %}
+                {%- call ui.util.call(ui.fieldset, legend=_('Change password')) -%}
+                    {{ ui.input(name='old_password', type='password', label=_('Old Password'), id='field-password-old', value=data.oldpassword, errors=errors.oldpassword, attrs={'autocomplete': 'off'}) }}
+                    {{ ui.input(name='password1', type='password', label=_('Password'), id='field-password', value=data.password1, errors=errors.password1, attrs={'autocomplete': 'off'} ) }}
+                    {{ ui.input(name='password2', type='password', label=_('Confirm Password'), id='field-password-confirm', value=data.password2, errors=errors.password2, attrs={'autocomplete': 'off'}) }}
+                {%- endcall %}
+            {% endblock %}
+        {% endif %}
+
+        {{ ui.form_annotation() }}
+
+        {%- call ui.util.call(ui.form_actions) -%}
+            {% block form_actions %}
+                {% set is_deleted = data.state == 'deleted' %}
+                {% if not is_deleted %}
+                    {% block delete_button %}
+                        {% if h.check_access('user_delete', {'id': data.id})  %}
+                            {%- call ui.util.call(ui.button, href=h.url_for('user_delete', id=data.id), style="danger", data={"module": "confirm-action", "module-content": _('Are you sure you want to delete this User?')}) -%}
+                                {% block delete_button_text %}{{ _('Delete') }}{% endblock %}
+                            {%- endcall %}
+                        {% endif %}
+                    {% endblock %}
+                {% endif %}
+
+                {{ ui.button(_('Reactivate Profile') if is_deleted else _('Update Profile'), type="submit", attrs={"name": "save"}) }}
+
+            {% endblock %}
+        {%- endcall %}
+
+    {%- endcall %}
+{% endblock %}

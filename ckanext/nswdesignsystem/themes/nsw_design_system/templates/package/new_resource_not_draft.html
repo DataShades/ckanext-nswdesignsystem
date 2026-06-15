@@ -1,0 +1,27 @@
+{% extends "package/resource_edit_base.html" %}
+
+{% block subtitle -%}
+    {{ ui.subtitle_item(_('Add resource')) }}
+    {{- ui.subtitle_item(h.dataset_display_name(pkg)) }}
+    {{- super() }}
+{%- endblock %}
+
+{% block form_title %}{{ _('Add resource') }}{% endblock %}
+
+{% block breadcrumb_content -%}
+    {{ super() }}
+    {{- ui.breadcrumb(_('Add New Resource'), href="#", active=true) }}
+{%- endblock %}
+
+{% block form %}
+    {% snippet resource_form_snippet, data=data, errors=errors, error_summary=error_summary, include_metadata=false, pkg_name=pkg_name, stage=stage, dataset_type=dataset_type %}
+{% endblock %}
+
+{% block content_primary_nav -%}
+    {{ ui.content_nav_item(_('New resource'), href="#", icon="pencil", active=true) }}
+{%- endblock %}
+
+{% block secondary_content %}
+    {% snippet 'package/snippets/resource_help.html' %}
+    {% snippet 'package/snippets/resources.html', pkg=pkg, no_new_res=true %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{%- call ui.util.call(ui.form, action=h.url_for('user.api_tokens', id=user.name), method="POST") -%}
+    {% if error_summary %}
+        {{ ui.alert(error_summary, style="danger") }}
+    {% endif %}
+    
+    <div class="nsw-grid">
+        <div class="nsw-col nsw-col-md-8">
+             {{ ui.input(name="name", label=_("Token Name"), placeholder=_("e.g. My Application"), errors=errors.name, required=true) }}
+        </div>
+        <div class="nsw-col nsw-col-md-4 nsw-display-flex nsw-align-items-end nsw-p-bottom-sm">
+            {{ ui.button(_('Create API Token'), type="submit", style="dark") }}
+        </div>
+    </div>
+{%- endcall %}

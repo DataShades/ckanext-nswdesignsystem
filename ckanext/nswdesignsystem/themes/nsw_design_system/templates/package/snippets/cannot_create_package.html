@@ -1,0 +1,22 @@
+{% extends "package/base_form_page.html" %}
+
+{% block primary_content %}
+
+    {% block page_header %}{% endblock %}
+
+    <section class="nsw-content-block">
+        <div class="nsw-content-block__content">
+            {% block primary_content_inner %}
+                {% if h.check_access('organization_create') %}
+                    {{ ui.alert(_('Before you can create a dataset you need to create an organization.'), style="warning") }}
+                    {{ ui.button(_('Create a new organization'), href=h.url_for('organization.new')) }}
+                {% else %}
+                    {%- call ui.util.call(ui.alert, style="danger") -%}
+                        <p>{{ _('There are no organizations to which you can assign this dataset.') }}</p>
+                        <p>{{ _('Ask a system administrator to create an organization before you can continue.') }}</p>
+                    {%- endcall %}
+                {% endif %}
+            {% endblock %}
+        </div>
+    </section>
+{% endblock %}

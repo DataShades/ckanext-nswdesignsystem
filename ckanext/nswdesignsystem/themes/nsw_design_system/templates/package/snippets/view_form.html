@@ -1,0 +1,20 @@
+{% set data = data or {} %}
+{% set errors = errors or {} %}
+
+{{ ui.form_errors(error_summary) }}
+
+{{ ui.input(name='title', label=_('Title'), placeholder=_('eg. My View'), value=data.title, errors=errors.title, required=true) }}
+{{ ui.markdown(name='description', label=_('Description'), placeholder=_('eg. Information about my view'), value=data.description, errors=errors.description) }}
+{{ ui.hidden_input(name='view_type', value=resource_view.view_type) }}
+
+{% block view_form_filters %}
+    {%- with resource=resource, resource_view=resource_view -%}
+        {% include 'package/snippets/view_form_filters.html' %}
+    {%- endwith %}
+{% endblock %}
+
+{# form template is defined in ResouceView extension point #}
+
+{% if form_template %}
+    {% include form_template %}
+{% endif %}

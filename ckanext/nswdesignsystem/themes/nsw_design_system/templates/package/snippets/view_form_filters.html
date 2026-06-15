@@ -1,0 +1,34 @@
+{% macro filtersInputs(selectName, inputName, label='', options='', filters={}) %}
+    <label class="form-label">{{ label }}</label>
+    <div class="resource-view-filters">
+        {% for field in filters %}
+            {% for value in filters[field] %}
+                {{ selectAndInput(selectName, inputName, selectOptions=options, selected=field, inputValue=value, attrs=attrs) }}
+            {% endfor %}
+        {% endfor %}
+    </div>
+    <a href="#" class="btn btn-primary resource-view-add-filter">{{ _('Add Filter') }}</a>
+{% endmacro %}
+
+{% macro selectAndInput(selectName, inputName, selectOptions='', selected='', inputValue='') %}
+    <div class="mb-3">
+        {{ ui.select(name=selectName, options=selectOptions, selected=selected) }}
+        {{ ui.input(name=inputName, value=inputValue) }}
+        {{ ui.button(ui.icon("times"), aria={"label": _('Remove Filter')}, data={"filter-action": "remove"}) }}
+    </div>
+{% endmacro %}
+
+{% set fields = h.resource_view_get_fields(resource) %}
+{% set templateFilterInputs = selectAndInput('filter_fields', 'filter_values', selectOptions=fields) %}
+{% set filters = resource_view['filters'] %}
+
+<div
+    data-module = "resource-view-filters-form"
+    data-module-resource-id = "{{ resource['id'] }}"
+    data-module-template-filter-inputs = "{{ h.remove_linebreaks(templateFilterInputs) }}"
+    data-module-filters-selector = ".resource-view-filters"
+    data-module-add-filter-selector = ".resource-view-add-filter"
+    data-module-remove-filter-selector = "[data-filter-action=remove]"
+>
+    {{filtersInputs('filter_fields', 'filter_values', label=_('Filters'), options=fields, filters=filters)}}
+</div>

@@ -1,0 +1,22 @@
+{% extends "group/edit_base.html" %}
+
+{% block primary_content_inner %}
+  {%- call ui.util.call(ui.section, title=_('Add Member')) -%}
+    <div class="nsw-content-block">
+        <div class="nsw-content-block__content">
+            {%- call ui.util.call(ui.form, method="POST", action=h.url_for(group_type ~ '.member_new', id=group_dict.name)) -%}
+                {% if error_summary %}
+                    {{ ui.alert(error_summary, style="danger") }}
+                {% endif %}
+                
+                {{ ui.input(name="username", label=_("Existing User"), placeholder=_("Username"), errors=errors.username, required=true) }}
+                {{ ui.select(name="role", label=_("Role"), options=roles, selected="member", errors=errors.role, required=true) }}
+                
+                <div class="nsw-m-top-sm">
+                    {{ ui.button(_('Add User'), type="submit", style="dark") }}
+                </div>
+            {%- endcall %}
+        </div>
+    </div>
+  {%- endcall %}
+{% endblock %}

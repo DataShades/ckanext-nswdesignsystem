@@ -1,0 +1,19 @@
+{% extends "group/read_base.html" %}
+
+{% block subtitle %}{{ _('Followers') }} - {{ super() }}{% endblock %}
+
+{% block primary_content_inner %}
+  {%- call ui.util.call(ui.section, title=_('Followers')) -%}
+    {% if followers %}
+        <div class="nsw-grid">
+            {% for follower in followers %}
+                <div class="nsw-col nsw-col-md-6 nsw-col-lg-4">
+                    {{ ui.user(user=follower) }}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        {{ ui.empty(_('No followers found.')) }}
+    {% endif %}
+  {%- endcall %}
+{% endblock %}

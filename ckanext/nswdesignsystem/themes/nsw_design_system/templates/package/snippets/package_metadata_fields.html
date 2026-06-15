@@ -1,0 +1,34 @@
+{% import 'macros/form.html' as form %}
+
+{% block package_metadata_fields %}
+
+    {% block package_metadata_fields_url %}
+        {{ ui.input(name='url', label=_('Source'), placeholder=_('http://example.com/dataset.json'), value=data.url, errors=errors.url) }}
+    {% endblock %}
+
+    {% block package_metadata_fields_version %}
+        {{ ui.input(name='version', label=_('Version'), placeholder=_('1.0'), value=data.version, errors=errors.version) }}
+    {% endblock %}
+
+    {% block package_metadata_author %}
+        {{ ui.input(name='author', label=_('Author'), placeholder=_('Joe Bloggs'), value=data.author, errors=errors.author) }}
+
+        {{ ui.input(name='author_email', label=_('Author Email'), id='field-author-email', placeholder=_('joe@example.com'), value=data.author_email, errors=errors.author_email) }}
+    {% endblock %}
+
+    {% block package_metadata_fields_maintainer %}
+        {{ ui.input(name='maintainer', label=_('Maintainer'), placeholder=_('Joe Bloggs'), value=data.maintainer, errors=errors.maintainer) }}
+
+        {{ ui.input(name='maintainer_email', label=_('Maintainer Email'), id='field-maintainer-email', placeholder=_('joe@example.com'), value=data.maintainer_email, errors=errors.maintainer_email) }}
+    {% endblock %}
+
+    {% block package_metadata_fields_custom %}
+        {% block custom_fields %}
+            {% snippet 'snippets/custom_form_fields.html', extras=data.extras, errors=errors, limit=3 %}
+        {% endblock %}
+    {% endblock %}
+
+    {% block dataset_fields %}
+    {% endblock %}
+
+{% endblock %}

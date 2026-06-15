@@ -1,0 +1,10 @@
+{% if followers %}
+    {%- call ui.util.call(ui.user_list) -%}
+        {%- for user in followers -%}
+            {{ ui.user(user=user, maxlength=20) }}
+        {%- endfor %}
+    {%- endcall %}
+
+{% else %}
+    {{ ui.empty(_('No followers')) }}
+{% endif %}

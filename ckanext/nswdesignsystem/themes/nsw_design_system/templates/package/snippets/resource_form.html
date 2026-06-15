@@ -1,0 +1,98 @@
+{%- set delete_modal_id = ui.util.id() -%}
+
+{% set data = data or {} %}
+{% set errors = errors or {} %}
+{% set action = form_action or h.url_for(dataset_type ~ '_resource.new', id=pkg_name) %}
+
+{%- call ui.util.call(ui.form, method="POST", action=form_action or h.url_for(dataset_type ~ '_resource.new', id=pkg_name), enctype="multipart/form-data", data={"module": "basic-form resource-form"}) -%}
+
+    {% block errors %}{{ ui.form_errors(error_summary) }}{% endblock %}
+
+    {{ ui.hidden_input(name="id", value=data.id) }}
+
+    {% block basic_fields %}
+        {% block basic_fields_url %}
+            {% set is_upload = (data.url_type == 'upload') %}
+            {% snippet 'package/snippets/resource_upload_field.html',
+            data=data,
+            errors=errors,
+            is_url=data.url and not is_upload,
+            is_upload=is_upload,
+            is_upload_enabled=h.uploads_enabled("resource"),
+            url_label=_('URL'),
+            upload_label=_('File'),
+            placeholder=_('http://example.com/external-data.csv') %}
+        {% endblock %}
+
+        {% block basic_fields_name %}
+            {{ ui.input(name='name', label=_('Name'), placeholder=_('eg. January 2011 Gold Prices'), value=data.name, errors=errors.name) }}
+        {% endblock %}
+
+        {% block basic_fields_description %}
+            {{ ui.markdown(name='description', label=_('Description'), placeholder=_('Some useful notes about the data'), value=data.description, errors=errors.description) }}
+        {% endblock %}
+
+        {% block basic_fields_format %}
+
+            {% set format_attrs = {'data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/format_autocomplete?incomplete=?'} %}
+
+            {% call ui.util.call(ui.input, name='format', label=_('Format'), placeholder=_('eg. CSV, XML or JSON'), value=data.format, errors=errors.format, data={'module': 'autocomplete', 'module-source': '/api/2/util/resource/format_autocomplete?incomplete=?'}) %}
+                {{ ui.field_info(_('This will be guessed automatically. Leave blank if you wish')) }}
+            {% endcall %}
+        {% endblock %}
+    {% endblock basic_fields %}
+
+    {% block metadata_fields %}
+        {% if include_metadata %}
+
+            {{ ui.input(name='last_modified', id='field-last-modified', label=_('Last Modified'), placeholder=_('eg. 2012-06-05'), value=data.last_modified, errors=errors.last_modified) }}
+            {{ ui.input(name='size', label=_('File Size'), placeholder=_('eg. 1024'), value=data.size, errors=errors.size) }}
+            {{ ui.input(name='mimetype', label=_('MIME Type'), placeholder=_('eg. application/json'), value=data.mimetype, errors=errors.mimetype) }}
+            {{ ui.input(name='mimetype_inner', id='field-mimetype-inner', label=_('MIME Type'), placeholder=_('eg. application/json'), value=data.mimetype_inner, errors=errors.mimetype_inner) }}
+        {% endif %}
+    {% endblock %}
+
+    {%- call ui.util.call(ui.form_actions) -%}
+        {% block delete_button %}
+            {% if data.id %}
+                {% if h.check_access('resource_delete', {'id': data.id})  %}
+                    {%- call ui.util.call(ui.modal_handle, id=delete_modal_id, style="danger") -%}
+                        {% block delete_button_text %}{{ _('Delete') }}{% endblock %}
+                    {%- endcall %}
+                {% endif %}
+            {% endif %}
+        {% endblock %}
+
+        {% if stage %}
+            {% block previous_button %}
+                {{ ui.button(_('Previous'), type="submit", style="secondary", attrs={"name": "save", "value": "go-dataset"}) }}
+            {% endblock %}
+        {% endif %}
+
+        {% block again_button %}
+            {{ ui.button(_('Save & add another'), type="submit", style="secondary", attrs={"name": "save", "value": "again"}) }}
+        {% endblock %}
+
+        {% if stage  %}
+            {% block save_button %}
+                {%- call ui.util.call(ui.button, type="submit", attrs={"name": "save", "value": "go-metadata-preview"}) -%}
+                    {% block save_button_text %}{{ _('Preview') }}{% endblock %}
+                {%- endcall %}
+            {% endblock %}
+
+            {% block publish_button %}
+                {%- call ui.util.call(ui.button, type="submit", style="success", attrs={"name": "save", "value": "go-metadata-publish"}) -%}
+                    {% block publish_button_text %}{{ _('Publish') }}{% endblock %}
+                {%- endcall %}
+            {% endblock %}
+
+        {% else %}
+            {% block add_button %}
+                {{ ui.button(_('Add'), type="submit", attrs={"name": "save", "value": "go-dataset-complete"}) }}
+            {% endblock %}
+        {% endif %}
+    {%- endcall %}
+
+{%- endcall %}
+
+{{ ui.confirm_modal(_('Are you sure you want to delete this resource?'), href=h.url_for(dataset_type ~ '_resource.delete', resource_id=data.id, id=pkg_name), id=delete_modal_id, dismissible=true) }}

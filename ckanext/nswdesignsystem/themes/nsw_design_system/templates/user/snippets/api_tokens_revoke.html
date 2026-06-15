@@ -1,0 +1,10 @@
+{%- set form_id = ui.util.id() -%}
+{%- set modal_id = ui.util.id() -%}
+
+{%- call ui.util.call(ui.form, method="POST", action=h.url_for('user.api_tokens', id=user.name), attrs={"id": form_id, "class": "nsw-display-inline-block"}) -%}
+    <input type="hidden" name="token" value="{{ token.id }}" />
+    <input type="hidden" name="revoke" value="1" />
+{%- endcall %}
+
+{{ ui.confirm_modal(_('Are you sure you want to revoke this API token? Any applications using it will no longer be able to access the API.'), id=modal_id, form_id=form_id) }}
+{{ ui.button(_('Revoke'), id=modal_id, style="danger", size="sm", aria={"label": _('Revoke token {name}').format(name=token.name)}) }}

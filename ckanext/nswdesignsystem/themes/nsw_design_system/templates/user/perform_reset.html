@@ -1,0 +1,26 @@
+{% extends "page.html" %}
+
+{% block subtitle %}{{ _('Reset Password') }}{% endblock %}
+
+{% block breadcrumb_content %}
+  {{ ui.breadcrumb(_('Reset Password'), active=true) }}
+{% endblock %}
+
+{% block primary_content_inner %}
+  {%- call ui.util.call(ui.section, title=_('Reset Password')) -%}
+    <div class="nsw-content-block">
+        <div class="nsw-content-block__content">
+            {%- call ui.util.call(ui.form, action=h.url_for('user.perform_reset', id=user_obj.id, token=token), method="POST") -%}
+                {{ ui.input(name="password", label=_("New Password"), type="password", required=true) }}
+                {{ ui.input(name="password_confirm", label=_("Confirm Password"), type="password", required=true) }}
+                
+                <div class="nsw-m-top-sm">
+                    {{ ui.button(_('Reset Password'), type="submit", style="dark") }}
+                </div>
+            {%- endcall %}
+        </div>
+    </div>
+  {%- endcall %}
+{% endblock %}
+
+{%- block secondary_content -%}{%- endblock -%}

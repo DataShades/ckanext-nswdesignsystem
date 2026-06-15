@@ -1,0 +1,24 @@
+{# This snippet creates an Additional Info Table
+
+extras is a list of tuples of the form (key, value)
+
+#}
+{% if extras %}
+    {{ ui.heading(_('Additional Info'), level=3) }}
+    {%- call ui.util.call(ui.table, striped=true, bordered=true, condensed=true) -%}
+        <thead>
+            <tr>
+                <th scope="col">{{ _('Field') }}</th>
+                <th scope="col">{{ _('Value') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, value in extras %}
+                <tr rel="dc:relation" resource="_:extra{{ i }}">
+                    <th scope="row" class="dataset-label" property="rdfs:label">{{ _(key|e) }}</th>
+                    <td class="dataset-details" property="rdf:value">{{ value }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    {%- endcall %}
+{% endif %}

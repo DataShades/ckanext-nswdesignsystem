@@ -1,0 +1,35 @@
+{% extends "package/view_edit_base.html" %}
+
+{% block subtitle -%}
+    {{ ui.subtitle_item(_('Add view')) }}
+    {{- ui.subtitle_item(h.resource_display_name(resource)) }}
+    {{- super() }}
+{%- endblock %}
+
+{% block form_title %}{{ _('Add view') }}{% endblock %}
+
+{% block breadcrumb_content -%}
+    {{ super() }}
+    {{- ui.breadcrumb(_('Add view'), href="#", active=true) }}
+{%- endblock %}
+
+{% block content_primary_nav -%}
+    {{ ui.content_nav_item(_('Add view'), href="#", icon="pencil", active=true) }}
+{%- endblock %}
+
+{% block form %}
+    {%- call ui.util.call(ui.form, method="POST", data={"module": "basic-form resource-form"}) -%}
+        {% include 'package/snippets/view_form.html' %}
+        {%- call ui.util.call(ui.form_actions) -%}
+            {%- set preview_attrs = {"name": "preview", "value": "True"} -%}
+            {% if not h.resource_view_display_preview(data) %}
+                {%- do preview_attrs.update({"hidden": true}) -%}
+            {%endif%}
+            {{ ui.button(_('Preview'), style="secondary", type="submit", attrs=preview_attrs) }}
+
+            {%- call ui.util.call(ui.button, type="submit", attrs={"name": "save", "value": "Save"}) -%}
+                {% block save_button_text %}{{ _('Add') }}{% endblock %}
+            {%- endcall %}
+        {%- endcall %}
+    {%- endcall %}
+{% endblock %}

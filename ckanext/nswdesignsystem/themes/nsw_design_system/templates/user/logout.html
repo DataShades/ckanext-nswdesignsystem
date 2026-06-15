@@ -1,0 +1,20 @@
+{% extends "page.html" %}
+
+{% block subtitle %}{{ _('Logged Out') }}{% endblock %}
+
+{% block breadcrumb_content %}
+  {{ ui.breadcrumb(_('Logged Out'), active=true) }}
+{% endblock %}
+
+{% block primary_content_inner %}
+  {%- call ui.util.call(ui.section, title=_('Logged Out')) -%}
+    <div class="nsw-content-block">
+        <div class="nsw-content-block__content">
+            <p>{{ _('You are now logged out.') }}</p>
+            <p>{{ ui.link(_('Login again'), href=h.url_for('user.login')) }}</p>
+        </div>
+    </div>
+  {%- endcall %}
+{% endblock %}
+
+{%- block secondary_content -%}{%- endblock -%}

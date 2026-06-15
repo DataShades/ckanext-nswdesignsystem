@@ -3,7 +3,7 @@
 {% set dataset_type = dataset_type or h.default_package_type() %}
 
 {% macro render_step(step_count, description, is_complete) %}
-    <div class="row">
+    <div class="nsw-grid">
         <span class="step">{{ _('Step {step}').format(step=step_count) }}</span>
         <span class="step-name">{{ description }}</span>
     </div>

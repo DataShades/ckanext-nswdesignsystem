@@ -138,9 +138,9 @@
 {% block primary_content %}
     {% block resource_additional_information %}
         {% if res %}
-            <section class="module">
+            <section class="nsw-content-block">
                 {% block resource_additional_information_inner %}
-                    <div class="module-content">
+                    <div class="nsw-content-block__content">
                         {{ ui.heading(_('Additional Information'), level=2) }}
                         {%- call ui.util.call(ui.table, striped=true, bordered=true, data={"module": "table-toggle-more"}) -%}
                             <thead>

@@ -1,0 +1,30 @@
+{% extends "package/read_base.html" %}
+{% import 'macros/form.html' as form %}
+
+{% set default_group_type = h.default_group_type('group') %}
+
+{% block primary_content_inner %}
+    {{ ui.heading(h.humanize_entity_type('group', default_group_type, 'page title') or _('Groups'), level=1) }}
+
+    {% if group_dropdown %}
+        {%- call ui.util.call(ui.form, method="POST", attrs={"class": "add-to-group"}) -%}
+            <select id="field-add_group" name="group_added" data-module="autocomplete">
+                {% for option in group_dropdown %}
+                    <option value="{{ option[0] }}"> {{ option[1] }}</option>
+                {% endfor %}
+            </select>
+
+            {{ ui.button(_('Add to group'), type="submit", aria={"label": _('Associate this group with this dataset')}) }}
+        {%- endcall %}
+
+    {% endif %}
+
+    {% if pkg_dict.groups %}
+        {%- call ui.util.call(ui.form, method="POST") -%}
+            {% snippet 'group/snippets/group_list.html', groups=pkg_dict.groups %}
+        {%- endcall %}
+    {% else %}
+        {{ ui.empty(h.humanize_entity_type('group', default_group_type, 'no associated label') or _('There are no groups associated with this dataset.')) }}
+    {% endif %}
+
+{% endblock %}
