@@ -1,0 +1,17 @@
+{% extends "organization/read_base.html" %}
+
+{% block subtitle %}{{ _('Members') }} - {{ super() }}{% endblock %}
+
+{% block primary_content_inner %}
+  {%- call ui.util.call(ui.section, title=_('Members')) -%}
+    {% if members %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for user in members %}
+                {{ ui.user(user=user) }}
+            {% endfor %}
+        </div>
+    {% else %}
+        {{ ui.empty(_('No members found for this organization.')) }}
+    {% endif %}
+  {%- endcall %}
+{% endblock %}

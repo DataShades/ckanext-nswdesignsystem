@@ -29,6 +29,12 @@
     </div>
 {%- endmacro %}
 
+{%- macro form_actions(content) -%}
+    <div {{ ui.util.attrs(kwargs, {"class": "nsw-form__group"}) }}>
+        {{- content -}}
+    </div>
+{%- endmacro %}
+
 {%- macro field_errors(errors) -%}
     {%- if errors -%}
         <span {{ ui.util.attrs(kwargs, {"class": "nsw-form__helper nsw-form__helper--error"}) }}><span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">cancel</span>{{ errors|join(", ") }}</span>

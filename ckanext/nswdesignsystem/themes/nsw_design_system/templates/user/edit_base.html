@@ -1,0 +1,15 @@
+{% extends "user/read_base.html" %}
+
+{% block breadcrumb_content -%}
+    {{- ui.breadcrumb(_('Users'), href=h.url_for('user.index')) }}
+    {{- ui.breadcrumb(user.display_name|truncate(35), href=h.url_for('user.read', id=user.name)) }}
+    {{- ui.breadcrumb(_('Manage'), active=true) }}
+{%- endblock %}
+
+{% block content_primary_nav -%}
+    {{ ui.content_nav_item(_('Public Profile'), href=h.url_for('user.read', id=user.name), icon='user', active=request.endpoint=='user.read') }}
+    {{- ui.content_nav_item(_('Settings'), href=h.url_for('user.edit', id=user.name), icon='settings', active=request.endpoint=='user.edit') }}
+    {{- ui.content_nav_item(_('API Tokens'), href=h.url_for('user.api_tokens', id=user.name), icon='key', active=request.endpoint=='user.api_tokens') }}
+{%- endblock %}
+
+{% block secondary_content %}{% endblock %}

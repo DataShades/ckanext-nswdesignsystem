@@ -1,0 +1,26 @@
+{% extends "page.html" %}
+
+{% block subtitle %}{{ ui.subtitle_item(_('About')) }}{% endblock %}
+
+{%- block page_layout -%}
+    no-sidebar
+{%- endblock %}
+
+{% block breadcrumb_content %}
+    {{ ui.breadcrumb(_('About'), active=true) }}
+{% endblock %}
+
+{% block primary_content_inner %}
+    {%- call ui.util.call(ui.section, title=_('About {title}').format(title=g.site_title)) -%}
+        <div class="nsw-content-block">
+            <div class="nsw-content-block__content">
+                {% if g.site_about %}
+                    {{ h.render_markdown(g.site_about) }}
+                {% else %}
+                    {% include 'home/snippets/about_text.html' %}
+                {% endif %}
+            </div>
+        </div>
+    {%- endcall %}
+
+{% endblock %}

@@ -1,5 +1,15 @@
 {% extends "admin/base.html" %}
 
+{%- block subtitle -%}
+    {{ ui.subtitle_item("Sysadmins settings") }}
+    {{- super() }}
+{%- endblock %}
+
+{% block breadcrumb_content -%}
+    {{ super() }}
+    {{ ui.breadcrumb(_('Sysadmins settings'), href=h.url_for('admin.index'), active=true) }}
+{%- endblock %}
+
 {% block primary_content_inner %}
     {%- call ui.util.call(ui.heading, level=1) -%}
         {% block page_heading %}{{ _('Manage Admins') }}{% endblock %}
@@ -10,7 +20,7 @@
         <thead>
             <tr>
                 <th>{{ _('User') }}</th>
-                <th>&nbsp;</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -22,7 +32,7 @@
                             {%- call ui.util.call(ui.form, method="POST", action=h.url_for('user.sysadmin')) -%}
                                 <input type="hidden" value="{{ user }}" name="username" />
                                 <input type="hidden" value="0" name="status" />
-                                {{ ui.button(ui.tooltip(ui.icon("close"), tooltip=_('Revoke Sysadmin permission')), type="submit", style="danger", aria={"label": _('Revoke Sysadmin permission')}, size="sm") }}
+                                {{ ui.button(_('Revoke Sysadmin permission'), type="submit", style="danger", size="sm") }}
                             {%- endcall %}
                         {%- endcall %}
                     </td>
@@ -34,15 +44,9 @@
     {{ ui.heading(_('Promote user to Sysadmin'), level=2) }}
 
     {%- call ui.util.call(ui.form, method="POST", action=h.url_for('user.sysadmin')) -%}
+        {{ ui.autocomplete(name="username", placeholder=_("Username"), source=h.url_for("api.user_autocomplete", ignore_self="true", q="?"), id_key="name", label_key="fullname") }}
 
-        <div class="form-group">
-            <input
-                id="promote-username" type="text" name="username" placeholder="Username"
-                value="" class="control-medium" data-module="autocomplete"
-                data-module-source="/api/2/util/user/autocomplete?ignore_self=true&q=?"
-            >
-            <input type="hidden" value="1" name="status" />
-        </div>
+        {{ ui.hidden_input(name="status", value="1") }}
 
         {%- call ui.util.call(ui.form_actions) -%}
             {{ ui.button(_('Promote'), type="submit", aria={"label": _('Promote user to Sysadmin')}) }}

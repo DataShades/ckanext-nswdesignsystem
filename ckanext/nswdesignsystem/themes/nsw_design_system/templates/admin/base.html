@@ -1,12 +1,16 @@
 {% extends "page.html" %}
 
+{%- block page_layout -%}
+    sidebar-end
+{%- endblock %}
+
 {% block subtitle -%}
     {{ ui.subtitle_item(_('Administration')) }}
     {{- super() }}
 {%- endblock %}
 
 {% block breadcrumb_content -%}
-    {{ ui.breadcrumb(_('Sysadmins settings'), href=h.url_for('admin.index'), active=true) }}
+    {{ ui.breadcrumb(_('Administration'), href=h.url_for('admin.index')) }}
 {%- endblock %}
 
 {% block content_primary_nav -%}

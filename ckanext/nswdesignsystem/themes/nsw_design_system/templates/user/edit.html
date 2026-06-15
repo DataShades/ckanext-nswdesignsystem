@@ -1,0 +1,7 @@
+{% extends "user/edit_base.html" %}
+
+{% block primary_content_inner %}
+  {%- call ui.util.call(ui.section, title=_('Manage User')) -%}
+    {% snippet 'user/snippets/edit_user_form.html', data=data, errors=errors, error_summary=error_summary %}
+  {%- endcall %}
+{% endblock %}

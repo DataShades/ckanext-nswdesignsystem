@@ -1,0 +1,16 @@
+{% extends "organization/read_base.html" %}
+
+{% block subtitle %}{{ _('About') }} - {{ super() }}{% endblock %}
+
+{% block primary_content_inner %}
+  <h1 class="nsw-h2">{{ _('About {title}').format(title=organization.display_name) }}</h1>
+  <div class="nsw-content-block">
+      <div class="nsw-content-block__content">
+          {% if organization.description %}
+              {{ h.render_markdown(organization.description) }}
+          {% else %}
+              <p class="nsw-intro">{{ _('No description for this organization') }}</p>
+          {% endif %}
+      </div>
+  </div>
+{% endblock %}

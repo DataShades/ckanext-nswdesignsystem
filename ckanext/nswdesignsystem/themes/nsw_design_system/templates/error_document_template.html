@@ -1,6 +1,12 @@
 {% extends "page.html" %}
 
-{% block subtitle %}{{ _('Error') }} {{ code }}{% endblock %}
+{% block subtitle %}
+    {{ ui.subtitle_item(_('Error {code}').format(code=code)) }}
+{% endblock %}
+
+{%- block page_layout -%}
+    no-sidebar
+{%- endblock %}
 
 {% block breadcrumb_content %}
   {{ ui.breadcrumb(_('Error') ~ ' ' ~ code, active=true) }}
@@ -8,12 +14,6 @@
 
 {% block primary_content_inner %}
   {%- call ui.util.call(ui.section, title=_('Error') ~ ' ' ~ code) -%}
-    <p>{{ content }}</p>
-    {% if g.debug %}
-        <hr/>
-        {%- call ui.util.call(ui.accordion, title=_('Debug information'), independent=true) -%}
-            {{ ui.code(debug) }}
-        {%- endcall %}
-    {% endif %}
+    <p class="nsw-intro">{{ content }}</p>
   {%- endcall %}
 {% endblock %}

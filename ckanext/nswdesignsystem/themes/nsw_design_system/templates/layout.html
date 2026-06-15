@@ -71,18 +71,16 @@
                                         {% block primary_content %}
                                             <article class="module">
                                                 {% block page_header %}
-                                                    <header class="module-content page-header">
-                                                        {%- call ui.util.call(ui.content_nav) -%}
-                                                            {% block content_primary_nav -%}{% endblock %}
-                                                        {%- endcall %}
-                                                    </header>
+                                                    {%- set content_primary_nav | trim -%}
+                                                    {% block content_primary_nav -%}{% endblock %}
+                                                    {%- endset %}
+                                                    {{ ui.content_nav(content_primary_nav) if content_primary_nav }}
                                                 {% endblock %}
                                                 <div class="module-content">
-                                                    {% if self.page_primary_action() | trim %}
-                                                        {%- call ui.util.call(ui.page_action_wrapper, _extra_class="pull-right") -%}
-                                                            {% block page_primary_action -%}{% endblock %}
-                                                        {%- endcall %}
-                                                    {% endif %}
+                                                    {%- set primary_action | trim -%}
+                                                    {% block page_primary_action -%}{% endblock %}
+                                                    {%- endset %}
+                                                    {{ ui.page_action_wrapper(primary_action) if page_primary_action }}
                                                     {% block primary_content_inner %}
                                                     {% endblock %}
                                                 </div>
