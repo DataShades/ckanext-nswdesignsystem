@@ -89,12 +89,8 @@
 {%- endmacro %}
 
 
-
-
-
-
 {%- macro content_action_wrapper(content) -%}
-    <div {{ ui.util.attrs(kwargs, {"class": "content_action"}) }}>
+    <div {{ ui.util.attrs(kwargs, {"class": "content_action nsw-text-right"}) }}>
         {{- content -}}
     </div>
 {%- endmacro %}
@@ -106,7 +102,7 @@
 {%- endmacro %}
 
 {%- macro page_action_wrapper(content) -%}
-    <div {{ ui.util.attrs(kwargs, {"class": "page_primary_action"}) }}>
+    <div {{ ui.util.attrs(kwargs, {"class": "page_primary_action nsw-m-top-xs"}) }}>
         {{- content -}}
     </div>
 {%- endmacro %}

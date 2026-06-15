@@ -1,22 +1,23 @@
 {% extends "page.html" %}
 
-{% block subtitle %}{{ _('Logout') }}{% endblock %}
+{%- block page_layout -%}
+    sidebar-end
+{%- endblock %}
 
-{% block breadcrumb_content %}
-  {{ ui.breadcrumb(_('Logout'), active=true) }}
+{% block subtitle %}
+    {{ ui.subtitle_item(_('Logout')) }}
 {% endblock %}
 
 {% block primary_content_inner %}
-  {%- call ui.util.call(ui.section, title=_('Logout')) -%}
-    <div class="nsw-content-block">
-        <div class="nsw-content-block__content">
-            <p>{{ _('Are you sure you want to log out?') }}</p>
-            {%- call ui.util.call(ui.form, action=h.url_for('user.logout'), method="POST") -%}
-                 {{ ui.button(_('Logout'), type="submit", style="dark") }}
-            {%- endcall %}
-        </div>
-    </div>
-  {%- endcall %}
-{% endblock %}
+    {%- call ui.util.call(ui.section, title=_('Logout')) -%}
+        <div class="nsw-content-block">
+            <div class="nsw-content-block__content">
+                <p>{{ _('Are you sure you want to log out?') }}</p>
 
-{%- block secondary_content -%}{%- endblock -%}
+                {%- call ui.util.call(ui.form, action=h.url_for('user.logout'), method="POST") -%}
+                    {{ ui.button(_('Logout'), type="submit") }}
+                {%- endcall %}
+            </div>
+        </div>
+    {%- endcall %}
+{% endblock %}

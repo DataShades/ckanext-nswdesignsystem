@@ -1,9 +1,12 @@
 {% extends "page.html" %}
 
-{% block subtitle %}{{ _('Logged Out') }}{% endblock %}
+{%- block page_layout -%}
+    sidebar-end
+{%- endblock %}
 
-{% block breadcrumb_content %}
-  {{ ui.breadcrumb(_('Logged Out'), active=true) }}
+{% block subtitle %}
+    {{ ui.subtitle_item(_('Logged Out')) }}
+    {{- super() -}}
 {% endblock %}
 
 {% block primary_content_inner %}
@@ -11,10 +14,8 @@
     <div class="nsw-content-block">
         <div class="nsw-content-block__content">
             <p>{{ _('You are now logged out.') }}</p>
-            <p>{{ ui.link(_('Login again'), href=h.url_for('user.login')) }}</p>
+            <p>{{ ui.button(_('Login again'), href=h.url_for('user.login')) }}</p>
         </div>
     </div>
   {%- endcall %}
 {% endblock %}
-
-{%- block secondary_content -%}{%- endblock -%}

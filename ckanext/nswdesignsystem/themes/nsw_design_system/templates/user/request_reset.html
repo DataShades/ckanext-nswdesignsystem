@@ -1,30 +1,36 @@
 {% extends "page.html" %}
 
-{% block subtitle %}{{ _('Forgot Password') }}{% endblock %}
+{%- block page_layout -%}
+    sidebar-end
+{%- endblock %}
 
-{% block breadcrumb_content %}
-  {{ ui.breadcrumb(_('Forgot Password'), active=true) }}
+{% block subtitle %}
+    {{ ui.subtitle_item(_('Forgot Password')) }}
 {% endblock %}
 
 {% block primary_content_inner %}
-  {%- call ui.util.call(ui.section, title=_('Forgot Password')) -%}
-    <div class="nsw-content-block">
-        <div class="nsw-content-block__content">
-            <p>{{ _("Enter your username and we'll send you a link to reset your password.") }}</p>
-            {%- call ui.util.call(ui.form, action=h.url_for('user.request_reset'), method="POST") -%}
-                {% if error_summary %}
-                    {{ ui.alert(error_summary, style="danger") }}
-                {% endif %}
-                
-                {{ ui.input(name="user", label=_("Username"), required=true) }}
-                
-                <div class="nsw-m-top-sm">
-                    {{ ui.button(_('Request Reset'), type="submit", style="dark") }}
-                </div>
-            {%- endcall %}
+    {%- call ui.util.call(ui.section, title=_('Forgot Password')) -%}
+        <div class="nsw-content-block">
+            <div class="nsw-content-block__content">
+                <p>{{ _("Enter your username and we'll send you a link to reset your password.") }}</p>
+
+                {%- call ui.util.call(ui.form, action=h.url_for('user.request_reset'), method="POST") -%}
+                    {{ ui.form_errors(error_summary) }}
+                    {{ ui.input(name="user", label=_("Username"), required=true) }}
+
+                    {%- call ui.util.call(ui.form_actions) -%}
+                        {{ ui.button(_('Request Reset'), type="submit") }}
+                    {%- endcall %}
+                {%- endcall %}
+            </div>
         </div>
-    </div>
-  {%- endcall %}
+    {%- endcall %}
 {% endblock %}
 
-{%- block secondary_content -%}{%- endblock -%}
+{%- block secondary_content -%}
+    {%- call ui.util.call(ui.sidebar_section, title=_("How does this work?")) -%}
+        <p>
+            {{ _("Enter your email address or username into the box and we will send you an email with a link to enter a new password.") }}
+        </p>
+    {%- endcall %}
+{%- endblock -%}

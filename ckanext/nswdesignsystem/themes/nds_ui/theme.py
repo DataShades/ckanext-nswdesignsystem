@@ -70,4 +70,5 @@ icon_map = {
     "unlock": "lock_open",
     "user": "person",
     "users": "group",
+    "wrench": "build",
 }

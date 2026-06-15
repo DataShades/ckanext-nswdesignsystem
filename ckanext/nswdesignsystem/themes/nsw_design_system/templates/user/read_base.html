@@ -1,19 +1,22 @@
 {% extends "page.html" %}
 
+{%- block page_layout -%}
+    sidebar-end
+{%- endblock %}
+
 {% set user = user_dict %}
 {% set dataset_type = h.default_package_type() %}
 {% set org_type = h.default_group_type('organization') %}
 {% set group_type = h.default_group_type('group') %}
 
 {% block subtitle -%}
-    {{ ui.subtitle_item(user.display_name) if user }}
+    {{ ui.subtitle_item(user.display_name) }}
     {{- ui.subtitle_item(_('Users')) }}
-    {{- super() }}
 {%- endblock %}
 
 {% block breadcrumb_content -%}
     {{- ui.breadcrumb(_('Users'), href=h.url_for('user.index')) }}
-    {{- ui.breadcrumb(user.display_name|truncate(35), href=h.url_for('user.read', id=user.name), active=true) }}
+    {{- ui.breadcrumb(user.display_name|truncate(35), href=h.url_for('user.read', id=user.name), active=request.endpoint=="user.read") }}
 {%- endblock %}
 
 {% block content_action -%}
@@ -21,12 +24,12 @@
 {%- endblock %}
 
 {% block content_primary_nav -%}
-    {{ ui.content_nav_item(h.humanize_entity_type('package', dataset_type, 'content tab') or _('Datasets'), href=h.url_for('user.read', id=user.name), icon='sitemap', active=request.endpoint=='user.read') }}
-    {{- ui.content_nav_item(h.humanize_entity_type('organization', org_type, 'content tab') or _('Organizations'), href=h.url_for('user.read_organizations', id=user.name), icon='building', active=request.endpoint=='user.read_organizations') }}
-    {{- ui.content_nav_item(h.humanize_entity_type('group', group_type, 'content tab') or _('Groups'), href=h.url_for('user.read_groups', id=user.name), icon='users', active=request.endpoint=='user.read_groups') }}
-    {{- ui.content_nav_item(_('API Tokens'), href=h.url_for('user.api_tokens', id=user.name), icon='key', active=request.endpoint=='user.api_tokens') if h.check_access('api_token_list', {'user': user['name']}) }}
+    {{ ui.content_nav_item(h.humanize_entity_type('package', dataset_type, 'content tab') or _('Datasets'), href=h.url_for('user.read', id=user.name), active=request.endpoint=='user.read') }}
+    {{- ui.content_nav_item(h.humanize_entity_type('organization', org_type, 'content tab') or _('Organizations'), href=h.url_for('user.read_organizations', id=user.name), active=request.endpoint=='user.read_organizations') }}
+    {{- ui.content_nav_item(h.humanize_entity_type('group', group_type, 'content tab') or _('Groups'), href=h.url_for('user.read_groups', id=user.name), active=request.endpoint=='user.read_groups') }}
+    {{- ui.content_nav_item(_('API Tokens'), href=h.url_for('user.api_tokens', id=user.name), active=request.endpoint=='user.api_tokens') if h.check_access('api_token_list', {'user': user['name']}) }}
 {%- endblock %}
 
 {% block secondary_content %}
-    {% snippet "user/snippets/info.html", user=user, is_myself=is_myself, is_sysadmin=is_sysadmin, dataset_type=dataset_type, org_type=org_type, group_type=group_type, am_following=am_following, about_formatted=about_formatted %}
+    {% include "user/snippets/info.html" %}
 {% endblock %}

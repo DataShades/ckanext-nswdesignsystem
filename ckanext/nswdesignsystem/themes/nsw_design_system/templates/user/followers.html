@@ -1,16 +1,17 @@
 {% extends "user/read_base.html" %}
 
+{%- block subtitle -%}
+    {{ ui.subtitle_item(_("Followers")) }}
+    {{- super() -}}
+{%- endblock %}
+
+{%- block breadcrumb_content -%}
+    {{- super() -}}
+    {{ ui.breadcrumb(_("Followers"), href=h.url_for("user.followers", id=user.name), active=true) }}
+{%- endblock %}
+
 {% block primary_content_inner %}
-  <h1 class="nsw-h2">{{ _('Followers') }}</h1>
-  {% if followers %}
-      <div class="nsw-grid">
-          {% for follower in followers %}
-              <div class="nsw-col nsw-col-md-6 nsw-col-lg-4">
-                  {{ ui.user(user=follower) }}
-              </div>
-          {% endfor %}
-      </div>
-  {% else %}
-      {{ ui.empty(_('No followers found.')) }}
-  {% endif %}
+    {%- call ui.util.call(ui.section, title=_("Followers")) -%}
+        {%- include "user/snippets/followers.html" -%}
+    {%- endcall %}
 {% endblock %}

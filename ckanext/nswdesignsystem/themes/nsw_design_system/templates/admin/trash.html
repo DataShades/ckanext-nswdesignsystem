@@ -3,6 +3,17 @@
 {%- set form_id = ui.util.id() -%}
 {%- set modal_id = ui.util.id() -%}
 
+{%- block subtitle -%}
+    {{ ui.subtitle_item("Trash") }}
+    {{- super() }}
+{%- endblock %}
+
+{% block breadcrumb_content %}
+    {{ super() }}
+    {{ ui.breadcrumb(_('Trash'), active=true) }}
+{% endblock %}
+
+
 {% block primary_content_inner %}
     {%- call ui.util.call(ui.heading, level=1) -%}
         {% block page_heading %}{{ _('Trash') }}{% endblock %}

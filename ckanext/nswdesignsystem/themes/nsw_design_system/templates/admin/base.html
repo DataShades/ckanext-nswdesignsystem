@@ -15,6 +15,6 @@
 
 {% block content_primary_nav -%}
     {{ ui.content_nav_item(_('Sysadmins'), href=h.url_for('admin.index'), icon='person', active=request.endpoint=='admin.index') }}
-    {{- ui.content_nav_item(_('Config'), href=h.url_for('admin.config'), icon='settings', active=request.endpoint=='admin.config') }}
+    {{- ui.content_nav_item(_('Config'), href=h.url_for('admin.config'), icon='settings', active=request.endpoint in ('admin.config', 'admin.reset_config')) }}
     {{- ui.content_nav_item(_('Trash'), href=h.url_for('admin.trash'), icon='delete', active=request.endpoint=='admin.trash') }}
 {%- endblock %}

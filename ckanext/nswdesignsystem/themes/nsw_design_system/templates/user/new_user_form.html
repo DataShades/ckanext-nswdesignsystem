@@ -1,12 +1,13 @@
 {% block form %}
     {%- call ui.util.call(ui.form, method="POST", enctype="multipart/form-data") -%}
         {{ ui.form_errors(error_summary) }}
+
         {% block core_fields %}
             {% block required_core_fields %}
                 {{ ui.input(name="name", id="field-username", label=_("Username"), value=data.name, icon='user', errors=errors.name, required=True) }}
                 {{ ui.input(name="email", id="field-email", label=_("Email"), type="email", value=data.email, icon='envelope', errors=errors.email, required=True) }}
-                {{ ui.input(name="password1", id="field-password", label=_("Password"), type="password", value=data.password1, icon="fingerprint", errors=errors.password1, required=True) }}
-                {{ ui.input(name="password2", id="field-confirm-password", label=_("Confirm"), type="password", value=data.password2, icon="fingerprint", errors=errors.password2, required=True) }}
+                {{ ui.input(name="password1", id="field-password", label=_("Password"), type="password", value=data.password1, icon="fingerprint", errors=errors.password, required=true) }}
+                {{ ui.input(name="password2", id="field-confirm-password", label=_("Confirm"), type="password", value=data.password2, icon="fingerprint", errors=errors.password, required=true) }}
             {% endblock %}
         {% endblock %}
 

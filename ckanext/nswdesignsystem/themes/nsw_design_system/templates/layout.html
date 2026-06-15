@@ -69,18 +69,18 @@
                                 {% block primary %}
                                     <div class="nsw-layout__main">
                                         {% block primary_content %}
-                                            <article class="module">
+                                            <article>
                                                 {% block page_header %}
                                                     {%- set content_primary_nav | trim -%}
                                                     {% block content_primary_nav -%}{% endblock %}
                                                     {%- endset %}
                                                     {{ ui.content_nav(content_primary_nav) if content_primary_nav }}
                                                 {% endblock %}
-                                                <div class="module-content">
+                                                <div>
                                                     {%- set primary_action | trim -%}
                                                     {% block page_primary_action -%}{% endblock %}
                                                     {%- endset %}
-                                                    {{ ui.page_action_wrapper(primary_action) if page_primary_action }}
+                                                    {{ ui.page_action_wrapper(primary_action) if primary_action }}
                                                     {% block primary_content_inner %}
                                                     {% endblock %}
                                                 </div>
