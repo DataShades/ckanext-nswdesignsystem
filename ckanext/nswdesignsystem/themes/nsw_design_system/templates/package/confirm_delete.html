@@ -1,28 +1,22 @@
 {% extends "page.html" %}
 
-{% block subtitle %}{{ _("Confirm Delete") }} - {{ super() }}{% endblock %}
+{%- block page_layout -%}
+    sidebar-end
+{%- endblock %}
 
-{% block breadcrumb_content %}
-  {{ ui.breadcrumb(h.humanize_entity_type('package', dataset_type, 'breadcrumb') or _('Datasets'), href=h.url_for(dataset_type ~ '.search')) }}
-  {{ ui.breadcrumb(pkg.title|truncate(35), href=h.url_for(pkg.type ~ '.read', id=pkg.name)) }}
-  {{ ui.breadcrumb(_('Confirm Delete'), active=true) }}
+{% block subtitle %}
+    {{ ui.subtitle_item(_("Confirm Delete")) }}
 {% endblock %}
 
 {% block primary_content_inner %}
-  {%- call ui.util.call(ui.section, title=_('Confirm Delete')) -%}
-    <div class="nsw-content-block">
-        <div class="nsw-content-block__content">
-            <p>{{ _('Are you sure you want to delete {name}?').format(name=pkg.title or pkg.name) }}</p>
-            
-            {%- call ui.util.call(ui.form, method="POST", action=h.url_for(pkg.type ~ '.delete', id=pkg.id)) -%}
-                <div class="nsw-list nsw-list--8">
-                    {{ ui.button(_('Cancel'), style="dark", type="submit", attrs={"name": "cancel"}) }}
-                    {{ ui.button(_('Confirm Delete'), style="danger", type="submit", attrs={"name": "delete"}) }}
-                </div>
-            {%- endcall %}
-        </div>
-    </div>
-  {%- endcall %}
-{% endblock %}
+    {%- call ui.util.call(ui.section, title=_('Confirm Delete'), level=1) -%}
+        <p>{{ _('Are you sure you want to delete {name}?').format(name=pkg.title or pkg.name) }}</p>
 
-{%- block secondary_content -%}{%- endblock -%}
+        {%- call ui.util.call(ui.form, method="POST", action=h.url_for(pkg.type ~ '.delete', id=pkg.id)) -%}
+            {%- call ui.util.call(ui.form_actions) -%}
+                {{ ui.button(_('Cancel'), style="dark", type="submit", attrs={"name": "cancel"}) }}
+                {{ ui.button(_('Confirm Delete'), style="danger", type="submit", attrs={"name": "delete"}) }}
+            {%- endcall %}
+        {%- endcall %}
+    {%- endcall %}
+{% endblock %}

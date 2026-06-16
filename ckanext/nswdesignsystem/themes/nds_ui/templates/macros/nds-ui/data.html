@@ -1,5 +1,5 @@
-{%- macro table(content, striped, bordered, caption) -%}
-    {%- set class = "nsw-table" ~ (" nsw-table--striped" if striped else "") ~ (" nsw-table--bordered" if bordered else "") -%}
+{%- macro table(content, striped, bordered, caption, adaptive) -%}
+    {%- set class = "nsw-table" ~ (" nsw-table--striped" if striped else "") ~ (" nsw-table--bordered" if bordered else "") ~ (" nsw-table--adaptive" if adaptive else "") -%}
     <div {{ ui.util.attrs(kwargs, {"class": class, "tabindex": 0}) }}>
         <table>
             {%- if caption -%}

@@ -8,10 +8,10 @@
                 {% if error_summary %}
                     {{ ui.alert(error_summary, style="danger") }}
                 {% endif %}
-                
-                {{ ui.input(name="username", label=_("Existing User"), placeholder=_("Username"), errors=errors.username, required=true) }}
-                {{ ui.select(name="role", label=_("Role"), options=roles, selected="member", errors=errors.role, required=true) }}
-                
+
+                {{ ui.input(name="username", label=_("Existing User"), placeholder=_("Username"),  required=true) }}
+                {{ ui.select(name="role", label=_("Role"), options=roles, selected="member",  required=true) }}
+
                 <div class="nsw-m-top-sm">
                     {{ ui.button(_('Add User'), type="submit", style="dark") }}
                 </div>

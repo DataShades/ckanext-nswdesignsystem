@@ -1,20 +1,27 @@
 {% extends "user/dashboard.html" %}
+
 {% set dataset_type = h.default_package_type() %}
 
-{% block primary_content_inner %}
-    <div class="nsw-display-flex nsw-justify-content-space-between nsw-align-items-center nsw-m-bottom-md">
-        <h1 class="nsw-h2 nsw-m-bottom-0">{{ h.humanize_entity_type('package', dataset_type, 'my label') or _('My Datasets') }}</h1>
-        {% if h.check_access('package_create') %}
-            {{ ui.button(h.humanize_entity_type('package', dataset_type, 'add link') or _("Add Dataset"), href=h.url_for(dataset_type ~ '.new'), style="dark") }}
-        {% endif %}
-    </div>
+{%- set page_heading = h.humanize_entity_type('package', dataset_type, 'my label') or _('My Datasets') -%}
 
-    {% if user_dict.datasets %}
-        {% snippet 'snippets/package_list.html', packages=user_dict.datasets %}
-    {% else %}
-        {%- call ui.util.call(ui.empty) -%}
-            {{ _('You haven\'t created any datasets.') }}
-            {{ ui.link(_('Create one now?'), href=h.url_for(dataset_type ~ '.new')) if h.check_access('package_create') }}
-        {%- endcall %}
-    {% endif %}
+{% block content_action -%}
+    {{ ui.button(h.humanize_entity_type('package', dataset_type, 'add link') or _("Add Dataset"), href=h.url_for(dataset_type ~ '.new')) if h.check_access('package_create') }}
+{%- endblock %}
+
+
+{% block primary_content_inner %}
+    {%- call ui.util.call(ui.section, title=page_heading, level=1) -%}
+        {% if user_dict.datasets %}
+            {%- call ui.util.call(ui.package_list) -%}
+                {%- for pkg in user_dict.datasets -%}
+                    {{ ui.package(package=pkg) }}
+                {%- endfor %}
+            {%- endcall %}
+        {% else %}
+            {%- call ui.util.call(ui.empty) -%}
+                {{ _('You haven\'t created any datasets.') }}
+                {{ ui.link(_('Create one now?'), href=h.url_for(dataset_type ~ '.new')) if h.check_access('package_create') }}
+            {%- endcall %}
+        {% endif %}
+    {%- endcall %}
 {% endblock %}

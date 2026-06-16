@@ -73,7 +73,7 @@
 {%- endmacro %}
 
 {%- macro content_nav_item(content, href, active) -%}
-    {{ ui.tab(content, href=href, active=active, **kwargs) }}
+    {{ ui.sidebar_nav_item(content, href=href, active=active, **kwargs) }}
 {%- endmacro %}
 
 {%- macro pagination(page=1, total=1, url_generator=h.pager_url, padding=2, hide_edges=false, hide_siblings=false, start_label=null, end_label=null, previous_label=ui.icon("chevron-left"), next_label=ui.icon("chevron-right"), padding_label="...", url_params={}) -%}

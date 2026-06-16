@@ -1,10 +1,31 @@
 {% extends "user/read_base.html" %}
 
+{%- block subtitle -%}
+    {{ ui.subtitle_item(_("Groups")) }}
+    {{- super() -}}
+{%- endblock %}
+
+{%- block breadcrumb_content -%}
+    {{- super() -}}
+    {{ ui.breadcrumb(_("Groups"), href=h.url_for("user.read_groups", id=user_dict.name), active=true) }}
+{%- endblock %}
+
+{% set groups_available = h.groups_available(am_member=True,
+  include_dataset_count=True,
+  include_member_count=True,
+  user=user_dict.name)
+%}
+
 {% block primary_content_inner %}
-  <h1 class="nsw-h2">{{ _('Groups') }}</h1>
-  {% if user_dict.groups %}
-      {% snippet 'group/snippets/group_list.html', groups=user_dict.groups %}
-  {% else %}
-      {{ ui.empty(_('User is not a member of any groups.')) }}
-  {% endif %}
+    {%- call ui.util.call(ui.section, title=_('Groups'), level=1) -%}
+        {% if groups_available %}
+            {%- call ui.util.call(ui.group_list) -%}
+                {% for group in groups_available %}
+                    {{ ui.group(group=group) }}
+                {% endfor %}
+            {%- endcall %}
+        {% else %}
+            {{ ui.empty(_('User is not a member of any groups.')) }}
+        {% endif %}
+    {%- endcall %}
 {% endblock %}

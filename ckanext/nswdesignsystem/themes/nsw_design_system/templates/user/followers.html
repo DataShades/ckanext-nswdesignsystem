@@ -11,7 +11,7 @@
 {%- endblock %}
 
 {% block primary_content_inner %}
-    {%- call ui.util.call(ui.section, title=_("Followers")) -%}
+    {%- call ui.util.call(ui.section, title=_("Followers"), level=1) -%}
         {%- include "user/snippets/followers.html" -%}
     {%- endcall %}
 {% endblock %}

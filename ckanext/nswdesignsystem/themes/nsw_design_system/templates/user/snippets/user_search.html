@@ -1,16 +1,3 @@
-<section class="module module-narrow module-shallow simple-input">
-    <div class="module-group">
-        <h2 class="module-heading">{{ _('Users') }}</h2>
-
-        <form class="module-content field-bordered" action="{{ h.url_for('user.index') }}" method="get" id="user-search-form">
-            <div class="field">
-                <label for="field-user-search">{{ _('Search Users') }}</label>
-                <input id="field-user-search" value="{{ q }}" class="field form-control" name="q" placeholder="{{ _('Search') }}" />
-                <button class="btn-search" type="submit">{{ ui.icon("search") }}</button>
-            </div>
-        </form>
-        <ul class="nav nav-simple">
-            <li class="nav-item">{{ h.nav_link(_('All Users'), named_route='user.index') }}</li>
-        </ul>
-    </div>
-</section>
+{%- call ui.util.call(ui.facet_section, title=_("Username")) -%}
+        {{ ui.input(name="q", placeholder=_("Search"), value=q) }}
+{%- endcall %}

@@ -1,24 +1,40 @@
-{% if tokens %}
-    {%- call ui.util.call(ui.table, hover=true) -%}
+{#
+Template variables:
+
+user - currently viewed user
+tokens - list of ApiToken entities
+
+#}
+
+{% set action = h.url_for("user.api_tokens_revoke", id=user['name']) %}
+
+{%- call ui.util.call(ui.form, method="POST", hx={"swap": "none", "post": action, "hx-on::after-request": "$('#revoke-tokens-button').attr('disabled', true)"}) -%}
+    {%- call ui.util.call(ui.table, striped=true, hover=true, condensed=true, attrs={"id": "api-tokens-table"}) -%}
         <thead>
             <tr>
-                <th>{{ _('Name') }}</th>
-                <th>{{ _('Last Used') }}</th>
-                <th></th>
+                {% block head_cells %}
+                    <th scope="col">{{ _('Token') }}</th>
+                    <th scope="col">{{ _('Created') }}</th>
+                    <th scope="col">{{ _('Last access') }}</th>
+                {% endblock head_cells %}
             </tr>
         </thead>
+
         <tbody>
             {% for token in tokens %}
-                <tr>
-                    <td><strong>{{ token.name }}</strong></td>
-                    <td>{{ ui.datetime(token.last_access) if token.last_access else _('Never') }}</td>
-                    <td class="nsw-text-right">
-                        {% snippet 'user/snippets/api_tokens_revoke.html', token=token, user=user %}
-                    </td>
+                <tr id="token-{{ token.id }}">
+                    {% block token_cells scoped %}
+                        <td>
+                            {{ ui.checkbox(name="token", value=token.id, id=ui.util.id(), label=ui.util.tag(token.name, "code"), on={"change": "$('#revoke-tokens-button').attr('disabled', !$('[name=token]:checked').length)"}) }}
+                        </td>
+                        <td>{{ ui.datetime(value=token.created_at, with_hours=true) }}</td>
+                        <td>{{ ui.datetime(value=token.last_access, with_hours=true, empty=_('Never')) }}</td>
+                    {% endblock token_cells %}
                 </tr>
-            {% endfor %}
+            {%- endfor -%}
         </tbody>
     {%- endcall %}
-{% else %}
-    {{ ui.empty(_('You have no API tokens.')) }}
-{% endif %}
+
+    {{ ui.button(_('Revoke tokens'), style="danger", icon="times", type="submit", data={"module": "confirm-action", "module-content": _('Are you sure you want to revoke these tokens?')}, attrs={"id": "revoke-tokens-button", "disabled": ""}, _extra_class="nsw-m-top-xs") }}
+
+{%- endcall %}

@@ -1,8 +1,12 @@
 {% extends "page.html" %}
 
+{%- set user = current_user -%}
+{% set org_type = h.default_group_type('organization') %}
+{% set group_type = h.default_group_type('group') %}
+{% set dataset_type = h.default_package_type() %}
+
 {% block subtitle -%}
     {{ ui.subtitle_item(_('Dashboard')) }}
-    {{- super() }}
 {%- endblock %}
 
 {% block breadcrumb_content -%}
@@ -10,12 +14,9 @@
 {%- endblock %}
 
 {% block content_primary_nav -%}
-    {{ ui.content_nav_item(_('News feed'), href=h.url_for('dashboard.index'), icon='rss', active=request.endpoint=='dashboard.index') }}
-    {{- ui.content_nav_item(_('My Datasets'), href=h.url_for('dashboard.datasets'), icon='sitemap', active=request.endpoint=='dashboard.datasets') }}
-    {{- ui.content_nav_item(_('My Organizations'), href=h.url_for('dashboard.organizations'), icon='corporate_fare', active=request.endpoint=='dashboard.organizations') }}
-    {{- ui.content_nav_item(_('My Groups'), href=h.url_for('dashboard.groups'), icon='group', active=request.endpoint=='dashboard.groups') }}
+    {%- block dashboard_nav_links -%}
+        {{- ui.content_nav_item(_('My Datasets'), href=h.url_for('dashboard.datasets'), icon='sitemap', active=request.endpoint=='dashboard.datasets') }}
+        {{- ui.content_nav_item(_('My Organizations'), href=h.url_for('dashboard.organizations'), icon='corporate_fare', active=request.endpoint=='dashboard.organizations') }}
+        {{- ui.content_nav_item(_('My Groups'), href=h.url_for('dashboard.groups'), icon='group', active=request.endpoint=='dashboard.groups') }}
+    {%- endblock %}
 {%- endblock %}
-
-{% block secondary_content %}
-    {% snippet 'user/snippets/info.html', user=user_dict, about_formatted=about_formatted %}
-{% endblock %}

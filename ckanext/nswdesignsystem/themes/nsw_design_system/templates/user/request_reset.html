@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block primary_content_inner %}
-    {%- call ui.util.call(ui.section, title=_('Forgot Password')) -%}
+    {%- call ui.util.call(ui.section, title=_('Forgot Password'), level=1) -%}
         <div class="nsw-content-block">
             <div class="nsw-content-block__content">
                 <p>{{ _("Enter your username and we'll send you a link to reset your password.") }}</p>

@@ -1,14 +1,26 @@
 {% extends "user/read_base.html" %}
 
-{% block primary_content_inner %}
-    <h1 class="nsw-h2">{{ _('API Tokens') }}</h1>
 
-    {% if h.check_access('api_token_create', {'user': user['name']}) %}
-        {% snippet 'user/snippets/api_token_create_form.html', data=data, errors=errors, user=user %}
-    {% endif %}
+{%- block subtitle -%}
+    {{ ui.subtitle_item(_("API Tokens")) }}
+    {{- super() -}}
+{%- endblock %}
 
-    {% block token_list %}
-        {% snippet 'user/snippets/api_token_list.html', tokens=tokens, user=user %}
-    {% endblock token_list %}
+{%- block breadcrumb_content -%}
+    {{- super() -}}
+    {{ ui.breadcrumb(_("API Tokens"), href=h.url_for("user.api_tokens", id=user_dict.name), active=true) }}
+{%- endblock %}
 
-{% endblock primary_content_inner %}
+
+{%- block primary_content_inner -%}
+    {%- call ui.util.call(ui.section, title=_('API Tokens'), level=1) -%}
+
+        {%- if h.check_access('api_token_create', {'user': user['name']}) -%}
+            {% include 'user/snippets/api_token_create_form.html' %}
+        {%- endif %}
+
+        {%- block token_list -%}
+            {% include 'user/snippets/api_token_list.html' %}
+        {%- endblock token_list %}
+    {%- endcall %}
+{%- endblock primary_content_inner %}

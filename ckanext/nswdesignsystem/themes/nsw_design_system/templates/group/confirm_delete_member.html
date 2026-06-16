@@ -1,29 +1,25 @@
 {% extends "page.html" %}
 
-{% block subtitle %}{{ _("Confirm Delete") }} - {{ super() }}{% endblock %}
+{%- block page_layout -%}
+    sidebar-end
+{%- endblock %}
 
-{% block breadcrumb_content %}
-  {{ super() }}
-  {{ ui.breadcrumb(_('Confirm Delete'), active=true) }}
+{% block subtitle %}
+    {{ ui.subtitle_item(_("Confirm Delete")) }}
 {% endblock %}
+
 
 {% block primary_content_inner %}
-  {%- call ui.util.call(ui.section, title=_('Confirm Delete')) -%}
-    <div class="nsw-content-block">
-        <div class="nsw-content-block__content">
-            <p>{{ _('Are you sure you want to delete member - {name}?').format(name=user_dict.name) }}</p>
-            
-            {%- call ui.util.call(ui.form, method="POST", action=h.url_for(group_type+'.member_delete', id=group_id)) -%}
-                <input type="hidden" name="user" value="{{ user_id }}" />
+    {%- call ui.util.call(ui.section, title=_('Confirm Delete'), level=1) -%}
+        <p>{{ _('Are you sure you want to delete member - {name}?').format(name=user_dict.name) }}</p>
 
-                <div class="nsw-list nsw-list--8">
-                    {{ ui.button(_('Cancel'), style="dark", type="submit", attrs={"name": "cancel"}) }}
-                    {{ ui.button(_('Confirm Delete'), style="danger", type="submit", attrs={"name": "delete"}) }}
-                </div>
+        {%- call ui.util.call(ui.form, method="POST", action=h.url_for(group_type+'.member_delete', id=group_id)) -%}
+            <input type="hidden" name="user" value="{{ user_id }}" />
+
+            {%- call ui.util.call(ui.form_actions) -%}
+                {{ ui.button(_('Cancel'), style="dark", type="submit", attrs={"name": "cancel"}) }}
+                {{ ui.button(_('Confirm Delete'), style="danger", type="submit", attrs={"name": "delete"}) }}
             {%- endcall %}
-        </div>
-    </div>
-  {%- endcall %}
+        {%- endcall %}
+    {%- endcall %}
 {% endblock %}
-
-{%- block secondary_content -%}{%- endblock -%}

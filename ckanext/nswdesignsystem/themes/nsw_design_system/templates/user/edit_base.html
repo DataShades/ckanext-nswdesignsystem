@@ -1,9 +1,17 @@
 {% extends "user/read_base.html" %}
 
+{%- block subtitle -%}
+    {{ ui.subtitle_item(_("Manage")) }}
+    {{- super() -}}
+{%- endblock %}
+
 {% block breadcrumb_content -%}
-    {{- ui.breadcrumb(_('Users'), href=h.url_for('user.index')) }}
-    {{- ui.breadcrumb(user.display_name|truncate(35), href=h.url_for('user.read', id=user.name)) }}
-    {{- ui.breadcrumb(_('Manage'), active=true) }}
+    {{- super() -}}
+    {{- ui.breadcrumb(_('Manage'), active=request.endpoint=="user.edit") }}
+{%- endblock %}
+
+{% block content_action -%}
+    {{ ui.content_action(_('View'), href=h.url_for('user.read', id=user.name), icon="eye", style="secondary") if h.check_access('user_update', user) }}
 {%- endblock %}
 
 {% block content_primary_nav -%}

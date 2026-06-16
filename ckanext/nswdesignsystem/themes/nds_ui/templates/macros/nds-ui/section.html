@@ -16,9 +16,9 @@
     </div>
 {%- endmacro %}
 
-{%- macro sidebar_section(content, title, collapsible) -%}
-    <nav {{ ui.util.attrs(kwargs) }}>
-        <button class="nsw-side-nav__toggle" aria-expanded="false">
+{%- macro sidebar_section(content, title) -%}
+    <nav {{ ui.util.attrs(kwargs, {"class": "nsw-side-nav js-side-nav"}) }}>
+        <button class="nsw-side-nav__toggle">
             <span>{{ title }}</span>
         </button>
         <div class="nsw-side-nav__header nsw-p-y-xs">

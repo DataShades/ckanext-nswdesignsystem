@@ -10,12 +10,12 @@
 {% endblock %}
 
 {% block primary_content_inner %}
-  {%- call ui.util.call(ui.section, title=_('Logged Out')) -%}
-    <div class="nsw-content-block">
-        <div class="nsw-content-block__content">
-            <p>{{ _('You are now logged out.') }}</p>
-            <p>{{ ui.button(_('Login again'), href=h.url_for('user.login')) }}</p>
+    {%- call ui.util.call(ui.section, title=_('Logged Out'), level=1) -%}
+        <div class="nsw-content-block">
+            <div class="nsw-content-block__content">
+                <p>{{ _('You are now logged out.') }}</p>
+                <p>{{ ui.button(_('Login again'), href=h.url_for('user.login')) }}</p>
+            </div>
         </div>
-    </div>
-  {%- endcall %}
+    {%- endcall %}
 {% endblock %}

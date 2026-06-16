@@ -1,10 +1,33 @@
 {% extends "user/read_base.html" %}
 
+{%- block subtitle -%}
+    {{ ui.subtitle_item(_("Organizations")) }}
+    {{- super() -}}
+{%- endblock %}
+
+{%- block breadcrumb_content -%}
+    {{- super() -}}
+    {{ ui.breadcrumb(_("Organizations"), href=h.url_for("user.read_organizations", id=user_dict.name), active=true) }}
+{%- endblock %}
+
+
+
+{% set orgs_available = h.organizations_available(permission='manage_group',
+  include_dataset_count=True,
+  include_member_count=True,
+  user=user_dict.name)
+%}
+
 {% block primary_content_inner %}
-  <h1 class="nsw-h2">{{ _('Organizations') }}</h1>
-  {% if user_dict.organizations %}
-      {% snippet 'organization/snippets/organization_list.html', organizations=user_dict.organizations %}
-  {% else %}
-      {{ ui.empty(_('User is not a member of any organizations.')) }}
-  {% endif %}
+    {%- call ui.util.call(ui.section, title=_('Organizations'), level=1) -%}
+        {% if orgs_available %}
+            {%- call ui.util.call(ui.organization_list) -%}
+                {% for organization in orgs_available %}
+                    {{ ui.organization(organization=organization) }}
+                {% endfor %}
+            {%- endcall %}
+        {% else %}
+            {{ ui.empty(_('User is not a member of any organizations.')) }}
+        {% endif %}
+    {%- endcall %}
 {% endblock %}

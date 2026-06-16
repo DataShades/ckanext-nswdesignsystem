@@ -8,9 +8,7 @@
 {% block content_primary_nav -%}
     {{ ui.content_nav_item(_('Edit metadata'), href=h.url_for(group_type ~ '.edit', id=group_dict.name), icon='edit', active=request.endpoint==group_type ~ '.edit') }}
     {{- ui.content_nav_item(_('Members'), href=h.url_for(group_type ~ '.manage_members', id=group_dict.name), icon='users', active=request.endpoint==group_type ~ '.manage_members') }}
-    {% if h.check_access('bulk_update') %}
         {{- ui.content_nav_item(_('Bulk Process'), href=h.url_for(group_type ~ '.bulk_process', id=group_dict.name), icon='list', active=request.endpoint==group_type ~ '.bulk_process') }}
-    {% endif %}
 {%- endblock %}
 
 {% block secondary_content %}

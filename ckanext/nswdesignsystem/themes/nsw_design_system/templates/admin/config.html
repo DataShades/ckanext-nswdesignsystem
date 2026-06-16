@@ -47,24 +47,36 @@
 {% block secondary_content %}
     {%- call ui.util.call(ui.sidebar_section, icon="info", title=_('CKAN config options')) -%}
         {% block admin_form_help %}
-            {% set about_url = h.url_for('home.about') %}
-            {% set home_url = h.url_for('home.index') %}
             {% set docs_url = "https://docs.ckan.org/en/{0}/theming".format(g.ckan_doc_version) %}
-            {% trans %}
-            <p><strong>Site Title:</strong> This is the title of this CKAN instance
-                It appears in various places throughout CKAN.</p>
-            <p><strong>Custom Stylesheet:</strong> Define an alternative main CSS file.</p>
-            <p><strong>Site Tag Logo:</strong> This is the logo that appears in the
-                header of all the CKAN instance templates.</p>
-            <p><strong>About:</strong> This text will appear on this CKAN instances
-                <a href="{{ about_url }}">about page</a>.</p>
-            <p><strong>Intro Text:</strong> This text will appear on this CKAN instances
-                <a href="{{ home_url }}">home page</a> as a welcome to visitors.</p>
-            <p><strong>Custom CSS:</strong> This is a block of CSS that appears in
-                <code>&lt;head&gt;</code> tag of every page. If you wish to customize
-                the templates more fully we recommend
-                <a href="{{ docs_url }}" target="_blank" rel="noreferrer">reading the documentation</a>.</p>
-          {% endtrans %}
+
+            <p>
+                <strong>{{ _("Site Title:") }}</strong>
+                {{ _("This is the title of this CKAN instance. It appears in various places throughout CKAN.") }}
+            </p>
+            <p>
+                <strong>{{ _("Custom Stylesheet:") }}</strong>
+                {{ _("Define an alternative main CSS file.") }}
+            </p>
+            <p>
+                <strong>{{ _("Site Tag Logo:") }}</strong>
+                {{ _("This is the logo that appears in the header of all the CKAN instance templates.") }}
+            </p>
+            <p>
+                <strong>{{ _("About:") }}</strong>
+                {{ _("This text will appear on this CKAN instances about page.") }}
+            </p>
+
+            <p>
+                <strong>{{ _("Intro Text:") }}</strong>
+                {{ _("This text will appear on this CKAN instances home page as a welcome to visitors.") }}
+            </p>
+
+            <p>
+                <strong>{{ _("Custom CSS:") }}</strong>
+                {{ _("This is a block of CSS that appears in <code>&lt;head&gt;</code> tag of every page. If you wish to customize the templates more fully we recommend reading the documentation.") }}
+            </p>
+            {{ ui.button(_("Open documentation"), color="light", href=docs_url) }}
+
         {% endblock %}
     {%- endcall %}
 {% endblock %}

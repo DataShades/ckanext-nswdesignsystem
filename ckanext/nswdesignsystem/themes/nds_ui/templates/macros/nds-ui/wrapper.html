@@ -84,8 +84,8 @@
     {{ content }}
 {%- endmacro %}
 
-{%- macro content_nav(content) -%}
-    {{ ui.tab_wrapper(content, **ui.util.augment_attrs(kwargs, {"as_nav": true}, key=none)) }}
+{%- macro content_nav(content, title=_("Navigation")) -%}
+    {{ ui.sidebar_nav(content, title, **kwargs) }}
 {%- endmacro %}
 
 

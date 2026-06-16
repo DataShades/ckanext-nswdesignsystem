@@ -8,6 +8,14 @@
     least one facet from the section is active.
 </p>
 
+<p>
+    Note, filters component needs a form to apply filters. By default GET form
+    for the current page is added around the filters. To use existing form, set
+    <code>form_id</code> parameter of the <code>filters</code> component to its
+    ID. You'll need to do the same with facets if using external form. As for
+    normal input fields, they require <code>attrs={"form": form_id}</code> parameter.
+</p>
+
 {%- call ui.util.call(show_example) -%}
     {%- raw %}
         {% set id = ui.util.id() -%}

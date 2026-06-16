@@ -1,14 +1,31 @@
-{%- call ui.util.call(ui.form, action=h.url_for('user.api_tokens', id=user.name), method="POST") -%}
-    {% if error_summary %}
-        {{ ui.alert(error_summary, style="danger") }}
-    {% endif %}
-    
-    <div class="nsw-grid">
-        <div class="nsw-col nsw-col-md-8">
-             {{ ui.input(name="name", label=_("Token Name"), placeholder=_("e.g. My Application"), errors=errors.name, required=true) }}
-        </div>
-        <div class="nsw-col nsw-col-md-4 nsw-display-flex nsw-align-items-end nsw-p-bottom-sm">
-            {{ ui.button(_('Create API Token'), type="submit", style="dark") }}
-        </div>
-    </div>
+{%- set hx_attrs = {"post": h.url_for('user.api_tokens', id=user.id ), "swap": "outerHTML"} -%}
+
+{%- call ui.util.call(ui.form, method="POST", hx=hx_attrs) -%}
+    {%- block base_fields -%}
+        {{ ui.input(name="name", label=_("Name"), required=true, value=data.name, errors=errors.name) }}
+    {%- endblock base_fields %}
+
+    {%- call ui.util.call(ui.form_actions) -%}
+        {%- block form_actions -%}
+            {{ ui.button(_('Create API Token'), type="submit") }}
+        {%- endblock form_actions %}
+    {%- endcall %}
 {%- endcall %}
+
+{% if created %}
+    <template>
+        <tbody hx-swap-oob="afterbegin:#api-tokens-table tbody">
+            <tr id="token-{{ created.id }}">
+                <td colspan="3">
+                    {{ ui.checkbox(name="token", value=created.id, id=ui.util.id(), label=ui.util.tag(created.name, "code"), on={"change": "$('#revoke-tokens-button').attr('disabled', !$('[name=token]:checked').length)"}) }}
+
+                    {{- _("API Token created: <code style=\"word-break:break-all;\">"
+               "{token}</code> {copy}<br>"
+               "Make sure to copy it now, "
+               "you won't be able to see it again!").format(
+               token=created.token, copy=ui.button(ui.icon("copy"), style="secondary", size="sm", data={"module": "theming-copy-to-clipboard", "module-value": created.token})) }}
+                </td>
+            </tr>
+        </tbody>
+    </template>
+{% endif %}

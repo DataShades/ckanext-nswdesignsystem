@@ -62,6 +62,11 @@
                             <div class="nsw-layout">
                                 {% block secondary %}
                                     <div class="nsw-layout__sidebar">
+                                        {%- set content_primary_nav | trim -%}
+                                        {% block content_primary_nav -%}{% endblock %}
+                                        {%- endset %}
+                                        {{ ui.content_nav(content_primary_nav) if content_primary_nav }}
+
                                         {% block secondary_content %}{% endblock %}
                                     </div>
                                 {% endblock %}
@@ -71,10 +76,6 @@
                                         {% block primary_content %}
                                             <article>
                                                 {% block page_header %}
-                                                    {%- set content_primary_nav | trim -%}
-                                                    {% block content_primary_nav -%}{% endblock %}
-                                                    {%- endset %}
-                                                    {{ ui.content_nav(content_primary_nav) if content_primary_nav }}
                                                 {% endblock %}
                                                 <div>
                                                     {%- set primary_action | trim -%}

@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block primary_content_inner %}
-    {%- call ui.util.call(ui.section, title=_('Logout')) -%}
+    {%- call ui.util.call(ui.section, title=_('Logout'), level=1) -%}
         <div class="nsw-content-block">
             <div class="nsw-content-block__content">
                 <p>{{ _('Are you sure you want to log out?') }}</p>
