@@ -14,7 +14,7 @@
             {%- if label -%}<label class="nsw-form__label" for="{{ id }}">{{ label }}</label>{%- endif %}
             <select class="nsw-form__select" id="{{ id }}" name="{{ name }}">
                 {%- for text, value in options -%}
-                    <option value="{{ value }}" {{ "selected" if selected }}>{{ text }}</option>
+                    <option value="{{ value }}" {{ "selected" if selected == value }}>{{ text }}</option>
                 {%- endfor %}
             </select>
         </div>
@@ -38,19 +38,20 @@
     {%- if active_filters -%}
         <p {{ ui.util.attrs(kwargs) }}>
             {%- for key, values in active_filters|groupby(0) -%}
-                {% set items = facets[key]['items'] if facets and key in facets else [] %}
-                <span class="facet">{{ facet_titles.get(key, key) }}:</span>
-                {%- for _key, value in values %}
-                    {%- call ui.util.call(ui.tag) -%}
-                        {{ ui.input(name=key, value=value) }}
-                        {{ h.list_dict_filter(items, 'name', 'display_name', value) }}
-                        {%- call ui.util.call(ui.tooltip, tooltip=_('Remove')) -%}
-                            <a href="{{ h.remove_url_param(key, value) }}" class="remove" aria-label="{{ _('Remove applied filter: {value}').format(value=value) }}" hx-boost="{{ 'true' if use_htmx else 'false' }}">
+                <div class="nsw-m-bottom-xs nsw-list--8">
+                    {% set items = facets[key]['items'] if facets and key in facets else [] %}
+                    <span class="facet">{{ facet_titles.get(key, key) }}:</span>
+                    {%- for _key, value in values %}
+                        {%- call ui.util.call(ui.tag) -%}
+                            <span>{{ h.list_dict_filter(items, 'name', 'display_name', value) }}</span>
+
+                            <a href="{{ h.remove_url_param(key, value) }}" class="remove nsw-link--icon" aria-label="{{ _('Remove applied filter: {value}').format(value=value) }}" hx-boost="{{ 'true' if use_htmx else 'false' }}">
                                 {{- ui.icon('times') -}}
                             </a>
                         {%- endcall %}
-                    {%- endcall %}
-                {% endfor %}
+                    {% endfor %}
+
+                </div>
             {%- endfor %}
         </p>
     {%- endif %}
@@ -58,7 +59,7 @@
 
 {%- macro search_form_box(content, use_htmx) -%}
     {%- if use_htmx -%}
-        {%- do kwargs.setdefault("hx", {"boost": "true", "disinherit": "hx-boost", "trigger": "change, submit"}) -%}
+        {%- do ui.util.augment_attrs(kwargs, {"boost": "true", "disinherit": "hx-boost", "trigger": "change, submit"}, key="hx") -%}
     {%- endif %}
     {%- call ui.util.call(ui.form, **kwargs) -%}
         {{ content }}
@@ -66,8 +67,9 @@
 {%- endmacro %}
 
 {%- macro search_form(query, sorting, sorting_options, error, facets, facet_titles, active_filters, use_htmx, search_input, count=0, query_name="q", sorting_name="sort", type="dataset") -%}
-    {%- call ui.util.call(ui.search_form_box, **kwargs) -%}
-        {{ search_input }}
+    {%- call ui.util.call(ui.search_form_box, use_htmx=use_htmx, **kwargs) -%}
+
+        {{ search_input or ui.search_input(name=query_name, label=none, value=query, icon_button=ui.search_submit_button()) }}
         <div class="nsw-results-bar">
             {{ ui.search_results_text(error=error, type=type, count=count, query=query) }}
             {{ ui.search_sort_control(name=sorting_name, selected=sorting, options=sorting_options) }}

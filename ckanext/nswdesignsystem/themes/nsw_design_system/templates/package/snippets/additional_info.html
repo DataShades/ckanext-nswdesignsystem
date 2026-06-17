@@ -1,6 +1,5 @@
-<section class="additional-info">
-    {{ ui.heading(_('Additional Info'), level=3) }}
-    {%- call ui.util.call(ui.table, striped=true, bordered=true) -%}
+{%- call ui.util.call(ui.section, title=_('Additional Info'), level=2) -%}
+    {%- call ui.util.call(ui.table, striped=true,) -%}
         <thead>
             <tr>
                 <th scope="col">{{ _('Field') }}</th>
@@ -95,4 +94,4 @@
             {% endblock %}
         </tbody>
     {%- endcall %}
-</section>
+{%- endcall %}

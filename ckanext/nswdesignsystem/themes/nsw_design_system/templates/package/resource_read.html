@@ -10,56 +10,48 @@
 {% endblock -%}
 
 {% block subtitle -%}
-    {{ ui.subtitle_item(h.dataset_display_name(package)) }}
     {{- ui.subtitle_item(h.resource_display_name(res)) }}
+    {{ ui.subtitle_item(h.dataset_display_name(package)) }}
     {{- super() }}
 {%- endblock %}
 
-{% block breadcrumb_content_selected -%}{% endblock %}
 
 {% block breadcrumb_content -%}
     {{ super() }}
-    {{- ui.breadcrumb(h.resource_display_name(res)|truncate(30), href="", active=true, aria={"current": "page", "label": _('Current resource: {name}').format(name=h.resource_display_name(res))}) }}
+    {{- ui.breadcrumb(h.resource_display_name(res)|truncate(30), href="", active=true) }}
 {%- endblock %}
 
-{% block pre_primary %}
+{%- block content_action -%}
+    {% block resource_actions_inner %}
+        {% if res.url and h.is_url(res.url) %}
+            {%- call ui.util.call(ui.button_group, direction="row") -%}
+                {%- call ui.util.call(ui.button, _extra_class="resource-url-analytics", href=res.url) -%}
+                    {% if res.resource_type in ('listing', 'service') %}
+                        {{ ui.icon("eye") }} {{ _('View') }}
+                    {% elif  res.resource_type == 'api' %}
+                        {{ ui.icon("key") }} {{ _('API Endpoint') }}
+                    {% elif not res.has_views and not res.url_type == 'upload' %}
+                        {{ ui.icon("open_in_new") }} {{ _('Go to resource') }}
+                    {% else %}
+                        {{ ui.icon("arrow-circle-down") }} {{ _('Download') }}
+                    {% endif %}
+                {%- endcall %}
+                {% block download_resource_button %}{% endblock download_resource_button %}
+            {%- endcall %}
+        {% endif %}
+    {% endblock %}
+    {% block action_manage %}
+        {% block action_manage_inner %}{% endblock %}
+        {{ ui.content_action(_('Manage'), href=h.url_for(pkg.type ~ '_resource.edit', id=pkg.name, resource_id=res.id), style="secondary", icon="settings") if h.check_access('package_update', {'id':pkg.id }) }}
+    {% endblock action_manage %}
+{%- endblock %}
+
+
+
+{% block primary_content %}
     {% block resource %}
         <section class="module module-resource" role="complementary">
             {% block resource_inner %}
-                <div class="actions">
-                    {% block resource_actions %}
-                        <ul class="d-flex flex-wrap gap-1 justify-content-end">
-                            {% block resource_actions_inner %}
-                                {% if res.url and h.is_url(res.url) %}
-                                    <li>
-                                        <div class="btn-group">
-                                            <a class="btn btn-primary resource-url-analytics" href="{{ res.url }}">
-                                                {% if res.resource_type in ('listing', 'service') %}
-                                                    {{ ui.icon("eye") }} {{ _('View') }}
-                                                {% elif  res.resource_type == 'api' %}
-                                                    {{ ui.icon("key") }} {{ _('API Endpoint') }}
-                                                {% elif not res.has_views and not res.url_type == 'upload' %}
-                                                    {{ ui.icon("open_in_new") }} {{ _('Go to resource') }}
-                                                {% else %}
-                                                    {{ ui.icon("arrow-circle-down") }} {{ _('Download') }}
-                                                {% endif %}
-                                            </a>
-                                            {% block download_resource_button %}{% endblock download_resource_button %}
-                                        </div>
-                                    </li>
-                                {% endif %}
-                            {% endblock %}
-                            {% block action_manage %}
-                                {% block action_manage_inner %}{% endblock %}
-                                {% if h.check_access('package_update', {'id':pkg.id }) %}
-                                    <li>
-                                        {{ ui.button(_('Manage'), href=h.url_for(pkg.type ~ '_resource.edit', id=pkg.name, resource_id=res.id), style="secondary", icon="settings") }}
-                                    </li>
-                                {% endif %}
-                            {% endblock action_manage %}
-                        </ul>
-                    {% endblock %}
-                </div>
                 {% block resource_content %}
                     {% block resource_read_title %}<h1 class="page-heading">{{ h.resource_display_name(res) | truncate(50) }}</h1>{% endblock %}
                     {% block resource_read_url %}
@@ -133,9 +125,7 @@
             {% endblock %}
         </section>
     {% endblock %}
-{% endblock %}
 
-{% block primary_content %}
     {% block resource_additional_information %}
         {% if res %}
             <section class="nsw-content-block">
@@ -186,10 +176,9 @@
 {% endblock %}
 
 {% block secondary_content %}
-
-    {% block dataset_wrench %}
-        {% snippet "package/snippets/package_wrench.html", pkg=pkg, active=res.id, action='read' %}
-    {% endblock %}
+    {%- call ui.util.call(ui.sidebar_nav, title=_("Dataset")) -%}
+        {{ ui.sidebar_nav_item(pkg.title, href=h.url_for(pkg.type ~ ".read", id=pkg.name)) }}
+    {%- endcall %}
 
     {% block resources_list %}
         {% snippet "package/snippets/resources.html", pkg=pkg, active=res.id, action='read' %}

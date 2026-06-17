@@ -250,9 +250,11 @@
             "id": id,
             "name": name,
             "value": value,
-            "checked": checked,
             "aria-invalid": "true" if errors else "false",
     } -%}
+    {%- if checked -%}
+        {%- do defaults.update({"checked": none}) -%}
+    {%- endif %}
     <div class="nsw-form__group">
         {{ content }}
         <input {{ ui.util.attrs(kwargs, defaults) }} >

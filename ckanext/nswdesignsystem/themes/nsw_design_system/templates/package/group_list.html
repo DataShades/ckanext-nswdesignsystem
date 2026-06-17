@@ -1,30 +1,35 @@
 {% extends "package/read_base.html" %}
-{% import 'macros/form.html' as form %}
 
 {% set default_group_type = h.default_group_type('group') %}
 
 {% block primary_content_inner %}
-    {{ ui.heading(h.humanize_entity_type('group', default_group_type, 'page title') or _('Groups'), level=1) }}
+    {%- call ui.util.call(ui.section, title=h.humanize_entity_type('group', default_group_type, 'page title') or _('Groups'), level=1) -%}
 
-    {% if group_dropdown %}
-        {%- call ui.util.call(ui.form, method="POST", attrs={"class": "add-to-group"}) -%}
-            <select id="field-add_group" name="group_added" data-module="autocomplete">
-                {% for option in group_dropdown %}
-                    <option value="{{ option[0] }}"> {{ option[1] }}</option>
-                {% endfor %}
-            </select>
+        {% if group_dropdown %}
+            {%- call ui.util.call(ui.form, method="POST") -%}
+                {%- call ui.util.call(ui.select_box, name="group_added", label=_("Add to group")) -%}
+                    {% for option in group_dropdown %}
+                        {{ ui.select_option(option[1], value=option[0]) }}
+                    {% endfor %}
+                {%- endcall %}
 
-            {{ ui.button(_('Add to group'), type="submit", aria={"label": _('Associate this group with this dataset')}) }}
-        {%- endcall %}
+                {%- call ui.util.call(ui.form_actions) -%}
+                    {{ ui.button(_('Add to group'), type="submit", aria={"label": _('Associate this group with this dataset')}) }}
+                {%- endcall %}
+            {%- endcall %}
 
-    {% endif %}
+        {% endif %}
 
-    {% if pkg_dict.groups %}
-        {%- call ui.util.call(ui.form, method="POST") -%}
-            {% snippet 'group/snippets/group_list.html', groups=pkg_dict.groups %}
-        {%- endcall %}
-    {% else %}
-        {{ ui.empty(h.humanize_entity_type('group', default_group_type, 'no associated label') or _('There are no groups associated with this dataset.')) }}
-    {% endif %}
+        {% if pkg_dict.groups %}
+            {%- call ui.util.call(ui.group_list) -%}
+                {%- for group in pkg_dict.groups -%}
+                    {{ ui.group(group=group) }}
+                {%- endfor %}
+            {%- endcall %}
 
+        {% else %}
+            {{ ui.empty(h.humanize_entity_type('group', default_group_type, 'no associated label') or _('There are no groups associated with this dataset.')) }}
+
+        {% endif %}
+    {%- endcall %}
 {% endblock %}

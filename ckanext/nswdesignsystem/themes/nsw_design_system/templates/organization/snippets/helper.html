@@ -1,4 +1,15 @@
-{%- call ui.util.call(ui.sidebar_section, icon="info", title=_('What are Organizations?')) -%}
+{#
+Displays a sidebard module with information about organizations.
+
+group_type    - The type of organization.
+
+Example:
+
+{% snippet "organization/snippets/helper.html", group_type=group_type %}
+
+#}
+
+{%- call ui.util.call(ui.sidebar_section, icon="info-circle", title=_('What are Organizations?')) -%}
     {% trans %}
     CKAN Organizations are used to create, manage and publish collections
     of datasets. Users can have different roles within an Organization,

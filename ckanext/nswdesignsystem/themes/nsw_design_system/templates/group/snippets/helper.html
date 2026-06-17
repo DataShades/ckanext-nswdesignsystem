@@ -1,4 +1,15 @@
-{%- call ui.util.call(ui.sidebar_section, icon="info", title=_('What are Groups?')) -%}
+{#
+Displays a sidebard module with information about group.
+
+group_type    - The type of group.
+
+Example:
+
+{% snippet "group/snippets/helper.html", group_type=group_type %}
+
+#}
+
+{%- call ui.util.call(ui.sidebar_section, icon="info-circle", title=_('What are Groups?')) -%}
     {% trans %}You can use CKAN Groups to create and manage collections of datasets.
     This could be to catalogue datasets for a particular project or team,
     or on a particular theme, or as a very simple way to help people find

@@ -1,7 +1,7 @@
-{% extends "organization/edit_base.html" %}
+{% extends "organization/base_form_page.html" %}
 
-{% block primary_content_inner %}
-  {%- call ui.util.call(ui.section, title=_('Edit Organization')) -%}
-    {% snippet 'organization/snippets/organization_form.html', data=data, errors=errors, error_summary=error_summary, action=action %}
-  {%- endcall %}
-{% endblock %}
+{% block breadcrumb_content_inner -%}
+    {{ ui.breadcrumb(_('Manage'), href=h.url_for(group_type+'.edit', id=group_dict.name), active=true) }}
+{%- endblock %}
+
+{% block page_heading %}{{ h.humanize_entity_type('organization', group_type, 'edit label') or _('Edit Organization') }}{% endblock %}

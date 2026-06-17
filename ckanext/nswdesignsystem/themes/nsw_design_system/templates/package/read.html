@@ -1,45 +1,33 @@
 {% extends "package/read_base.html" %}
 
 {% block primary_content_inner %}
-    {{ super() }}
     {% block package_description %}
-        {% if pkg.private %}
-            <span class="dataset-private badge badge-inverse">
-                {{ ui.icon("lock") }}
-                {{ _('Private') }}
-            </span>
-        {% endif %}
-        <h1 class="page-heading">
-            {% block page_heading %}
-                {{ h.dataset_display_name(pkg) }}
-                {% if pkg.state.startswith('draft') %}
-                    [{{ _('Draft') }}]
-                {% endif %}
-                {% if pkg.state == 'deleted' %}
-                    [{{ _('Deleted') }}]
+        {%- call ui.util.call(ui.section, title=h.dataset_display_name(pkg), level=1) -%}
+            {% block package_notes %}
+                {% if pkg.notes %}
+                    {{ h.render_markdown(h.get_translated(pkg, 'notes')) }}
                 {% endif %}
             {% endblock %}
-        </h1>
-        {% block package_notes %}
-            {% if pkg.notes %}
-                <div class="notes embedded-content">
-                    {{ h.render_markdown(h.get_translated(pkg, 'notes')) }}
+
+            {% block package_tags %}
+                <div class="nsw-list--8">
+                    {%- for tag in pkg.tags -%}
+                        {{ ui.tag(tag.display_name|truncate(22), href=h.url_for('dataset.search', tags=tag.name), aria={"label": _('Search datasets with the tag: {name}').format(name=tag.display_name)}) }}
+                    {%- endfor %}
                 </div>
-            {% endif %}
-        {% endblock %}
-    {% endblock %}
+            {% endblock %}
 
-    {% block package_resources %}
-        {% snippet "package/snippets/resources_list.html", pkg=pkg, resources=pkg.resources,
-      can_edit=h.check_access('package_update', {'id':pkg.id }) %}
-    {% endblock %}
-
-    {% block package_tags %}
-        {% snippet "package/snippets/tags.html", tags=pkg.tags %}
+        {%- endcall %}
     {% endblock %}
 
     {% block package_additional_info %}
-        {% snippet "package/snippets/additional_info.html", pkg_dict=pkg %}
+        {%- include "package/snippets/additional_info.html" -%}
+    {% endblock %}
+
+    {% block package_resources %}
+        {%- with resources=pkg_dict.resources -%}
+            {%- include "package/snippets/resources_list.html" -%}
+        {%- endwith %}
     {% endblock %}
 
 {% endblock %}

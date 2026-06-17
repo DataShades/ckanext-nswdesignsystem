@@ -1,16 +1,32 @@
 {% extends "organization/read_base.html" %}
 
-{% block subtitle %}{{ _('About') }} - {{ super() }}{% endblock %}
+{% block subtitle %}
+    {{ ui.subtitle_item(_('About')) }}
+    {{ super() }}
+{% endblock %}
+
+{%- block breadcrumb_content -%}
+    {{- super() -}}
+    {{ ui.breadcrumb(_('About'), href=h.url_for(group_type + '.about', id=organization.name), active=true) }}
+{%- endblock %}
+
+{%- set page_heading | trim -%}
+{% block page_heading %}{{ group_dict.display_name }}{% endblock %}
+{%- endset %}
+
 
 {% block primary_content_inner %}
-  <h1 class="nsw-h2">{{ _('About {title}').format(title=organization.display_name) }}</h1>
-  <div class="nsw-content-block">
-      <div class="nsw-content-block__content">
-          {% if organization.description %}
-              {{ h.render_markdown(organization.description) }}
-          {% else %}
-              <p class="nsw-intro">{{ _('No description for this organization') }}</p>
-          {% endif %}
-      </div>
-  </div>
+    {%- call ui.util.call(ui.section, title=page_heading, level=1) -%}
+        {% block oraganization_description %}
+            {% if group_dict.description %}
+                {{ h.render_markdown(group_dict.description) }}
+  	    {% endif %}
+        {% endblock %}
+
+        {% block oraganization_extras %}
+            {%- with extras=h.sorted_extras(group_dict.extras) -%}
+                {%- include 'snippets/additional_info.html' -%}
+            {%- endwith %}
+        {% endblock %}
+    {%- endcall %}
 {% endblock %}

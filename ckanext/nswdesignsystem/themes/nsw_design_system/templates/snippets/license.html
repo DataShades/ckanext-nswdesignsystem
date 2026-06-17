@@ -15,29 +15,22 @@
         {{ license_string(pkg_dict) }}
     {% else %}
         {% block license_wrapper %}
-            <section class="module module-narrow module-shallow license">
-                <div class="module-group">
-                    {% block license_title %}
-                        <h2 class="module-heading" id="headingLicense">
-                            {{ _('License') }}
-                        </h2>
-                    {% endblock %}
-                    {% block license_content %}
-                        <p class="module-content">
-                            {% block license_content_inner %}
-                                {{ license_string(pkg_dict) }}
-                                {% if pkg_dict.isopen %}
-                                    {%- call ui.util.call(ui.tooltip, tooltip=_('This dataset satisfies the Open Definition.')) -%}
-                                        {%- call ui.util.call(ui.link, href="http://opendefinition.org/okd/", aria={"label": _('Open Data (This dataset satisfies the Open Definition.)')}, attrs={"class": "open-data"}) -%}
-                                            {% trans %}<span class="prefix">Open</span><span class="suffix">Data</span>{% endtrans %}
-                                        {%- endcall %}
+            {%- call ui.util.call(ui.sidebar_section, title=_("License")) -%}
+                {% block license_content %}
+                    <p class="module-content">
+                        {% block license_content_inner %}
+                            {{ license_string(pkg_dict) }}
+                            {% if pkg_dict.isopen %}
+                                {%- call ui.util.call(ui.tooltip, tooltip=_('This dataset satisfies the Open Definition.')) -%}
+                                    {%- call ui.util.call(ui.link, href="http://opendefinition.org/okd/", aria={"label": _('Open Data (This dataset satisfies the Open Definition.)')}, attrs={"class": "open-data"}) -%}
+                                        {% trans %}<span class="prefix">Open</span><span class="suffix">Data</span>{% endtrans %}
                                     {%- endcall %}
-                                {% endif %}
-                            {% endblock %}
-                        </p>
-                    {% endblock %}
-                </div>
-            </section>
+                                {%- endcall %}
+                            {% endif %}
+                        {% endblock %}
+                    </p>
+                {% endblock %}
+            {%- endcall %}
         {% endblock %}
     {% endif %}
 {% endblock %}

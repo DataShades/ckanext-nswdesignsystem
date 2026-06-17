@@ -1,10 +1,28 @@
-{% extends "group/read_base.html" %}
+{% extends "organization/edit_base.html" %}
 
-{% block subtitle %}{{ _('Administrators') }} - {{ super() }}{% endblock %}
+{% block subtitle %}
+    {{ ui.subtitle_item(_('Administrators')) }}
+    {{ super() }}
+{% endblock %}
+
+{% block breadcrumb_content -%}
+    {{ super() }}
+    {{ ui.breadcrumb(_("Admins"), href=h.url_for(group_type ~ '.admins', id=group_dict.name), active=true) }}
+{%- endblock -%}
+
+
+{%- set page_heading | trim -%}
+{% block page_heading %}{{ _('Administrators') }}{% endblock %}
+{%- endset %}
 
 {% block primary_content_inner %}
-  <h1 class="nsw-h2">{% block page_heading %}{{ _('Administrators') }}{% endblock %}</h1>
-  {% block admins_list %}
-    {% snippet "user/snippets/followers.html", followers=admins %}
-  {% endblock %}
+    {%- call ui.util.call(ui.section, title=page_heading, level=1) -%}
+        {% block admins_list %}
+            {%- call ui.util.call(ui.user_list) -%}
+                {%- for user in admins -%}
+                    {{ ui.user(user={"name": user}) }}
+                {%- endfor %}
+            {%- endcall %}
+        {% endblock %}
+    {%- endcall %}
 {% endblock %}

@@ -1,27 +1,9 @@
 {% set current_url = h.full_current_url() %}
 {% block social %}
-    <section class="module module-narrow module-shallow social">
-        <div class="module-group">
-            <h2 class="module-heading" id="headingSocial">
-                {{ _('Social') }}
-            </h2>
-            {% block social_nav %}
-                <ul class="nav nav-simple">
-                    <li class="nav-item">
-                        {%- call ui.util.call(ui.link, href="https://x.com/share?url="~current_url, blank=true) -%}
-                            {{ ui.icon("close") }}
-                            {# TRANSLATORS: This is a link to the social network service X, formally known as Twitter. #}
-                            {{ _("X") }}
-                        {%- endcall %}
-                    </li>
-                    <li class="nav-item">
-                        {%- call ui.util.call(ui.link, href="https://www.facebook.com/sharer.php?u="~current_url, blank=true) -%}
-                            {{ ui.icon("facebook") }}
-                            {{ _('Facebook') }}
-                        {%- endcall %}
-                    </li>
-                </ul>
-            {% endblock %}
-        </div>
-    </section>
+    {%- call ui.util.call(ui.sidebar_nav, title=_("Social")) -%}
+        {% block social_nav %}
+            {{ ui.sidebar_nav_item(_("X"), href="https://x.com/share?url="~current_url, blank=true) }}
+            {{ ui.sidebar_nav_item(_("Facebook"), href="https://www.facebook.com/sharer.php?u="~current_url, blank=true) }}
+        {% endblock %}
+    {%- endcall %}
 {% endblock %}

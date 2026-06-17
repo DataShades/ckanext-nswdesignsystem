@@ -1,16 +1,7 @@
 {%- macro facet(content, key, value, active, form_id) -%}
-    {%- set value = value or content -%}
-    {%- set id = id or ui.util.id() -%}
-    {%- set defaults = {
-            "class": "nsw-form__checkbox-input",
-            "name": key,
-            "value": value,
-            "id": id,
-            "checked": active,
-            "form": form_id,
-    } -%}
-    <input {{ ui.util.attrs(kwargs, defaults) }} type="checkbox">
-    <label class="nsw-form__checkbox-label" for="{{ id }}">{{ content }}</label>
+    {%- do ui.util.augment_attrs(kwargs, {"form": form_id}) -%}
+
+    {{ ui.checkbox(id=ui.util.id(prefix="facet-"), name=key, value=value, label=content, checked=active, **kwargs) }}
 {%- endmacro %}
 
 {%- macro package(content, package) -%}
@@ -51,8 +42,8 @@
 
 {%- macro group(content, group) -%}
     {{ ui.list_item(group.notes|truncate(300),
-        title=ui.link(group.title, href=h.url_for(group.type ~ ".read", id=group.name)),
-        subtitle=ungettext("{count} Dataset", "{count} Datasets", group.package_count).format(count=group.package_count),
+        title=ui.link(group.title, href=h.url_for((group.type or "group") ~ ".read", id=group.name)),
+        subtitle=ungettext("{count} Dataset", "{count} Datasets", group.package_count).format(count=group.package_count) if group.package_count is defined,
         img=group.image_display_url,
         reversed=true,
         **kwargs,

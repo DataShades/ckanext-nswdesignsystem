@@ -1,79 +1,71 @@
-{% set organization = organization or group%}
-{% set url = h.url_for(organization.type + '.read', id=organization.name, ) %}
+{% set organization = organization or group %}
+{% set url = h.url_for(organization.type + '.read', id=organization.name) %}
 {% set dataset_type = h.default_package_type() %}
 
 {% block info %}
-    <section id="organization-info" class="module module-narrow module-shallow">
-        <div class="module context-info">
-            <div class="module-content">
-                {% block inner %}
-                    <div class="image-container">
-                        {% block image %}
-                            <div class="image">
-                                {% if image_link %}
-                                    <a href="{{ url }}">
-                                        <img src="{{ organization.image_display_url or h.url_for_static('/base/images/placeholder-organization.svg') }}" width="200" alt="{{ organization.name }}" />
-                                    </a>
-                                {% else %}
-                                    <img src="{{ organization.image_display_url or h.url_for_static('/base/images/placeholder-organization.svg') }}" width="200" alt="{{ organization.name }}" />
-                                {% endif %}
-                            </div>
-                        {% endblock %}
-                        <div class="heading-container">
-                            {% block heading %}
-                                <span class="heading">{{ organization.title or organization.name }}
-                                    {% if organization.state == 'deleted' %}
-                                        [{{ _('Deleted') }}]
-                                    {% endif %}
-                                </span>
-                            {% endblock %}
-                            {% block description %}
-                                {% if organization.description %}
-                                    <p class="description">
-                                        {{ h.markdown_extract(organization.description, 180) }}
-                                    </p>
-                                    <p class="read-more">
-                                        {{ ui.link(_('read more'), href=h.url_for(organization.type ~ '.about', id=organization.name)) }}
-                                    </p>
-                                {% else %}
-                                    {{ ui.empty(h.humanize_entity_type('organization', organization.type, 'no description') or _('There is no description for this organization')) }}
-                                {% endif %}
-                            {% endblock %}
-                        </div>
-                    </div>
-                    {% if show_nums %}
-                        {% block nums %}
-                            {% set num_followers = h.follow_count('group', organization.id) %}
-                            <div class="nums">
-                                <dl>
-                                    <dt>{{ _('Followers') }}</dt>
-                                    <dd>{{ h.SI_number_span(num_followers) }}</dd>
-                                </dl>
-                                <dl>
-                                    <dt>{{ h.humanize_entity_type('package', dataset_type, 'facet label') or _('Datasets') }}</dt>
-                                    <dd>{{ h.SI_number_span(organization.package_count) }}</dd>
-                                </dl>
-                                <dl>
-                                    <dt>{{ _('Members') }}</dt>
-                                    <dd>{{ h.member_count(organization.id) }}</dd>
-                                </dl>
-                            </div>
-                        {% endblock %}
-                        {% block follow %}
-                            {% if current_user.is_authenticated %}
-                                {% if error_message %}
-                                    <div class="alert alert-danger">{{ error_message }}</div>
-                                {% elif am_following %}
-                                    {{ ui.button(ui.icon("remove") ~ _("Unfollow"), style="danger", hx={"target": "#organization-info", "post": h.url_for('organization.unfollow', id=organization.id)}) }}
-                                {% else %}
-                                    {{ ui.button(ui.icon("add") ~ _("Follow"), style="success", hx={"target": "#organization-info", "post": h.url_for('organization.follow', id=organization.id)}) }}
+    {%- call ui.util.call(ui.sidebar_section, title=_("Details"), attrs={"id": "organization-info"}) -%}
+        {% block inner %}
+            {% block image %}
+                <div class="image">
+                    {{ ui.image(src=organization.image_display_url or h.url_for_static('/base/images/placeholder-group.svg'), alt=organization.display_name) }}
+                </div>
+            {% endblock %}
 
-                                {% endif %}
-                            {% endif %}
-                        {% endblock %}
-                    {% endif %}
-                {% endblock %}
+            <div class="nsw-content-block nsw-m-top-xs">
+                <div class="nsw-content-block__title">
+                    {% block heading %}
+                        {{ organization.title or organization.name }}
+                        {% if organization.state == 'deleted' %}
+                            [{{ _('Deleted') }}]
+                        {% endif %}
+                    {%- endblock -%}
+                </div>
+                <div class="nsw-content-block__content">
+                    {% block description %}
+                        {% if organization.description %}
+                            <p class="description">
+                                {{ h.markdown_extract(organization.description, 180) }}
+                            </p>
+                        {% endif %}
+                    {% endblock %}
+                </div>
             </div>
-        </div>
-    </section>
-{% endblock %}
+
+            {% if current_user.is_authenticated %}
+                <div class="nsw-m-top-xs">
+                    {% block follow %}
+                        {{ ui.alert(error_message, style="danger") if error_message }}
+
+                        {% if am_following %}
+                            {{ ui.button(_("Unfollow"), icon="bell-slash", style="secondary", hx={"target": "#organization-info", "post": h.url_for('organization.unfollow', id=organization.id)}, _extra_class="nsw-width-100") }}
+                        {% else %}
+                            {{ ui.button(_("Follow"), icon="bell", style="secondary", hx={"target": "#organization-info", "post": h.url_for('organization.follow', id=organization.id)}, _extra_class="nsw-width-100") }}
+                        {%- endif -%}
+                    {% endblock %}
+                </div>
+            {% endif %}
+
+            {% if show_nums %}
+                {% block nums %}
+                    {% set num_followers = h.follow_count('group', organization.id) %}
+                    {%- call ui.util.call(ui.table, striped=true, condensed=true, adaptive=true, _extra_class="profile-nums") -%}
+                        <tbody>
+                            <tr>
+                                <th>{{ _('Followers') }}</th>
+                                <td>{{ h.SI_number_span(num_followers) }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ h.humanize_entity_type('package', dataset_type, 'facet label') or _('Datasets') }}</th>
+                                <td>{{ h.SI_number_span(organization.package_count) }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ _('Members') }}</th>
+                                <td>{{ h.member_count(organization.id) }}</td>
+                            </tr>
+                        </tbody>
+                    {%- endcall -%}
+                {% endblock %}
+            {% endif %}
+        {%- endblock -%}
+    {%- endcall %}
+{%- endblock %}

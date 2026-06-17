@@ -1,4 +1,8 @@
-{%- macro button(content, href, size, flex, icon, type="button", style="primary", color="dark") -%}
+{%- macro image(src, alt, fit="cover") -%}
+    <img {{ ui.util.attrs(kwargs, {"class": "nsw-height-100 nsw-width-100 nsw-object-fit-" ~ fit}) }} alt="{{ alt }}" src="{{ src }}"/>
+{%- endmacro %}
+
+{%- macro button(content, href, size, flex, icon, full, type="button", style="primary", color="dark") -%}
     {%- set _style_map = {
         "primary": color,
         "secondary": color ~ "-outline",
@@ -14,6 +18,10 @@
     {%- endif %}
     {%- if flex -%}
         {%- set class = class ~ " nsw-button--flex" -%}
+    {%- endif %}
+    {%- if full -%}
+        {%- set class = class ~ " nsw-width-100" -%}
+
     {%- endif %}
     {%- do ui.util.augment_attrs(kwargs, {"class": class}) -%}
     {%- if href -%}

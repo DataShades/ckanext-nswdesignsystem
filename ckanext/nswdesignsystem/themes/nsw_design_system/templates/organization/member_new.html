@@ -1,22 +1,29 @@
 {% extends "organization/edit_base.html" %}
 
+{% block subtitle -%}
+    {{ ui.subtitle_item(_("Edit Member") if user_dict else _("Add Member")) }}
+    {{- super() }}
+{%- endblock %}
+
+{% block breadcrumb_content -%}
+    {{ super() }}
+    {{ ui.breadcrumb(_("Edit Member") if user_dict else _("Add Member"), href=h.url_for(group_type ~ '.member_new', id=group_dict.name, user=user_id), active=true) }}
+{%- endblock -%}
+
+
 {% block primary_content_inner %}
-  {%- call ui.util.call(ui.section, title=_('Add Member')) -%}
-    <div class="nsw-content-block">
-        <div class="nsw-content-block__content">
-            {%- call ui.util.call(ui.form, method="POST", action=h.url_for(group_type ~ '.member_new', id=group_dict.name)) -%}
-                {% if error_summary %}
-                    {{ ui.alert(error_summary, style="danger") }}
-                {% endif %}
+    {%- call ui.util.call(ui.section, title=_("Edit Member") if user_dict else _('Add Member'), level=1) -%}
+        {%- call ui.util.call(ui.form, method="POST", action=h.url_for(group_type ~ '.member_new', id=group_dict.name)) -%}
+            {% if error_summary %}
+                {{ ui.form_errors(error_summary) }}
+            {% endif %}
 
-                {{ ui.input(name="username", label=_("Existing User"), placeholder=_("Username"),  required=true) }}
-                {{ ui.select(name="role", label=_("Role"), options=roles, selected="member",  required=true) }}
+            {{ ui.input(name="username", label=_("Existing User"), value=user_dict.name, placeholder=_("Username"), required=true) }}
+            {{ ui.select(name="role", label=_("Role"), options=roles, selected=user_role, required=true) }}
 
-                <div class="nsw-m-top-sm">
-                    {{ ui.button(_('Add User'), type="submit", style="dark") }}
-                </div>
+            {%- call ui.util.call(ui.form_actions) -%}
+                {{ ui.button(_('Update') if user_dict else _('Add'), type="submit") }}
             {%- endcall %}
-        </div>
-    </div>
-  {%- endcall %}
+        {%- endcall %}
+    {%- endcall %}
 {% endblock %}

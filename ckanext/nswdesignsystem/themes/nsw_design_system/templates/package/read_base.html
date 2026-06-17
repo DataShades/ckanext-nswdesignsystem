@@ -27,26 +27,18 @@
 {%- endblock %}
 
 {% block secondary_content %}
-
-    {% block secondary_help_content %}{% endblock %}
-
     {% block package_info %}
-        {% snippet 'package/snippets/info.html', pkg=pkg, am_following=am_following %}
-    {% endblock %}
-
-    {% block package_organization %}
-        {% if pkg.organization %}
-            {% set org = h.get_organization(pkg.organization.id) %}
-            {% snippet "organization/snippets/info.html", organization=org, show_nums=false, am_following=am_following, image_link=true %}
-        {% endif %}
+        {%- with pkg=pkg_dict -%}
+            {%- include 'package/snippets/info.html' -%}
+        {%- endwith %}
     {% endblock %}
 
     {% block package_social %}
-        {% snippet "snippets/social.html" %}
+        {% include "snippets/social.html" %}
     {% endblock %}
 
     {% block package_license %}
-        {% snippet "snippets/license.html", pkg_dict=pkg %}
+        {%- include "snippets/license.html" -%}
     {% endblock %}
 
 {% endblock %}

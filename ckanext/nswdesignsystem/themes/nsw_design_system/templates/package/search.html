@@ -10,41 +10,16 @@
 {%- endblock %}
 
 {% block content_action -%}
-    {{ ui.content_action(h.humanize_entity_type('package', dataset_type, 'add link') or _("Add Dataset"), href=h.url_for(dataset_type ~ '.new'), icon="plus-square") if h.check_access('package_create') }}
+    {{ ui.content_action(h.humanize_entity_type('package', dataset_type, 'add link') or _("Add Dataset"), href=h.url_for(dataset_type ~ '.new'), icon="plus") if h.check_access('package_create') }}
 {%- endblock %}
 
 {% block primary_content %}
-    {% snippet "package/snippets/search_results.html",
-    heading=h.humanize_entity_type('dataset', dataset_type, 'page title') or _('Datasets'),
-    dataset_type=dataset_type,
-    fields_grouped=fields_grouped,
-    search_facets=search_facets,
-    facet_titles=facet_titles,
-    translated_fields=translated_fields,
-    remove_field=remove_field,
-    q=q,
-    sort_by_selected=sort_by_selected,
-    page=page,
-    query_error=query_error,
-    fields=fields
-    %}
-
-    {% block package_search_results_api %}
-        <section class="nsw-content-block">
-            <div class="nsw-content-block__content">
-                {% block package_search_results_api_inner %}
-                    <small>
-                        {% set api_link = ui.link(_('API'), href=h.url_for('api.get_api', ver=3)) %}
-                        {% set api_doc_link = ui.link(_('API Docs'), href='https://docs.ckan.org/en/{0}/api/'.format(g.ckan_doc_version)) %}
-                        {% trans %} You can also access this registry using the {{ api_link }} (see {{ api_doc_link}}). {% endtrans %}
-                    </small>
-                {% endblock %}
-            </div>
-        </section>
-    {% endblock %}
+    {%- call ui.util.call(ui.section, title=h.humanize_entity_type('dataset', dataset_type, 'page title') or _('Datasets'), level=1) -%}
+        {%- include "package/snippets/search_results.html" -%}
+    {%- endcall %}
 {% endblock %}
 
 
 {% block secondary_content %}
-    {% snippet "package/snippets/search_facets.html", facet_titles=facet_titles, search_facets=search_facets %}
+    {% include "package/snippets/search_facets.html" %}
 {% endblock %}

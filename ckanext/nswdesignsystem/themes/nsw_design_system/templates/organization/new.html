@@ -2,18 +2,22 @@
 
 {% set label = h.humanize_entity_type('organization', group_type, 'create title') or _('Create an Organization') %}
 
-{% block subtitle %}{{ label }} - {{ super() }}{% endblock %}
+{% block subtitle %}
+    {{ ui.subtitle_item(label) }}
+    {{ super() }}
+{% endblock %}
 
-{% block breadcrumb_content_inner %}
+{% block breadcrumb_content %}
+    {{ super() }}
     {{ ui.breadcrumb(label, href=h.url_for(group_type~'.new'), active=true) }}
 {% endblock %}
 
 {% block primary_content_inner %}
-  <h1 class="nsw-h2">{{ label }}</h1>
-  {% block page_header %}{% endblock %}
-  {% snippet 'organization/snippets/organization_form.html', data=data, errors=errors, error_summary=error_summary, action=action %}
+    {%- call ui.util.call(ui.section, title=label, level=1) -%}
+        {{ form|safe }}
+    {%- endcall %}
 {% endblock %}
 
 {% block secondary_content %}
-    {% snippet "organization/snippets/helper.html", group_type=group_type %}
+    {% include "organization/snippets/helper.html" %}
 {% endblock %}

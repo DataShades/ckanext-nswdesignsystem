@@ -8,7 +8,7 @@
 
 {% block page_primary_action -%}
     {% if h.check_access('resource_view_create', {'resource_id': resource.id}) %}
-        {%- call ui.util.call(ui.dropdown, title=ui.icon("plus-square") ~ _('New view'), inline=true) -%}
+        {%- call ui.util.call(ui.dropdown, title=ui.icon("plus") ~ _('New view'), inline=true) -%}
             {% for view_type, label, icon in h.get_allowed_view_types(resource, pkg_dict) -%}
                 {{ ui.dropdown_item(" " ~ label, href=h.url_for(pkg_dict.type ~ '_resource.edit_view', id=pkg_dict.name, resource_id=resource.id, view_type=view_type), icon=icon) }}
             {%- endfor %}

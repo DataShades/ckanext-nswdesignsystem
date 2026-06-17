@@ -1,7 +1,18 @@
 {% extends "package/edit_base.html" %}
 
+{% block subtitle %}
+    {{ ui.subtitle_item(_('Edit Dataset')) }}
+    {{ super() }}
+{% endblock %}
+
+{% block breadcrumb_content %}
+    {{ super() }}
+    {{- ui.breadcrumb(h.humanize_entity_type('package', dataset_type, 'edit label') or _('Edit Dataset'), href=h.url_for(pkg_dict.type ~ ".edit", id=pkg_dict.name), active=true) }}
+{% endblock %}
+
+
 {% block primary_content_inner %}
-  {%- call ui.util.call(ui.section, title=_('Edit Dataset')) -%}
-    {% snippet 'package/snippets/package_form.html', data=data, errors=errors, error_summary=error_summary, action=action %}
+    {%- call ui.util.call(ui.section, title=_('Edit Dataset'), level=1) -%}
+	{{- h.snippet(form_snippet, pkg_dict=pkg_dict, **form_vars) -}}
   {%- endcall %}
 {% endblock %}

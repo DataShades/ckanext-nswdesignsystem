@@ -1,21 +1,19 @@
-{% set default_collapsed = h.default_collapse_facets() %}
-{%- set use_htmx = use_htmx | default(true) -%}
+{%- set hx = {"swap-oob": "true", "swap": "none"} -%}
+{%- set form_id = form_id or "dataset-search-form" -%}
 
-<div class="filters" id="search-facets"{% if use_htmx %} hx-swap-oob="true" hx-swap="none"{%- endif %}>
-    <div>
-        {%- block facet_list -%}
-            {%- for facet in facet_titles %}
-                {%- set items = h.get_facet_items_dict(facet, search_facets) -%}
-
-                {%- call ui.util.call(ui.facet_section, title=facet_titles[facet], items=items, key=facet, collapsed=not h.currently_active_facet(facet) and default_collapsed, has_more=h.has_more_facets(facet, search_facets, limit=items|length)) -%}
-                    {%- call ui.util.call(ui.facet_list, hx={"boost": "true"} if use_htmx else {}) -%}
+{%- call ui.util.call(ui.filters, form_id=form_id, attrs={"id": "search-facets"}, hx=hx) -%}
+    {%- block facet_list -%}
+        {%- for facet in facet_titles %}
+            {%- set items = h.get_facet_items_dict(facet, search_facets) -%}
+            {%- call ui.util.call(ui.facet_section, title=facet_titles[facet], key=facet, has_more=h.has_more_facets(facet, search_facets, limit=items|length)) -%}
+                {%- if items -%}
+                    {%- call ui.util.call(ui.facet_list) -%}
                         {%- for item in items -%}
-                            {{ ui.facet(item.display_name, key=facet, value=item.name, count=item.count, active=item.active) }}
+                            {{ ui.facet(item.display_name, key=facet, value=item.name, count=item.count, active=item.active, form_id=form_id) }}
                         {%- endfor %}
                     {%- endcall %}
-                {%- endcall %}
-            {%- endfor %}
-        {%- endblock facet_list %}
-    </div>
-    <a class="close no-text hide-filters"><i class="fa fa-times-circle"></i><span class="text">{{ _('close') }}</span></a>
-</div>
+                {%- endif %}
+            {%- endcall %}
+        {%- endfor %}
+    {%- endblock facet_list %}
+{%- endcall %}

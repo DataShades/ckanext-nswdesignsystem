@@ -5,18 +5,27 @@
     {{- super() }}
 {%- endblock %}
 
+{%- block breadcrumb_content -%}
+    {{- super() -}}
+    {{ ui.breadcrumb(_('About'), href=h.url_for(group_type + '.about', id=group_dict.name), active=true) }}
+{%- endblock %}
+
+{%- set page_heading | trim -%}
+{% block page_heading %}{{ group_dict.display_name }}{% endblock %}
+{%- endset %}
+
 {% block primary_content_inner %}
-    {%- call ui.util.call(ui.heading, level=1) -%}
-        {% block page_heading %}{{ group_dict.display_name }}{% endblock %}
+    {%- call ui.util.call(ui.section, title=page_heading, level=1) -%}
+        {% block group_description %}
+            {% if group_dict.description %}
+                {{ h.render_markdown(group_dict.description) }}
+  	    {% endif %}
+        {% endblock %}
+
+        {% block group_extras %}
+            {%- with extras=h.sorted_extras(group_dict.extras) -%}
+                {%- include 'snippets/additional_info.html' -%}
+            {%- endwith %}
+        {% endblock %}
     {%- endcall %}
-
-    {% block group_description %}
-        {% if group_dict.description %}
-            {{ h.render_markdown(group_dict.description) }}
-  	{% endif %}
-    {% endblock %}
-
-    {% block group_extras %}
-        {% snippet 'snippets/additional_info.html', extras = h.sorted_extras(group_dict.extras) %}
-    {% endblock %}
 {% endblock %}

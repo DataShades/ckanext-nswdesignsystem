@@ -41,7 +41,6 @@
             </div>
         {% endif %}
 
-
         {% block user_nums %}
             {% set num_followers = h.follow_count('user', user.id) %}
             {%- call ui.util.call(ui.table, striped=true, adaptive=true, condensed=true, _extra_class="profile-nums") -%}

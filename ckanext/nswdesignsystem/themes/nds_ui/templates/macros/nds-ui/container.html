@@ -47,7 +47,7 @@
     </div>
 {%- endmacro %}
 
-{%- macro filters(content, form_id, js, instant, collapse_direction="down", title=_("Filters")) -%}
+{%- macro filters(content, form_id, instant, js=true, collapse_direction="down", title=_("Filters")) -%}
     {%- set class = "nsw-filters" -%}
     {%- if instant -%}
         {%- set class = class ~ " nsw-filters--instant" -%}
@@ -63,8 +63,7 @@
     {%- endif %}
     {%- set item_kwargs = kwargs -%}
 
-    {%- call ui.util.call(ui.util.tag, "" if form_id else "form") -%}
-        <div {{ ui.util.attrs(item_kwargs, {"class": class}) }}>
+    {%- call ui.util.call(ui.util.tag, "div" if form_id else "form", **ui.util.augment_attrs(item_kwargs, {"class": class})) -%}
         {%- if collapse_direction -%}
             <div class="nsw-filters__controls">
                 <button>
@@ -95,7 +94,6 @@
             <div class="nsw-filters__cancel">
                 <button onclick="window.location.href = '{{ h.url_for_static(request.path) }}'" type="reset">Clear all filters</button>
             </div>
-        </div>
         </div>
     {%- endcall %}
 {%- endmacro %}

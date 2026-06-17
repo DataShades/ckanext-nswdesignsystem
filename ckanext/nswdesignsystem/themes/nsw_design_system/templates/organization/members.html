@@ -1,17 +1,30 @@
 {% extends "organization/read_base.html" %}
 
-{% block subtitle %}{{ _('Members') }} - {{ super() }}{% endblock %}
+{% block subtitle %}
+    {{ ui.subtitle_item(_('Members')) }}
+    {{ super() }}
+{% endblock %}
 
 {% block primary_content_inner %}
-  {%- call ui.util.call(ui.section, title=_('Members')) -%}
-    {% if members %}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {% for user in members %}
-                {{ ui.user(user=user) }}
-            {% endfor %}
-        </div>
-    {% else %}
-        {{ ui.empty(_('No members found for this organization.')) }}
-    {% endif %}
-  {%- endcall %}
+    {%- call ui.util.call(ui.section, title=_('Members'), level=1) -%}
+        {%- call ui.util.call(ui.table, striped=true) -%}
+            <thead>
+                <tr>
+                    <th>{{ _('User') }}</th>
+                    <th>{{ _('Role') }}</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for user_id, user, role in members %}
+                    <tr>
+                        <td class="media">
+                            {{ h.linked_user(user_id, maxlength=20) }}
+                        </td>
+                        <td>{{ role }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        {%- endcall %}
+    {%- endcall %}
 {% endblock %}

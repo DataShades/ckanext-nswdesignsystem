@@ -2,13 +2,22 @@
 
 {% block subtitle -%}
     {{ ui.subtitle_item(_('Followers')) }}
-    {{- ui.subtitle_item(h.dataset_display_name(pkg_dict)) }}
     {{- super() }}
 {%- endblock %}
 
+{%- block breadcrumb_content -%}
+    {{- super() -}}
+    {{ ui.breadcrumb(_("Followers"), href=h.url_for(pkg_dict.type~".followers", id=pkg_dict.name), active=true) }}
+{%- endblock %}
+
 {% block primary_content_inner %}
-  <h1 class="hide-heading">{% block page_heading %}{{ _('Followers') }}{% endblock %}</h1>
-  {% block followers_list %}
-    {% snippet "user/snippets/followers.html", followers=followers %}
-  {% endblock %}
+    {%- call ui.util.call(ui.section, title=_("Followers"), level=1) -%}
+        {% block followers_list %}
+            {%- call ui.util.call(ui.user_list) -%}
+                {%- for user in followers -%}
+                    {{ ui.user(user=user) }}
+                {%- endfor %}
+            {%- endcall %}
+        {% endblock %}
+    {%- endcall %}
 {% endblock %}

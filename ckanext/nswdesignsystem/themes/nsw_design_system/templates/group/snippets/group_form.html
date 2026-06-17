@@ -1,10 +1,8 @@
 {%- set modal_id = ui.util.id() -%}
 
-{%- call ui.util.call(ui.form, method="POST", enctype="multipart/form-data", data={"module": "basic-form"}, attrs={"novalidate": ""}) -%}
+{%- call ui.util.call(ui.form, method="POST", enctype="multipart/form-data") -%}
     {% block error_summary %}
-        {% if error_summary %}
-             {{ ui.alert(error_summary, style="danger") }}
-        {% endif %}
+        {{ ui.form_errors(error_summary) }}
     {% endblock %}
 
     {% block basic_fields %}
@@ -30,7 +28,7 @@
 
     {{ ui.form_annotation() }}
 
-    <div class="nsw-list nsw-list--8 nsw-m-top-md">
+    {%- call ui.util.call(ui.form_actions) -%}
         {% block delete_button %}
             {% if h.check_access('group_delete', {'id': data.id})  %}
                 {%- call ui.util.call(ui.modal_handle, id=modal_id, style="danger") -%}
@@ -42,8 +40,8 @@
         {%- call ui.util.call(ui.button, type="submit", style="dark", attrs={"name": "save"}) -%}
             {% block save_text %}{{ h.humanize_entity_type('group', group_type, 'save label') or _('Save Group') }}{% endblock %}
         {%- endcall %}
-    </div>
+    {%- endcall %}
 
 {%- endcall %}
 
-{{ ui.confirm_modal(h.humanize_entity_type('group', group_type, 'delete confirmation') or _('Are you sure you want to delete this Group?'), id=modal_id, href=h.url_for(group_type+'.delete', id=data.id)) }}
+{{ ui.confirm_modal(h.humanize_entity_type('group', group_type, 'delete confirmation') or _('Are you sure you want to delete this group?'), id=modal_id, href=h.url_for(group_type+'.delete', id=data.id)) }}

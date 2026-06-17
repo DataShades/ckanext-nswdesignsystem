@@ -2,20 +2,16 @@
 {% block resource_list_class %}resource-list{% endblock %}
 {%- endset -%}
 
-<section id="dataset-resources" class="resources">
-    {{ ui.heading(_('Data and Resources'), level=2) }}
-
+{%- call ui.util.call(ui.section, _('Data and Resources'), level=2) -%}
     {% block resource_list %}
         {% if resources %}
-            {%- call ui.util.call(ui.resource_list, attrs={"class": list_class} if list_class else {}) -%}
-                {% block resource_list_inner %}
-                    {% set can_edit = can_edit or h.check_access('package_update', {'id':pkg.id }) %}
-                    {% for resource in resources %}
-                        {{ ui.resource(resource=resource, package=pkg, can_edit=can_edit) }}
-                    {% endfor %}
-                {% endblock %}
+            {%- call ui.util.call(ui.resource_list) -%}
+                {%- for resource in resources -%}
+                    {{ ui.resource(resource=resource, package=pkg_dict) }}
+                {%- endfor %}
             {%- endcall %}
         {% else %}
+
             {% block resource_list_empty %}
                 {%- call ui.util.call(ui.empty) -%}
                     {% if h.check_access('resource_create', {'package_id': pkg['id']}) %}
@@ -30,4 +26,4 @@
             {% endblock %}
         {% endif %}
     {% endblock %}
-</section>
+{%- endcall %}

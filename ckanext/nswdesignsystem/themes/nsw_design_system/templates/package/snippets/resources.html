@@ -2,60 +2,19 @@
 {% set can_edit = pkg.id and h.check_access('package_update', {'id':pkg.id }) %}
 
 {% if pkg %}
+
     {% block resources %}
-        <section class="module module-narrow module-shallow">
-            <div class="module-group">
-
-                {% block resources_inner %}
-                    {% block resources_title %}
-                        <h2 class="module-heading">
-                            {{ _("Resources") }}
-                        </h2>
-                    {% endblock %}
-
-                    {% if resources %}
-                        {% block resources_list %}
-                            <ul class="list-group">
-                                {% for resource in resources %}
-                                    {% set url = h.url_for('%s_resource.read' % pkg.type, id=pkg.name, resource_id=resource.id) %}
-                                    <li class="list-group-item d-flex justify-content-between position-relative {{ 'active' if active == resource.id  }}">
-
-                                        {% if active == resource.id %}
-                                            <span class="flex-fill" aria-label="{{ h.resource_display_name(resource) }}">{{ h.resource_display_name(resource)|truncate(25) }}</span>
-                                        {% else %}
-                                            <a class="flex-fill" href="{{ url }}" aria-label="{{ _('Navigate to resource: {name}').format(name=h.resource_display_name(resource)) }}">{{ h.resource_display_name(resource)|truncate(25) }}</a>
-                                        {% endif %}
-
-                                        {% if can_edit %}
-                                            {%- call ui.util.call(ui.dropdown, title=ui.icon("settings"), style="secondary", size="sm", aria={"label": _('Manage {name} options').format(name=pkg.title or pkg.name)}) -%}
-
-                                                {{ ui.dropdown_item(' ' ~ _('Edit resource'), href=h.url_for(pkg.type ~ '_resource.edit', id=pkg.name, resource_id=resource.id), icon="pencil") }}
-
-                                                {% block resources_list_edit_dropdown_inner scoped %}{% endblock %}
-
-                                                {{ ui.dropdown_item(' ' ~ _('Views'), href=h.url_for(pkg.type ~ '_resource.views', id=pkg.name, resource_id=resource.id), icon="show_chart") }}
-
-                                            {%- endcall %}
-
-                                        {% endif %}
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% endblock %}
-
-                    {% else %}
-                        <p class="nsw-content-block__content">{{ _('No resources available.') }}</p>
-
-                    {% endif %}
-
-                    {% if can_edit and not is_activity_archive and not no_new_res %}
-                        <div class="module-content add-new-res">
-                            {{ ui.button(_('Add new resource'), href=h.url_for(pkg.type ~ '_resource.new', id=pkg.name), style="secondary", size="sm", icon="add") }}
-                        </div>
-                    {% endif %}
-
+        {%- call ui.util.call(ui.sidebar_nav, title=_("Resources")) -%}
+            {%- if resources -%}
+                {% block resources_list %}
+                    {% for resource in resources %}
+                        {% set url = h.url_for(pkg.type ~ '_resource.edit', id=pkg.name, resource_id=resource.id) if g.view == "edit" else h.url_for('%s_resource.read' % pkg.type, id=pkg.name, resource_id=resource.id) %}
+                        {{ ui.sidebar_nav_item(h.resource_display_name(resource)|truncate(25), href=url, active=active == resource.id ) }}
+                    {% endfor %}
                 {% endblock %}
-            </div>
-        </section>
+            {%- else -%}
+                {{ ui.empty(_('No resources available.')) }}
+            {%- endif %}
+        {%- endcall %}
     {% endblock %}
 {% endif %}

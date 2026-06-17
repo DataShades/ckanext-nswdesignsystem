@@ -1,4 +1,5 @@
-{%- macro facet_section(content, title, collapsible) -%}
+{%- macro facet_section(content, title, collapsible, has_more, key) -%}
+    {%- set content = content | trim -%}
     <div {{ ui.util.attrs(kwargs, {"class": "nsw-filters__item"}) }}>
         {%- if collapsible -%}
             <button class="nsw-filters__item-button">
@@ -6,11 +7,14 @@
                 <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">keyboard_arrow_down</span>
             </button>
         {%- endif %}
-
         <div class="nsw-filters__item-content">
             <fieldset class="nsw-form__fieldset">
                 <legend class="nsw-form__legend {{ 'sr-only' if collapsible }}">{{ title }}</legend>
-                {{ content }}
+                {%- if content -%}
+                    {{ content }}
+                {%- else -%}
+                    {{ ui.empty(_('There are no {facet_type} that match this search').format(facet_type=title)) }}
+                {%- endif %}
             </fieldset>
         </div>
     </div>

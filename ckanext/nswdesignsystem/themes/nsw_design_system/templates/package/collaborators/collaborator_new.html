@@ -6,60 +6,35 @@
 {%- endblock %}
 
 {%- block content_action -%}
-    {{ ui.content_action(_('Back to all collaborators'), href=h.url_for('dataset.collaborators_read', id=pkg_dict.name), style="secondary", icon="arrow-left") }}
+    {{ ui.content_action(_('Back to all collaborators'), href=h.url_for('dataset.collaborators_read', id=pkg_dict.name), icon="chevron-left") }}
     {{ super() }}
 {%- endblock %}
 
 {% block primary_content_inner %}
-    <h1 class="page-heading">
-        {% block page_heading %}{{ _('Edit Collaborator') if user else _('Add Collaborator') }}{% endblock %}
-    </h1>
+    {%- call ui.util.call(ui.section, title=_('Edit Collaborator') if user else _('Add Collaborator'), level=1) -%}
+        {% block form %}
+            {%- call ui.util.call(ui.form, method="POST") -%}
+                {{ ui.input(name="username", label=_("User"), value=user.name if user else "", required=true, attrs={"readonly": ""} if user else {}) }}
+                {{ ui.select(name='capacity', label=_('Role'), options=capacities, selected=user_capacity) }}
 
-    {% block form %}
-        {%- call ui.util.call(ui.form, method="POST") -%}
-            <div class="nsw-grid">
-                <div class="col-md-5">
-                    <div class="form-group control-medium">
-                        {% if not user %}
-                            <label class="form-label" for="username">
-                                {{ _('Existing User') }}
-                            </label>
-                            <p>
-                                {{ _('If you wish to add an existing user, search for their username below.') }}
-                            </p>
-                        {% endif %}
-                        <div class="controls">
-                            {% if user %}
-                                <input type="hidden" name="username" value="{{ user.name }}" />
-                                <input id="username" name="username" type="text" value="{{ user.name }}"
-                                       disabled="True" class="form-control">
-                            {% else %}
-                                <input id="username" type="text" name="username" placeholder="{{ _('Username') }}"
-                                       value="" class="control-medium" data-module="autocomplete"
-                                       data-module-source="/api/2/util/user/autocomplete?q=?">
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
+                {%- call ui.util.call(ui.form_actions) -%}
+                    {% if user %}
+                        {{ ui.button(_('Delete'), href=h.url_for('dataset.collaborator_delete', id=pkg_dict.id, user_id=user.name), style="danger", data={"module": "confirm-action", "module-content": _('Are you sure you want to delete this collaborator?')}) }}
 
-            {{ ui.select(name='capacity', label=_('Role'), options=capacities, selected=user_capacity) }}
-            {%- call ui.util.call(ui.form_actions) -%}
-                {% if user %}
-                    {{ ui.button(_('Delete'), href=h.url_for('dataset.collaborator_delete', id=pkg_dict.id, user_id=user.name), style="danger", data={"module": "confirm-action", "module-content": _('Are you sure you want to delete this collaborator?')}) }}
-
-                    {{ ui.button(_('Update Collaborator'), type="submit", attrs={"name": "submit"}) }}
-                {% else %}
-                    {{ ui.button(_('Add Collaborator'), type="submit", attrs={"name": "submit"}) }}
-                {% endif %}
+                        {{ ui.button(_('Update Collaborator'), type="submit") }}
+                    {% else %}
+                        {{ ui.button(_('Add Collaborator'), type="submit") }}
+                    {% endif %}
+                {%- endcall %}
             {%- endcall %}
-        {%- endcall %}
-    {% endblock %}
+        {% endblock %}
+    {%- endcall %}
 {% endblock %}
 
 {% block secondary_content %}
     {{ super() }}
-    {%- call ui.util.call(ui.sidebar_section, icon="info-circle", title=_('What are the available roles?')) -%}
+
+    {%- call ui.util.call(ui.sidebar_section, title=_('What are the available roles?'), _extra_class="nsw-m-top-xs") -%}
         {% if h.check_config_permission('allow_admin_collaborators') %}
             {% trans %}
             <p><strong>Admin:</strong> In addition to managing the dataset, admins can add and remove collaborators from a dataset.</p>

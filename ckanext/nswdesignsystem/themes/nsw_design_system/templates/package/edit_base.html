@@ -1,18 +1,17 @@
 {% extends "package/read_base.html" %}
 
-{% block breadcrumb_content -%}
-    {{ super() }}
-    {{- ui.breadcrumb(_('Manage'), active=true) }}
-{%- endblock %}
-
 {% block content_primary_nav -%}
     {{ ui.content_nav_item(_('Edit metadata'), href=h.url_for(pkg.type ~ '.edit', id=pkg.name), icon='edit', active=request.endpoint==pkg.type ~ '.edit') }}
     {{- ui.content_nav_item(_('Resources'), href=h.url_for(pkg.type ~ '.resources', id=pkg.name), icon='list', active=request.endpoint==pkg.type ~ '.resources') }}
-    {{- ui.content_nav_item(_('Collaborators'), href=h.url_for(pkg.type ~ '.collaborators', id=pkg.name), icon='users', active=request.endpoint==pkg.type ~ '.collaborators') if h.check_access('package_collaborator_create', {'id': pkg.id}) }}
+    {{- ui.content_nav_item(_('Collaborators'), href=h.url_for(pkg.type ~ '.collaborators_read', id=pkg.name), icon='users', active=request.endpoint==pkg.type ~ '.collaborators') if h.check_access('package_collaborator_create', {'id': pkg.id}) }}
 {%- endblock %}
 
 {% block secondary_content %}
-    <div class="nsw-list nsw-list--8 nsw-m-top-md">
-        {{ ui.button(_('View dataset'), href=h.url_for(pkg.type ~ '.read', id=pkg.name), style="dark", _extra_class="nsw-width-100 nsw-justify-content-center") }}
-    </div>
+    {{ ui.button(_('Add new resource'), href=h.url_for(pkg.type ~ '_resource.new', id=pkg.name), style="secondary", icon="plus", full=true) }}
+
 {% endblock %}
+
+
+{% block content_action -%}
+    {{- ui.content_action(_('View'), href=h.url_for(pkg.type ~ '.read', id=pkg.name), icon="eye", style="secondary") }}
+{%- endblock %}
