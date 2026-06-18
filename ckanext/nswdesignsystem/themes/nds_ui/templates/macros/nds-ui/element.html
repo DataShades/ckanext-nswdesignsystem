@@ -12,7 +12,10 @@
     {%- set prefix = ui.icon(icon) if icon else "" -%}
     {%- set content = ui.util.tag(content, "span") if prefix else content -%}
 
-    {%- set class = "nsw-button" ~ " nsw-button--" ~ _style_map.get(style, style) -%}
+    {%- set class = "nsw-button" -%}
+    {%- if style -%}
+        {%- set class = class ~ " nsw-button--" ~ _style_map.get(style, style) -%}
+    {%- endif %}
     {%- if size == "sm" -%}
         {%- set class = class ~ " nsw-button--small" -%}
     {%- endif %}
