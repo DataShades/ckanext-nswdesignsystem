@@ -70,15 +70,16 @@
     {% endblock %}
     #}
     {%- block styles %}
-        {%- block nds_fontw -%}
+        {%- block nds_font -%}
             <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
             <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
             <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
-        {%- endblock nds_fontw %}
+        {%- endblock nds_font %}
 
         {%- block styles_theming -%}
-            {% asset 'theming/nds-ui/nds-css' %}
-            {% asset 'theming/nds-ui/nds-ui-css' %}
+            <link href="https://unpkg.com/nsw-design-system@3.24.12/dist/css/main.css" crossorigin="anonymous" integrity="sha256-FJULCywShcXwJrh1Ft78HhxiLVJilTn+8Uj1B4MaTHU=" rel="stylesheet"/>
+
+            {% asset 'theming/nds-ui/styles' %}
         {%- endblock styles_theming %}
     {% endblock %}
 
@@ -120,8 +121,10 @@
     circumstances
     #}
     {%- block scripts %}
-        {% asset 'theming/nds-ui/nds-js' %}
-        {% asset 'theming/nds-ui/nds-ui-js' %}
+        {%- block scripts_theming -%}
+            <script src="https://unpkg.com/nsw-design-system@3.24.12/dist/js/main.js" crossorigin="anonymous" integrity="sha256-FAe39P2HHNbaAvhpVnepaiWAGoMHWENpBGZ4BWxnrNY="></script>
+            {% asset 'theming/nds-ui/scripts' %}
+        {%- endblock %}
     {% endblock -%}
 
     {% block body_extras -%}
