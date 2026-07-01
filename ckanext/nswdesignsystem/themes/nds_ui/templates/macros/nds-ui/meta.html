@@ -152,7 +152,7 @@
 
 
     <div class="ckan-lang-select">
-        {%- call ui.util.call(ui.form, method="POST", action=h.url_for('util.internal_redirect'), data={"module": "change-submit", "module-selector": "[name=url]"}) -%}
+        {%- call ui.util.call(ui.form, method="POST", action=h.url_for('util.internal_redirect'), data={"module": "theming-change-submit", "module-selector": "[name=url]"}) -%}
             {%- set ns = namespace(options=[]) -%}
             {% for locale in h.get_available_locales() %}
                 {%- do ns.options.append({"text": locale.display_name or locale.english_name, "value": h.url_for(h.current_url(), locale=locale.short_name)}) -%}

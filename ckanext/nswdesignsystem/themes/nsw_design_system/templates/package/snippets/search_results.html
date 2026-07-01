@@ -11,7 +11,7 @@
         ] %}
 
 
-        {{ ui.search_form(query=q, sorting=sort_by_selected, sorting_options=sorting, error=query_error, facets=search_facets, facet_titles=facet_titles, active_filters=fields, use_htmx=use_htmx, count=page.item_count, attrs={"id": "dataset-search-form", "data-module": "change-submit", "data-module-external-tracking": ""}) }}
+        {{ ui.search_form(query=q, sorting=sort_by_selected, sorting_options=sorting, error=query_error, facets=search_facets, facet_titles=facet_titles, active_filters=fields, use_htmx=use_htmx, count=page.item_count, attrs={"id": "dataset-search-form", "data-module": "theming-change-submit", "data-module-external-tracking": ""}) }}
 
     {% endblock %}
 
