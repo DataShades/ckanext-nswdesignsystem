@@ -1,0 +1,6 @@
+{% ckan_extends %}
+
+{%- block parameters -%}
+    {%- do parametrized.extend(["nds_footer_section"]) -%}
+    {{ super() }}
+{%- endblock %}

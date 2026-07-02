@@ -1,0 +1,6 @@
+{% ckan_extends %}
+
+{%- block parameters -%}
+    {%- do parametrized.extend(["nds_sidebar_nav_item_with_subnav"]) -%}
+    {{ super() }}
+{%- endblock %}

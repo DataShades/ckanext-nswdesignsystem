@@ -1,0 +1,25 @@
+<h3>NSW Design System: Footer sections</h3>
+
+<p>
+    The footer sections component is used to display a list of grouped links in the
+    footer. The title of the section itself can be a link if <code>href</code> attribute
+    is provided.
+</p>
+
+{%- call ui.util.call(show_example) -%}
+    {%- raw %}
+        {%- call ui.util.call(ui.footer) -%}
+            {%- call ui.util.call(ui.footer_main) -%}
+                {%- call ui.util.call(ui.nds_footer_section, title="First column") -%}
+                    {{ ui.footer_main_nav_item("First") }}
+                    {{ ui.footer_main_nav_item("Second") }}
+                {%- endcall %}
+
+                {%- call ui.util.call(ui.nds_footer_section, title="Second column", href="/") -%}
+                    {{ ui.footer_main_nav_item("First") }}
+                    {{ ui.footer_main_nav_item("Second") }}
+                {%- endcall %}
+            {%- endcall %}
+        {%- endcall %}
+    {%- endraw %}
+{%- endcall %}

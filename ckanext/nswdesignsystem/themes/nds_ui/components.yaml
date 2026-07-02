@@ -1,0 +1,336 @@
+nds_back_to_top:
+  description: |
+    A button that allows users to quickly return to the top of the page.
+  arguments:
+    content:
+      description: Ignored, as NSW Design system inserts standardized content into the button
+
+nds_callout:
+  description: |
+    Callouts are a snippet of information that draws attention to important content.
+  arguments:
+    content:
+      description: |
+        The content of the callout. This can include text, links, or other HTML elements.
+
+nds_card_carousel:
+  description: |
+    A card carousel displays multiple related cards horizontally, allowing users to swipe or navigate through the content.
+  arguments:
+    content:
+      description: |
+        The content of the card carousel. This can include multiple card
+        elements.
+    title:
+      description: |
+        The title of the card carousel. This should be a brief summary of the carousel's content.
+      type: 'str'
+    drag:
+      description: |
+        A boolean indicating whether the carousel can be dragged to scroll through the cards.
+      type: 'bool'
+    loop:
+      description: |
+        A boolean indicating whether the carousel should loop back to the beginning when the end is reached.
+      type: 'bool'
+    navigation:
+      description: |
+        A boolean indicating whether navigation dots should be displayed for the carousel.
+      type: 'bool'
+    pagination:
+      description: |
+        A boolean indicating whether pagination blocks should be displayed for
+        the carousel. Replaces navigation dots.
+      type: 'bool'
+
+nds_card_carousel_item:
+  description: |
+    A card carousel item represents a single card within a card carousel.
+  arguments:
+    content:
+      description: |
+        The content of the card carouspel item. The content and any other named
+        argument will be passed to the card component.
+
+nds_date_input:
+  description: |
+    A date input allows users to select a date from a calendar or enter a date manually.
+  arguments:
+    content:
+        description: Help text for the input
+    name:
+        description: Name of the form field, used as the key when submitting the form
+        type: 'str'
+    id:
+        description: Unique identifier for the input, used to associate it with a label
+        type: 'str'
+    label:
+        description: Label text shown before the fied
+        type: 'str'
+    required:
+        description: Whether this field is required to submit the form
+        type: 'bool'
+    value:
+        description: Initial value of the field
+        type: 'str'
+    errors:
+        description: List of error messages to show for this field
+        type: 'list[str]'
+    datepicker:
+        description: Mapping for data-attributes for datepicker configuration
+        type: 'dict[str, str]'
+
+
+nds_date_input_group:
+  description: |
+    A date input group allows users to select a date from a calendar or enter a date manually.
+  arguments:
+    content:
+        description: Help text for the input
+    name:
+        description: Name of the form field, used as the key when submitting the form
+        type: 'str'
+    id:
+        description: Unique identifier for the input, used to associate it with a label
+        type: 'str'
+    label:
+        description: Label text shown before the fied
+        type: 'str'
+    required:
+        description: Whether this field is required to submit the form
+        type: 'bool'
+    value:
+        description: Initial value of the field
+        type: 'str'
+    errors:
+        description: List of error messages to show for this field
+        type: 'list[str]'
+    datepicker:
+        description: Mapping for data-attributes for datepicker configuration. When set to true, simply shows default datepicker.
+        type: 'dict[str, str]|bool'
+
+nds_global_alert:
+    description: |
+        Global alerts display across the top of an entire site to show important information to users.
+    arguments:
+        content:
+            description: |
+                The content of the alert. This can include text, links, or other HTML elements.
+        title:
+            description: |
+                The title of the alert. This should be a brief summary of the alert's message.
+            type: 'str'
+        cookie_name:
+            description: |
+                The name of the cookie to be set when the alert is
+                dismissed. This allows the alert to be dismissed and not shown
+                again to the user.
+            type: 'str'
+        variant:
+            description: |
+                The variant of the alert. This can be used to indicate the type
+                of alert, such as 'light', 'critical', or 'standard'.
+            type: 'str'
+
+nds_hero_banner:
+  description: |
+    The hero banner introduces the goals or purpose of the product or service.
+  arguments:
+    content:
+      description: |
+        The content of the hero banner.
+    color:
+      description: |
+        The color of the hero banner. This can be used to indicate the type of
+        content, such as 'light', 'dark', or 'off-white'.
+      type: 'str'
+    img:
+      description: |
+        The image to be displayed in the hero banner.
+      type: 'str'
+    lines:
+      description: |
+        Enables line pattern on the right side of the banner.
+      type: 'bool'
+    subtitle:
+      description: |
+        The subtitle of the hero banner.
+      type: 'str'
+    extra_content:
+      description: |
+        Additional content to be displayed on the right side of the hero banner.
+      type: 'str'
+
+nds_hero_search:
+  description: |
+    Hero search provides the user with easy access to targeted search.
+  arguments:
+    content:
+      description: |
+        The content shown below the search form, typically the list of search suggestions.
+    title:
+      description: |
+        The title of the hero search.
+      type: 'str'
+    intro:
+      description: |
+        The intro text of the hero search. Rendered below the title with smaller font size.
+      type: 'str'
+    img:
+      description: |
+        The background image to be displayed in the hero search.
+      type: 'str'
+    html_img:
+      description: |
+        When enabled, background image is inserted using real IMG tag. When
+        disabled, background image is applied via CSS background.
+      type: 'bool'
+    href:
+      description: |
+        The URL to which the search form should submit.
+      type: 'str'
+    search_name:
+      description: |
+        The name of the search input field, used as the key when submitting the form.
+      type: 'str'
+
+nds_in_page_nav:
+  description: |
+    In-page navigation helps users scan and navigate to content on the page quickly.
+  arguments:
+    content:
+      description: |
+        The content of the in-page navigation. This can include multiple
+        in-page navigation items.
+    title:
+      description: |
+        The title of the in-page navigation.
+      type: 'str'
+
+nds_in_page_nav_item:
+  description: |
+    Single link fot the in-page navigation block.
+  arguments:
+    content:
+      description: |
+        The content of the in-page navigation item.
+    href:
+      description: |
+        The URL to which the in-page navigation item should link.
+      type: 'str'
+
+nds_link_list:
+  description: |
+    Link lists surface and group related content.
+  arguments:
+    content:
+      description: |
+        The content of the link list. This can include multiple link list items.
+
+nds_link_list_item:
+  description: |
+    A link for the link list.
+  arguments:
+    content:
+      description: |
+        The content of the link list item.
+    href:
+      description: |
+        The URL to which the link list item should link.
+      type: 'str'
+
+nds_progress_indicator:
+  description: |
+    Progress indicators show a user how far along they are in a process.
+  arguments:
+    content:
+      description: |
+        The content of the progress indicator.
+    total:
+      description: |
+        The total number of steps in the process.
+      type: 'int'
+    step:
+      description: |
+        The current step in the process.
+      type: 'int'
+
+nds_sidebar_nav_item_with_subnav:
+  description: |
+    Sidebar navigation item with sub-navigation links.
+  arguments:
+    content:
+      description: |
+        Nested navigation.
+    title:
+      description: |
+        The title of the sidebar navigation item.
+      type: 'str'
+    href:
+      description: |
+        The URL to which the sidebar navigation item should link.
+      type: 'str'
+    active:
+      description: |
+        A boolean indicating whether the sidebar navigation item is active.
+      type: 'bool'
+
+nds_step_item:
+  description: |
+    Separate item of the steps collection
+  arguments:
+    content:
+      description: |
+        The content of the step item.
+    title:
+      description: |
+        The title of the step item.
+      type: 'str'
+    fill:
+      description: |
+        A boolean indicating whether the step item should be filled.
+      type: 'bool'
+    level:
+      description: |
+        The heading level of the step item. This can be used to indicate the
+        importance of the step item.
+      type: 'int'
+
+nds_steps:
+  description: |
+    Indicator of a visual journey or link between sections of content.
+  arguments:
+    content:
+      description: |
+        The content of the steps. This can include multiple step items.
+    variant:
+      description: |
+        The variant of the steps. This can be used to indicate the type of
+        steps, such as 'light', 'dark', or 'supplementary'.
+      type: 'str'
+    counter:
+      description: |
+        A boolean indicating whether the steps should be numbered.
+      type: 'bool'
+    size:
+      description: |
+        The size of the steps. This can be used to indicate the size of the
+        steps, such as 'sm' or 'md'.
+      type: 'str'
+
+nds_footer_section:
+  description: |
+    Wrapper for a group of links in the footer.
+  arguments:
+    content:
+      description: |
+        The content of the footer section. This can include multiple footer
+        links.
+    title:
+      description: |
+        The title of the footer section.
+      type: 'str'
+    href:
+      description: |
+        The URL to which the footer section should link.
+      type: 'str'

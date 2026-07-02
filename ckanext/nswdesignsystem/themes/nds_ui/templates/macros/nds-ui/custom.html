@@ -1,5 +1,6 @@
 {%- macro nds_back_to_top(content) -%}
-    {{ ui.button(content, _extra_class="nsw-back-to-top js-back-to-top", **kwargs) }}
+    {%- do kwargs.setdefault("_extra_class", "nsw-back-to-top js-back-to-top") -%}
+    {{ ui.button(**kwargs) }}
 {%- endmacro %}
 
 {%- macro nds_callout(content) -%}
@@ -197,7 +198,7 @@
 {%- endmacro %}
 
 
-{%- macro nds_hero_search(content, title, intro, img, html_img, suggestions, href=h.url_for("dataset.search"), search_name="q") -%}
+{%- macro nds_hero_search(content, title, intro, img, html_img, href=h.url_for("dataset.search"), search_name="q") -%}
     {%- set class = "nsw-section" -%}
     {%- if img -%}
         {%- set class = class ~ " nsw-section--image" ~ ("-html" if html_img else "")-%}
@@ -214,7 +215,7 @@
                     <div class="hero-search__content">
                         {%- if title -%}<h1>{{ title }}</h1>{%- endif %}
                         {%- if intro -%}<p class="nsw-intro">{{ intro }}</p>{%- endif %}
-                        <form role="search" class="hero-search__form" action="">
+                        <form role="search" class="hero-search__form" action="{{ href }}">
                             <label class="sr-only nsw-form__label" for="{{ id }}">Search site for:</label>
                             <div class="nsw-form__input-group nsw-form__input-group--icon">
                                 <input class="nsw-form__input" type="text" id="{{ id }}" name="{{ search_name }}" value="">
@@ -326,7 +327,7 @@
     <div {{ ui.util.attrs(kwargs, {"class": "nsw-footer__group"}) }}>
         {%- if title -%}
             <div class="nsw-footer__heading">
-                {{ ui.util.tag(title, "a" if href else "", href=href) }}
+                {{ ui.util.tag(title, "a" if href else "", attrs={"href": href}) }}
             </div>
         {%- endif %}
         <ul>
