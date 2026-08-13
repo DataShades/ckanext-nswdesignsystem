@@ -17,34 +17,8 @@
     </div>
 {%- endmacro %}
 
-{%- macro card(content, title, img, href, variant, tag, date, horizontal, icon="east") -%}
-    {%- set class = "nsw-card" ~ (" nsw-card--" ~ variant if variant else "") -%}
-    {%- if horizontal -%}
-        {%- set class = class ~ " nsw-card--horizontal" -%}
-    {%- endif %}
-    <div {{ ui.util.attrs(kwargs, {"class": class}) }}>
-        {%- if img -%}
-            <div class="nsw-card__image">
-                <img src="{{ img }}" alt="{{ title }}">
-            </div>
-        {%- endif %}
-        <div class="nsw-card__content">
-            {%- if tag -%}
-                <div class="nsw-card__tag">{{ tag }}</div>
-            {%- endif %}
-            {%- if date -%}
-                <div class="nsw-card__date">{{ date }}</div>
-            {%- endif %}
-
-            <div class="nsw-card__title">
-                <a href="{{ href }}">{{ title }}</a>
-            </div>
-            <div class="nsw-card__copy">
-                {{ content }}
-            </div>
-            {{ ui.icon(icon) }}
-        </div>
-    </div>
+{%- macro card(content) -%}
+    {{ ui.nds_card(content, **kwargs) }}
 {%- endmacro %}
 
 {%- macro filters(content, form_id, instant, js=true, collapse_direction="down", title=_("Filters")) -%}

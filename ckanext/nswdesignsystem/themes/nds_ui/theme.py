@@ -51,6 +51,7 @@ icon_map = {
     "heart": "favorite",
     "info-circle": "info",
     "language": "translate",
+    "list-check": "checklist",
     "map-marker": "place",
     "minus": "remove",
     "play": "play_arrow",

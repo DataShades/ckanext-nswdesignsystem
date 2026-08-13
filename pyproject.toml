@@ -6,10 +6,19 @@ build-backend = "setuptools.build_meta"
 name = "ckanext-nswdesignsystem"
 version = "0.2.19"
 description = ""
-classifiers = [ "Development Status :: 4 - Beta", "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)", "Programming Language :: Python :: 3.8", "Programming Language :: Python :: 3.9", "Programming Language :: Python :: 3.10",]
+classifiers = [
+            "Development Status :: 4 - Beta",
+            "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+            "Programming Language :: Python :: 3.10",
+            "Programming Language :: Python :: 3.11",
+            "Programming Language :: Python :: 3.12",
+            "Programming Language :: Python :: 3.13",
+            "Programming Language :: Python :: 3.14",
+            "Programming Language :: Python :: 3.15",
+            ]
 keywords = [ "CKAN",]
-requires-python = ">= 3.8"
-dependencies = [ "typing_extensions",]
+requires-python = ">= 3.10"
+dependencies = [ "typing_extensions", "ckanext-theming>=0.0.6"]
 authors = [
     {name = "DataShades", email = "datashades@linkdigital.com.au"},
     {name = "Yan Rudenko", email = "yan.rudenko@linkdigital.com.au"},
