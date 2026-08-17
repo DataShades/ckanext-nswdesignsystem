@@ -170,7 +170,7 @@
 {%- endmacro %}
 
 
-{%- macro nds_global_alert(content, title, cookie_name, variant) -%}
+{%- macro nds_global_alert(content, title, cookie_name, variant, dismissible=true) -%}
     {%- set class = "nsw-global-alert js-global-alert" -%}
     {%- if variant -%}
         {%- set class = class ~ " nsw-global-alert--" ~ variant -%}
@@ -185,10 +185,12 @@
                 {%- endif %}
                 {{ content }}
             </div>
-            <button class="nsw-icon-button js-close-alert" type="button" aria-expanded="true">
-                <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">close</span>
-                <span class="sr-only">Close message</span>
-            </button>
+            {%- if dismissible -%}
+                <button class="nsw-icon-button js-close-alert" type="button" aria-expanded="true">
+                    <span class="material-icons nsw-material-icons" focusable="false" aria-hidden="true">close</span>
+                    <span class="sr-only">Close message</span>
+                </button>
+            {%- endif %}
         </div>
     </div>
 {%- endmacro %}
