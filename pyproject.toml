@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ckanext-nswdesignsystem"
-version = "0.2.19"
+version = "0.2.20"
 description = ""
 classifiers = [
             "Development Status :: 4 - Beta",

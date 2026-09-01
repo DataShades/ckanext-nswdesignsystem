@@ -6,9 +6,24 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
-## [0.2.19](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/0.2.19) - 2026-01-21
+## [0.2.20](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/0.2.20) - 2026-09-01
 
-<small>[Compare with v0.2.18](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.18...0.2.19)</small>
+<small>[Compare with v0.2.19](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.19...0.2.20)</small>
+
+### Features
+
+- implement all theming components ([ae72516](https://github.com/DataShades/ckanext-nswdesignsystem/commit/ae72516324d73cbfc2de39bd343d0ba24c29e9d5) by Sergey Motornyuk).
+- allow facet to pass sub_text to filter ([bf2b0bd](https://github.com/DataShades/ckanext-nswdesignsystem/commit/bf2b0bddcc1d264cec038bb76b91336e15f3e005) by Oleksandr Ivaniuk).
+- add cookie_name parameter to global_alert for persistence ([af8dec7](https://github.com/DataShades/ckanext-nswdesignsystem/commit/af8dec7913ace918e0757758b9117611c3c8eff7) by Oleksandr Ivaniuk).
+
+### Bug Fixes
+
+- show all facet matches during search ([5a8816e](https://github.com/DataShades/ckanext-nswdesignsystem/commit/5a8816e70a600e8d7fc6743fde1520eb0aa11ab0) by Oleksandr Ivaniuk).
+- render global-alert content without wrapping p to avoid nested paragraphs ([74ba1e0](https://github.com/DataShades/ckanext-nswdesignsystem/commit/74ba1e05b194946a4c867081eeed8f693727abb1) by Oleksandr Ivaniuk).
+
+## [v0.2.19](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.19) - 2026-01-21
+
+<small>[Compare with v0.2.18](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.18...v0.2.19)</small>
 
 ### Features
 
@@ -142,7 +157,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - add utility list ([4e5ac53](https://github.com/DataShades/ckanext-nswdesignsystem/commit/4e5ac535b72a6c7e2cc730977058393b7a12ad66) by Sergey Motornyuk).
 
-## [v0.2.4](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.4) - 2025-05-07
+## [v0.2.4](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.2.4) - 2025-05-08
 
 <small>[Compare with v0.2.3](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.2.3...v0.2.4)</small>
 
@@ -246,19 +261,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - form.select macro supports multiple selected options ([9bc6f44](https://github.com/DataShades/ckanext-nswdesignsystem/commit/9bc6f446ee2f60f85501fb7ac3efc3d392cdc199) by Sergey Motornyuk).
 
-## [v0.1.5](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.5) - 2023-07-22
+## [v0.1.5](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.5) - 2023-07-23
 
 <small>[Compare with v0.1.4](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.4...v0.1.5)</small>
 
-## [v0.1.4](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.4) - 2023-07-22
+## [v0.1.4](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.4) - 2023-07-23
 
 <small>[Compare with v0.1.3](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.3...v0.1.4)</small>
 
-## [v0.1.3](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.3) - 2023-07-22
+## [v0.1.3](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.3) - 2023-07-23
 
 <small>[Compare with v0.1.2](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.1.2...v0.1.3)</small>
 
-## [v0.1.2](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.2) - 2023-07-22
+## [v0.1.2](https://github.com/DataShades/ckanext-nswdesignsystem/releases/tag/v0.1.2) - 2023-07-23
 
 <small>[Compare with v0.0.2](https://github.com/DataShades/ckanext-nswdesignsystem/compare/v0.0.2...v0.1.2)</small>
 
