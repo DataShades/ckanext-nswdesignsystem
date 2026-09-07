@@ -1,5 +1,6 @@
 include README.rst
 include LICENSE
 include requirements.txt
-recursive-include ckanext/nswdesignsystem *.html *.json *.js *.css *.mo *.yml *.yaml
+recursive-include ckanext/nswdesignsystem *.html *.json *.js *.css *.mo *.yml *.yaml *.woff2 *.md *.txt
+recursive-include ckanext/nswdesignsystem LICENSE-*
 recursive-include ckanext/nswdesignsystem/migration *.ini *.py *.mako

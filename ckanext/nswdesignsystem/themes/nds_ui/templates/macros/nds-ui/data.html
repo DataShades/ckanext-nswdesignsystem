@@ -17,9 +17,12 @@
         {%- set payload = {"series": data or [], "labels": labels or []} -%}
 
 
-        <link href="https://cdn.jsdelivr.net/npm/chartist@1.5.0/dist/index.min.css" rel="stylesheet">
+        <link
+            href="{{ h.url_for_static('/nswdesignsystem/chartist/index.css') }}"
+            rel="stylesheet"
+        >
         <script type="module">
-            import { BarChart, LineChart, PieChart }  from 'https://cdn.jsdelivr.net/npm/chartist@1.5.0/+esm'
+            import { BarChart, LineChart, PieChart } from "{{ h.url_for_static('/nswdesignsystem/chartist/index.js') }}"
             new {{ type | capitalize }}Chart("#{{ id }}", {{ payload | tojson }})
         </script>
 

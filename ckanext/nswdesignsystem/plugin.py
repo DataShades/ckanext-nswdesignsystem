@@ -23,9 +23,10 @@ class NswdesignsystemPlugin(ITheme, p.IConfigurer, p.SingletonPlugin):
     # IConfigurer
     @override
     def update_config(self, config: types.CKANConfig):
+        tk.add_public_directory(config, "public")
+
         if config["ckanext.nswdesignsystem.legacy_enabled"]:
             tk.add_template_directory(config, "templates")
-            tk.add_public_directory(config, "public")
             tk.add_resource("assets", "nswdesignsystem")
 
     @override

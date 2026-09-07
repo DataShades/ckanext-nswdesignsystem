@@ -2,9 +2,7 @@
 {% from "macros/nswdesignsystem/skip_to_nav.html" import skip_to_nav with context  %}
 
 {% block styles %}
-    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="{{ h.url_for_static('/nswdesignsystem/fonts/fonts.css') }}">
     {% if h.nswdesignsystem_css_enabled() %}
         {% asset 'nswdesignsystem/nswdesignsystem-css' %}
     {% endif %}
