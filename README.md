@@ -138,6 +138,24 @@ The extension wraps the official `nsw-design-system` package. To update the unde
 
 *(Note: Custom behaviors are applied via patches located in the `patches/` folder during the build process.)*
 
+### Locally Hosted Fonts
+
+`make vendor` and `make nsw-source` do not replace the locally hosted fonts in
+`public/nswdesignsystem/fonts`. If an NSW Design System update changes the font
+family, weights, or icon font requirements, update the font files, `fonts.css`,
+checksums, and licenses together.
+
+### External Resource Policy
+
+Fonts and the optional Chartist chart component are served from this extension's
+`public/` directory. `make vendor` and `make nsw-source` do not replace those
+assets. The NSW Design System package assets loaded from unpkg are version-pinned
+and include Subresource Integrity metadata.
+
+The conditional Google reCAPTCHA loader remains an exception: its response is
+dynamic, so a fixed SRI hash would break the challenge. It is rendered only when
+`g.recaptcha_publickey` is configured.
+
 ---
 
 ## Tests
